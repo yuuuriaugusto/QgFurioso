@@ -1,15 +1,16 @@
 import { NewsContent, Survey, SurveyQuestion, PaginationParams, SortParams } from '@types';
-import { get, post, put, del } from './api';
+import { get, post, patch, del } from './api';
 
-// ================= News Content API =================
+// ===== Gerenciamento de Conteúdo de Notícias =====
 
 /**
- * Busca lista de conteúdos de notícias com filtros e paginação
+ * Busca conteúdos de notícias com filtros e paginação
  */
 export async function fetchNewsContent(
   filters: {
-    isPublished?: boolean;
+    status?: string;
     category?: string;
+    author?: string;
     search?: string;
   } = {},
   pagination: PaginationParams = { page: 1, pageSize: 10 },
@@ -18,8 +19,9 @@ export async function fetchNewsContent(
   const queryParams = new URLSearchParams();
   
   // Adiciona filtros
-  if (filters.isPublished !== undefined) queryParams.append('isPublished', filters.isPublished.toString());
+  if (filters.status) queryParams.append('status', filters.status);
   if (filters.category) queryParams.append('category', filters.category);
+  if (filters.author) queryParams.append('author', filters.author);
   if (filters.search) queryParams.append('search', filters.search);
   
   // Adiciona paginação
@@ -34,47 +36,51 @@ export async function fetchNewsContent(
 }
 
 /**
- * Busca detalhes de um conteúdo específico
+ * Busca um conteúdo específico por ID
  */
-export async function fetchNewsContentById(contentId: number): Promise<NewsContent> {
-  return await get<NewsContent>(`/api/admin/content/news/${contentId}`);
+export async function fetchNewsContentById(id: number): Promise<NewsContent> {
+  return await get<NewsContent>(`/api/admin/content/news/${id}`);
 }
 
 /**
- * Cria um novo conteúdo de notícia
+ * Cria um novo conteúdo
  */
 export async function createNewsContent(content: Omit<NewsContent, 'id' | 'createdAt' | 'updatedAt'>): Promise<NewsContent> {
   return await post<NewsContent>('/api/admin/content/news', content);
 }
 
 /**
- * Atualiza um conteúdo de notícia existente
+ * Atualiza um conteúdo existente
  */
-export async function updateNewsContent(
-  contentId: number, 
-  content: Partial<Omit<NewsContent, 'id' | 'createdAt' | 'updatedAt'>>
-): Promise<NewsContent> {
-  return await put<NewsContent>(`/api/admin/content/news/${contentId}`, content);
+export async function updateNewsContent(id: number, content: Partial<Omit<NewsContent, 'id' | 'createdAt' | 'updatedAt'>>): Promise<NewsContent> {
+  return await patch<NewsContent>(`/api/admin/content/news/${id}`, content);
 }
 
 /**
- * Altera o status de publicação (publicado/rascunho)
+ * Atualiza o status de um conteúdo (publicar/despublicar)
  */
-export async function toggleNewsContentPublishStatus(contentId: number, isPublished: boolean): Promise<NewsContent> {
-  return await put<NewsContent>(`/api/admin/content/news/${contentId}/publish`, { isPublished });
+export async function updateNewsStatus(id: number, status: 'published' | 'draft'): Promise<NewsContent> {
+  return await patch<NewsContent>(`/api/admin/content/news/${id}/status`, { status });
 }
 
 /**
- * Remove um conteúdo de notícia
+ * Remove um conteúdo
  */
-export async function deleteNewsContent(contentId: number): Promise<void> {
-  await del(`/api/admin/content/news/${contentId}`);
+export async function deleteNewsContent(id: number): Promise<boolean> {
+  return await del<boolean>(`/api/admin/content/news/${id}`);
 }
 
-// ================= Surveys API =================
+/**
+ * Faz upload de uma imagem para o conteúdo
+ */
+export async function uploadContentImage(formData: FormData): Promise<{ url: string }> {
+  return await post<{ url: string }>('/api/admin/content/upload', formData, true);
+}
+
+// ===== Gerenciamento de Pesquisas =====
 
 /**
- * Busca lista de pesquisas com filtros e paginação
+ * Busca pesquisas com filtros e paginação
  */
 export async function fetchSurveys(
   filters: {
@@ -102,21 +108,42 @@ export async function fetchSurveys(
 }
 
 /**
- * Busca detalhes de uma pesquisa específica
+ * Busca uma pesquisa específica por ID
  */
-export async function fetchSurvey(surveyId: number): Promise<Survey> {
-  return await get<Survey>(`/api/admin/surveys/${surveyId}`);
+export async function fetchSurvey(id: number): Promise<Survey> {
+  return await get<Survey>(`/api/admin/surveys/${id}`);
 }
 
 /**
- * Busca perguntas de uma pesquisa
+ * Busca as perguntas de uma pesquisa
  */
 export async function fetchSurveyQuestions(surveyId: number): Promise<SurveyQuestion[]> {
   return await get<SurveyQuestion[]>(`/api/admin/surveys/${surveyId}/questions`);
 }
 
 /**
- * Cria uma nova pesquisa
+ * Busca os resultados agregados de uma pesquisa
+ */
+export async function fetchSurveyResults(surveyId: number): Promise<any> {
+  return await get<any>(`/api/admin/surveys/${surveyId}/results`);
+}
+
+/**
+ * Busca as respostas individuais de uma pesquisa com paginação
+ */
+export async function fetchSurveyResponses(
+  surveyId: number, 
+  pagination: PaginationParams = { page: 1, pageSize: 5 }
+): Promise<{ data: any[]; total: number }> {
+  const queryParams = new URLSearchParams();
+  queryParams.append('page', pagination.page.toString());
+  queryParams.append('pageSize', pagination.pageSize.toString());
+  
+  return await get<{ data: any[]; total: number }>(`/api/admin/surveys/${surveyId}/responses?${queryParams.toString()}`);
+}
+
+/**
+ * Cria uma nova pesquisa com perguntas
  */
 export async function createSurvey(
   survey: Omit<Survey, 'id' | 'createdAt' | 'updatedAt'>,
@@ -129,44 +156,23 @@ export async function createSurvey(
  * Atualiza uma pesquisa existente
  */
 export async function updateSurvey(
-  surveyId: number,
+  id: number,
   survey: Partial<Omit<Survey, 'id' | 'createdAt' | 'updatedAt'>>,
   questions?: Omit<SurveyQuestion, 'surveyId'>[]
 ): Promise<Survey> {
-  return await put<Survey>(`/api/admin/surveys/${surveyId}`, { survey, questions });
+  return await patch<Survey>(`/api/admin/surveys/${id}`, { survey, questions });
 }
 
 /**
- * Altera o status de uma pesquisa
+ * Atualiza o status de uma pesquisa
  */
-export async function updateSurveyStatus(surveyId: number, status: string): Promise<Survey> {
-  return await put<Survey>(`/api/admin/surveys/${surveyId}/status`, { status });
+export async function updateSurveyStatus(id: number, status: string): Promise<Survey> {
+  return await patch<Survey>(`/api/admin/surveys/${id}/status`, { status });
 }
 
 /**
  * Remove uma pesquisa
  */
-export async function deleteSurvey(surveyId: number): Promise<void> {
-  await del(`/api/admin/surveys/${surveyId}`);
-}
-
-/**
- * Busca resultados agregados de uma pesquisa
- */
-export async function fetchSurveyResults(surveyId: number): Promise<any> {
-  return await get<any>(`/api/admin/surveys/${surveyId}/results`);
-}
-
-/**
- * Busca as respostas de uma pesquisa
- */
-export async function fetchSurveyResponses(
-  surveyId: number,
-  pagination: PaginationParams = { page: 1, pageSize: 10 }
-): Promise<{ data: any[]; total: number }> {
-  const queryParams = new URLSearchParams();
-  queryParams.append('page', pagination.page.toString());
-  queryParams.append('pageSize', pagination.pageSize.toString());
-  
-  return await get<{ data: any[]; total: number }>(`/api/admin/surveys/${surveyId}/responses?${queryParams.toString()}`);
+export async function deleteSurvey(id: number): Promise<boolean> {
+  return await del<boolean>(`/api/admin/surveys/${id}`);
 }

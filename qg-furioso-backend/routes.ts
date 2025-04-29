@@ -5,6 +5,7 @@ import { setupAuth } from "./auth";
 import { z } from "zod";
 import { fromZodError } from "zod-validation-error";
 import { insertUserProfileSchema, insertUserPreferencesSchema, insertSurveyResponseSchema } from "./schema";
+import analyticsRouter from "./analytics-routes";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Setup authentication routes and middleware
@@ -434,6 +435,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
     const responses = await storage.getUserSurveyResponses(userId);
     res.json(responses);
   });
+  
+  // Analytics routes - secured with admin authentication
+  const isAdmin = (req: Request, res: Response, next: NextFunction) => {
+    if (!req.isAuthenticated() || !req.user) {
+      return res.status(401).json({ message: "Não autenticado" });
+    }
+    
+    // Verificar se o usuário é um administrador
+    // Em um sistema real, você teria um campo 'role' ou similar
+    // Aqui estamos considerando apenas o usuário com ID 1 como admin
+    if (req.user.id !== 1) {
+      return res.status(403).json({ message: "Acesso negado. Requer permissões de administrador." });
+    }
+    
+    next();
+  };
+  
+  // Montar as rotas de analytics em /api/admin/analytics
+  app.use('/api/admin/analytics', isAdmin, analyticsRouter);
   
   // Initialize HTTP server
   const httpServer = createServer(app);

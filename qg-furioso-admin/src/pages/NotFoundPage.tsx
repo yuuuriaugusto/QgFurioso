@@ -5,16 +5,23 @@ const NotFoundPage: React.FC = () => {
   const navigate = useNavigate();
 
   return (
-    <Result
-      status="404"
-      title="404"
-      subTitle="Desculpe, a página que você visitou não existe."
-      extra={
-        <Button type="primary" onClick={() => navigate('/')}>
-          Voltar para o Dashboard
-        </Button>
-      }
-    />
+    <div style={{ 
+      display: 'flex', 
+      justifyContent: 'center', 
+      alignItems: 'center', 
+      minHeight: 'calc(100vh - 100px)'
+    }}>
+      <Result
+        status="404"
+        title="404"
+        subTitle="Desculpe, a página que você visitou não existe."
+        extra={
+          <Button type="primary" onClick={() => navigate('/')}>
+            Voltar para o Dashboard
+          </Button>
+        }
+      />
+    </div>
   );
 };
 

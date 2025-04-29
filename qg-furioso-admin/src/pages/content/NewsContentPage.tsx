@@ -1,64 +1,57 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { 
   Table, Card, Button, Input, Select, Typography, Space, Row, Col, Form, Tag, 
-  Modal, Tabs, Tooltip, Popconfirm, message, Upload, Switch
+  Modal, Tabs, Tooltip, Popconfirm, message, Upload, Empty, Image
 } from 'antd';
 import { 
   SearchOutlined, PlusOutlined, EditOutlined, DeleteOutlined, 
-  EyeOutlined, CheckCircleOutlined, CloseCircleOutlined, 
-  ReloadOutlined, FileTextOutlined, UploadOutlined
+  EyeOutlined, CheckCircleOutlined, StopOutlined, ReloadOutlined,
+  UploadOutlined, FileImageOutlined, LinkOutlined
 } from '@ant-design/icons';
+import type { UploadProps, RcFile } from 'antd/es/upload';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { fetchNewsContent, createNewsContent, updateNewsContent, toggleNewsContentPublishStatus, deleteNewsContent } from '@api/content';
+import { fetchNewsContent, fetchNewsContentById, createNewsContent, updateNewsContent, updateNewsStatus, deleteNewsContent, uploadContentImage } from '@api/content';
 import type { NewsContent, PaginationParams, SortParams } from '@types';
 import type { ColumnsType } from 'antd/es/table';
 import type { TablePaginationConfig } from 'antd/es/table';
-import type { UploadFile, UploadProps } from 'antd/es/upload';
-import type { RcFile } from 'antd/es/upload/interface';
+import dayjs from 'dayjs';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
-import dayjs from 'dayjs';
 
 const { Title, Text, Paragraph } = Typography;
 const { Option } = Select;
 const { TabPane } = Tabs;
 const { TextArea } = Input;
 
-// Editor configuration
-const modules = {
-  toolbar: [
-    [{ header: [1, 2, 3, 4, 5, 6, false] }],
-    ['bold', 'italic', 'underline', 'strike', 'blockquote'],
-    [{ list: 'ordered' }, { list: 'bullet' }],
-    [{ indent: '-1' }, { indent: '+1' }],
-    [{ align: [] }],
-    ['link', 'image'],
-    ['clean'],
-  ],
+// Constantes
+const STATUS_MAP: Record<string, { color: string; text: string }> = {
+  'draft': { color: 'default', text: 'Rascunho' },
+  'published': { color: 'green', text: 'Publicado' },
 };
 
-const formats = [
-  'header',
-  'bold', 'italic', 'underline', 'strike', 'blockquote',
-  'list', 'bullet', 'indent',
-  'align',
-  'link', 'image',
+const CATEGORY_OPTIONS = [
+  { label: 'Notícias', value: 'news' },
+  { label: 'Atualizações', value: 'updates' },
+  { label: 'Eventos', value: 'events' },
+  { label: 'Promoções', value: 'promos' },
 ];
 
 const NewsContentPage: React.FC = () => {
   const queryClient = useQueryClient();
-  const [form] = Form.useForm();
+  const [searchForm] = Form.useForm();
+  const [contentForm] = Form.useForm();
   
-  // Estados para gerenciar a interface
-  const [isModalVisible, setIsModalVisible] = useState(false);
-  const [isPreviewVisible, setIsPreviewVisible] = useState(false);
+  // Estados
+  const [isCreateModalVisible, setIsCreateModalVisible] = useState(false);
+  const [isPreviewModalVisible, setIsPreviewModalVisible] = useState(false);
   const [editingContent, setEditingContent] = useState<NewsContent | null>(null);
-  const [fileList, setFileList] = useState<UploadFile[]>([]);
-  const [activeTab, setActiveTab] = useState<string>('edit');
+  const [previewContent, setPreviewContent] = useState<NewsContent | null>(null);
+  const [activeTab, setActiveTab] = useState('content');
+  const [editorContent, setEditorContent] = useState('');
   
   // Estados para filtros e paginação
   const [searchParams, setSearchParams] = useState({
-    isPublished: undefined as boolean | undefined,
+    status: undefined as string | undefined,
     category: undefined as string | undefined,
     search: undefined as string | undefined,
   });
@@ -71,49 +64,57 @@ const NewsContentPage: React.FC = () => {
     order: 'descend',
   });
 
-  // Buscar conteúdos de notícias
-  const { data: newsContentData, isLoading, refetch } = useQuery({
+  // Buscar conteúdos
+  const { data: contentData, isLoading, refetch } = useQuery({
     queryKey: ['news-content', searchParams, pagination, sort],
     queryFn: () => fetchNewsContent(searchParams, pagination, sort),
   });
 
+  // Buscar detalhes de um conteúdo específico
+  const { data: contentDetails, isLoading: isLoadingDetails } = useQuery({
+    queryKey: ['news-content-details', previewContent?.id],
+    queryFn: () => previewContent ? fetchNewsContentById(previewContent.id) : null,
+    enabled: !!previewContent?.id,
+  });
+
   // Mutações
-  const createMutation = useMutation({
-    mutationFn: createNewsContent,
+  const createContentMutation = useMutation({
+    mutationFn: (content: Omit<NewsContent, 'id' | 'createdAt' | 'updatedAt'>) => createNewsContent(content),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['news-content'] });
       message.success('Conteúdo criado com sucesso');
-      handleCloseModal();
+      handleCloseCreateModal();
     },
     onError: () => {
       message.error('Erro ao criar conteúdo');
     },
   });
 
-  const updateMutation = useMutation({
-    mutationFn: ({ id, data }: { id: number; data: Partial<NewsContent> }) => updateNewsContent(id, data),
+  const updateContentMutation = useMutation({
+    mutationFn: ({ id, content }: { id: number; content: Partial<Omit<NewsContent, 'id' | 'createdAt' | 'updatedAt'>> }) => 
+      updateNewsContent(id, content),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['news-content'] });
       message.success('Conteúdo atualizado com sucesso');
-      handleCloseModal();
+      handleCloseCreateModal();
     },
     onError: () => {
       message.error('Erro ao atualizar conteúdo');
     },
   });
 
-  const togglePublishMutation = useMutation({
-    mutationFn: ({ id, isPublished }: { id: number; isPublished: boolean }) => toggleNewsContentPublishStatus(id, isPublished),
+  const updateStatusMutation = useMutation({
+    mutationFn: ({ id, status }: { id: number; status: 'published' | 'draft' }) => updateNewsStatus(id, status),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['news-content'] });
-      message.success('Status de publicação atualizado com sucesso');
+      message.success('Status do conteúdo atualizado com sucesso');
     },
     onError: () => {
-      message.error('Erro ao atualizar status de publicação');
+      message.error('Erro ao atualizar status');
     },
   });
 
-  const deleteMutation = useMutation({
+  const deleteContentMutation = useMutation({
     mutationFn: (id: number) => deleteNewsContent(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['news-content'] });
@@ -124,125 +125,179 @@ const NewsContentPage: React.FC = () => {
     },
   });
 
+  const uploadImageMutation = useMutation({
+    mutationFn: (formData: FormData) => uploadContentImage(formData),
+    onSuccess: (data) => {
+      message.success('Imagem enviada com sucesso');
+      // Adiciona a URL da imagem no campo de imagem destacada
+      contentForm.setFieldsValue({ featuredImage: data.url });
+    },
+    onError: () => {
+      message.error('Erro ao enviar imagem');
+    },
+  });
+
   // Funções para manipulação do modal
-  const showAddModal = () => {
+  const showCreateModal = () => {
     setEditingContent(null);
-    setFileList([]);
-    form.resetFields();
-    form.setFieldsValue({
-      isPublished: false,
+    setActiveTab('content');
+    contentForm.resetFields();
+    contentForm.setFieldsValue({
+      status: 'draft',
       category: 'news',
-      publishDate: dayjs(),
     });
-    setIsModalVisible(true);
+    setEditorContent('');
+    setIsCreateModalVisible(true);
   };
 
   const showEditModal = (content: NewsContent) => {
     setEditingContent(content);
-    
-    // Preencher o formulário
-    form.setFieldsValue({
+    setActiveTab('content');
+    setEditorContent(content.content);
+    contentForm.setFieldsValue({
       ...content,
       publishDate: content.publishDate ? dayjs(content.publishDate) : null,
     });
-    
-    // Configurar imagem se existir
-    if (content.imageUrl) {
-      setFileList([
-        {
-          uid: '-1',
-          name: 'Current image',
-          status: 'done',
-          url: content.imageUrl,
-        },
-      ]);
-    } else {
-      setFileList([]);
-    }
-    
-    setIsModalVisible(true);
+    setIsCreateModalVisible(true);
   };
 
-  const handlePreview = () => {
-    // Validar campos antes de mostrar o preview
-    form.validateFields()
-      .then(() => {
-        setActiveTab('preview');
-        setIsPreviewVisible(true);
-      })
-      .catch(() => {
-        message.error('Por favor, preencha todos os campos obrigatórios antes de visualizar');
-      });
+  const showPreviewModal = (content: NewsContent) => {
+    setPreviewContent(content);
+    setIsPreviewModalVisible(true);
   };
 
-  const handleCloseModal = () => {
-    setIsModalVisible(false);
-    setIsPreviewVisible(false);
+  const handleCloseCreateModal = () => {
+    setIsCreateModalVisible(false);
     setEditingContent(null);
-    setFileList([]);
-    form.resetFields();
-    setActiveTab('edit');
+    contentForm.resetFields();
+    setEditorContent('');
   };
 
-  // Função para calcular o tempo de leitura
-  const calculateReadTime = (content: string): number => {
-    const wordsPerMinute = 200;
-    // Remover tags HTML
-    const text = content.replace(/<[^>]*>/g, '');
-    const words = text.split(/\s+/).length;
-    return Math.ceil(words / wordsPerMinute);
-  };
-
-  // Função para manipulação do upload de imagens
+  // Função para fazer upload da imagem destacada
   const handleBeforeUpload = (file: RcFile): boolean => {
     const isImage = file.type.startsWith('image/');
     if (!isImage) {
-      message.error('Você só pode fazer upload de imagens!');
+      message.error('Você só pode fazer upload de arquivos de imagem!');
       return false;
     }
     
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => {
-      setFileList([
-        {
-          uid: file.uid,
-          name: file.name,
-          status: 'done',
-          url: reader.result as string,
-        },
-      ]);
-    };
+    const isLt2M = file.size / 1024 / 1024 < 2;
+    if (!isLt2M) {
+      message.error('A imagem deve ser menor que 2MB!');
+      return false;
+    }
     
-    // Prevent automatic upload
+    // Criar FormData e fazer upload
+    const formData = new FormData();
+    formData.append('image', file);
+    uploadImageMutation.mutate(formData);
+    
+    // Retorna false para que o Upload componente não faça o upload automaticamente
     return false;
   };
 
-  // Configuração do componente Upload
+  // Configuração do componente de upload
   const uploadProps: UploadProps = {
-    fileList,
+    name: 'image',
+    accept: 'image/*',
+    showUploadList: false,
     beforeUpload: handleBeforeUpload,
-    onRemove: () => {
-      setFileList([]);
-    },
-    listType: 'picture-card',
-    maxCount: 1,
   };
 
-  // Função para enviar o formulário
-  const handleSubmit = (values: any) => {
-    // Adicionar tempo de leitura se conteúdo foi fornecido
-    const formData = {
-      ...values,
-      imageUrl: fileList.length > 0 ? fileList[0].url : null,
-      readTime: values.content ? calculateReadTime(values.content) : null,
-    };
+  // Função para submeter o formulário
+  const handleSubmit = () => {
+    contentForm.validateFields()
+      .then(values => {
+        const formattedContent = {
+          ...values,
+          content: editorContent,
+          publishDate: values.publishDate ? values.publishDate.toISOString() : null,
+        };
+        
+        if (editingContent) {
+          updateContentMutation.mutate({
+            id: editingContent.id,
+            content: formattedContent,
+          });
+        } else {
+          createContentMutation.mutate(formattedContent);
+        }
+      })
+      .catch(() => {
+        message.error('Por favor, corrija os erros no formulário');
+      });
+  };
+
+  // Função para lidar com a busca
+  const handleSearch = (values: any) => {
+    setSearchParams({
+      search: values.searchTerm,
+      status: values.status,
+      category: values.category,
+    });
     
-    if (editingContent) {
-      updateMutation.mutate({ id: editingContent.id, data: formData });
-    } else {
-      createMutation.mutate(formData);
+    setPagination({
+      ...pagination,
+      page: 1,
+    });
+  };
+
+  // Função para resetar filtros
+  const handleReset = () => {
+    searchForm.resetFields();
+    setSearchParams({
+      status: undefined,
+      category: undefined,
+      search: undefined,
+    });
+    setPagination({
+      page: 1,
+      pageSize: 10,
+    });
+    setSort({
+      field: 'createdAt',
+      order: 'descend',
+    });
+  };
+
+  // Função para lidar com mudança na paginação
+  const handleTableChange = (
+    pagination: TablePaginationConfig,
+    filters: Record<string, any>,
+    sorter: any
+  ) => {
+    setPagination({
+      page: pagination.current || 1,
+      pageSize: pagination.pageSize || 10,
+    });
+    
+    // Atualizar filtros
+    setSearchParams({
+      ...searchParams,
+      status: filters.status && filters.status.length > 0 ? filters.status[0] : undefined,
+      category: filters.category && filters.category.length > 0 ? filters.category[0] : undefined,
+    });
+    
+    // Atualizar ordenação
+    if (sorter.field && sorter.order) {
+      setSort({
+        field: sorter.field,
+        order: sorter.order === 'ascend' ? 'ascend' : 'descend',
+      });
     }
+  };
+
+  // Configuração do editor de texto rico
+  const editorModules = {
+    toolbar: [
+      [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+      ['bold', 'italic', 'underline', 'strike'],
+      [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+      [{ 'indent': '-1'}, { 'indent': '+1' }],
+      [{ 'color': [] }, { 'background': [] }],
+      ['link', 'image'],
+      ['clean']
+    ],
   };
 
   // Colunas da tabela
@@ -255,6 +310,32 @@ const NewsContentPage: React.FC = () => {
       sorter: true,
     },
     {
+      title: 'Imagem',
+      dataIndex: 'featuredImage',
+      key: 'featuredImage',
+      width: 100,
+      render: (image) => (
+        image ? 
+          <Image 
+            src={image} 
+            alt="Thumbnail" 
+            width={80} 
+            height={45} 
+            style={{ objectFit: 'cover' }}
+          /> :
+          <div style={{ 
+            width: 80, 
+            height: 45, 
+            background: '#f5f5f5', 
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'center' 
+          }}>
+            <FileImageOutlined />
+          </div>
+      ),
+    },
+    {
       title: 'Título',
       dataIndex: 'title',
       key: 'title',
@@ -262,52 +343,42 @@ const NewsContentPage: React.FC = () => {
       render: (text) => <Text strong>{text}</Text>,
     },
     {
-      title: 'Slug',
-      dataIndex: 'slug',
-      key: 'slug',
-      width: 200,
-      render: (text) => <Text copyable>{text}</Text>,
-    },
-    {
       title: 'Categoria',
       dataIndex: 'category',
       key: 'category',
-      width: 120,
+      width: 130,
       render: (category) => {
-        let color = 'blue';
-        if (category === 'news') color = 'green';
-        if (category === 'announcement') color = 'orange';
-        if (category === 'event') color = 'purple';
-        return <Tag color={color}>{category}</Tag>;
+        const option = CATEGORY_OPTIONS.find(opt => opt.value === category);
+        return <Tag>{option?.label || category}</Tag>;
       },
-      filters: [
-        { text: 'Notícias', value: 'news' },
-        { text: 'Anúncios', value: 'announcement' },
-        { text: 'Eventos', value: 'event' },
-        { text: 'Blog', value: 'blog' },
-      ],
+      filters: CATEGORY_OPTIONS.map(option => ({ text: option.label, value: option.value })),
     },
     {
       title: 'Status',
-      dataIndex: 'isPublished',
-      key: 'isPublished',
-      width: 100,
-      render: (isPublished) => (
-        isPublished ? 
-          <Tag color="green">Publicado</Tag> : 
-          <Tag color="orange">Rascunho</Tag>
-      ),
+      dataIndex: 'status',
+      key: 'status',
+      width: 120,
+      render: (status) => {
+        const statusInfo = STATUS_MAP[status] || { color: 'default', text: status };
+        return <Tag color={statusInfo.color}>{statusInfo.text}</Tag>;
+      },
       filters: [
-        { text: 'Publicado', value: true },
-        { text: 'Rascunho', value: false },
+        { text: 'Rascunho', value: 'draft' },
+        { text: 'Publicado', value: 'published' },
       ],
     },
     {
-      title: 'Data de Publicação',
+      title: 'Autor',
+      dataIndex: 'author',
+      key: 'author',
+      width: 120,
+    },
+    {
+      title: 'Publicado em',
       dataIndex: 'publishDate',
       key: 'publishDate',
       sorter: true,
-      render: (date) => date ? dayjs(date).format('DD/MM/YYYY HH:mm') : '-',
+      render: (date) => date ? dayjs(date).format('DD/MM/YYYY') : '-',
     },
     {
       title: 'Criado em',
@@ -326,7 +397,7 @@ const NewsContentPage: React.FC = () => {
             <Button
               type="text"
               icon={<EyeOutlined />}
-              onClick={() => showEditModal(record)}
+              onClick={() => showPreviewModal(record)}
             />
           </Tooltip>
           
@@ -338,21 +409,31 @@ const NewsContentPage: React.FC = () => {
             />
           </Tooltip>
           
-          <Tooltip title={record.isPublished ? "Despublicar" : "Publicar"}>
-            <Button
-              type="text"
-              icon={record.isPublished ? <CloseCircleOutlined /> : <CheckCircleOutlined />}
-              style={{ color: record.isPublished ? '#f5222d' : '#52c41a' }}
-              onClick={() => togglePublishMutation.mutate({ 
-                id: record.id, 
-                isPublished: !record.isPublished 
-              })}
-            />
-          </Tooltip>
+          {record.status === 'draft' && (
+            <Tooltip title="Publicar">
+              <Button
+                type="text"
+                style={{ color: '#52c41a' }}
+                icon={<CheckCircleOutlined />}
+                onClick={() => updateStatusMutation.mutate({ id: record.id, status: 'published' })}
+              />
+            </Tooltip>
+          )}
+          
+          {record.status === 'published' && (
+            <Tooltip title="Despublicar">
+              <Button
+                type="text"
+                style={{ color: '#faad14' }}
+                icon={<StopOutlined />}
+                onClick={() => updateStatusMutation.mutate({ id: record.id, status: 'draft' })}
+              />
+            </Tooltip>
+          )}
           
           <Popconfirm
             title="Tem certeza que deseja remover este conteúdo?"
-            onConfirm={() => deleteMutation.mutate(record.id)}
+            onConfirm={() => deleteContentMutation.mutate(record.id)}
             okText="Sim"
             cancelText="Não"
           >
@@ -369,104 +450,44 @@ const NewsContentPage: React.FC = () => {
     },
   ];
 
-  // Função para lidar com mudança na paginação
-  const handleTableChange = (
-    pagination: TablePaginationConfig,
-    filters: Record<string, any>,
-    sorter: any
-  ) => {
-    setPagination({
-      page: pagination.current || 1,
-      pageSize: pagination.pageSize || 10,
-    });
-    
-    // Atualizar filtros
-    setSearchParams({
-      ...searchParams,
-      isPublished: filters.isPublished ? filters.isPublished[0] : undefined,
-      category: filters.category ? filters.category[0] : undefined,
-    });
-    
-    // Atualizar ordenação
-    if (sorter.field && sorter.order) {
-      setSort({
-        field: sorter.field,
-        order: sorter.order === 'ascend' ? 'ascend' : 'descend',
-      });
-    }
-  };
-
-  // Função para lidar com a busca
-  const handleSearch = (values: any) => {
-    setSearchParams({
-      search: values.searchTerm,
-      category: values.category,
-      isPublished: values.isPublished,
-    });
-    
-    setPagination({
-      ...pagination,
-      page: 1,
-    });
-  };
-
-  // Função para resetar filtros
-  const handleReset = () => {
-    form.resetFields();
-    setSearchParams({
-      isPublished: undefined,
-      category: undefined,
-      search: undefined,
-    });
-    setPagination({
-      page: 1,
-      pageSize: 10,
-    });
-    setSort({
-      field: 'createdAt',
-      order: 'descend',
-    });
-  };
-
   return (
     <div>
       <Title level={2}>Gerenciamento de Conteúdo</Title>
       
       <Card style={{ marginBottom: 24 }}>
-        <Form form={form} onFinish={handleSearch} layout="vertical">
+        <Form form={searchForm} onFinish={handleSearch} layout="vertical">
           <Row gutter={[16, 16]}>
             <Col xs={24} sm={12} md={8}>
               <Form.Item name="searchTerm" label="Buscar">
                 <Input
                   prefix={<SearchOutlined />}
-                  placeholder="Título ou slug"
+                  placeholder="Título ou autor"
                   allowClear
                 />
               </Form.Item>
             </Col>
             
-            <Col xs={24} sm={12} md={8}>
+            <Col xs={24} sm={12} md={8} lg={4}>
+              <Form.Item name="status" label="Status">
+                <Select placeholder="Todos" allowClear>
+                  <Option value="draft">Rascunho</Option>
+                  <Option value="published">Publicado</Option>
+                </Select>
+              </Form.Item>
+            </Col>
+            
+            <Col xs={24} sm={12} md={8} lg={4}>
               <Form.Item name="category" label="Categoria">
                 <Select placeholder="Todas" allowClear>
-                  <Option value="news">Notícias</Option>
-                  <Option value="announcement">Anúncios</Option>
-                  <Option value="event">Eventos</Option>
-                  <Option value="blog">Blog</Option>
+                  {CATEGORY_OPTIONS.map(option => (
+                    <Option key={option.value} value={option.value}>{option.label}</Option>
+                  ))}
                 </Select>
               </Form.Item>
             </Col>
             
-            <Col xs={24} sm={12} md={8}>
-              <Form.Item name="isPublished" label="Status">
-                <Select placeholder="Todos" allowClear>
-                  <Option value={true}>Publicado</Option>
-                  <Option value={false}>Rascunho</Option>
-                </Select>
-              </Form.Item>
-            </Col>
-            
-            <Col xs={24}>
-              <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+            <Col xs={24} lg={8}>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 24 }}>
                 <Button onClick={handleReset} style={{ marginRight: 8 }}>
                   Limpar
                 </Button>
@@ -482,9 +503,9 @@ const NewsContentPage: React.FC = () => {
       <Card>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
           <Space>
-            <FileTextOutlined />
+            <FileImageOutlined />
             <span>
-              {newsContentData?.total || 0} conteúdos encontrados
+              {contentData?.total || 0} itens encontrados
             </span>
           </Space>
           
@@ -499,7 +520,7 @@ const NewsContentPage: React.FC = () => {
             <Button
               type="primary"
               icon={<PlusOutlined />}
-              onClick={showAddModal}
+              onClick={showCreateModal}
             >
               Criar Conteúdo
             </Button>
@@ -508,40 +529,47 @@ const NewsContentPage: React.FC = () => {
         
         <Table
           columns={columns}
-          dataSource={newsContentData?.data || []}
+          dataSource={contentData?.data || []}
           rowKey="id"
           loading={isLoading}
           onChange={handleTableChange as any}
           pagination={{
             current: pagination.page,
             pageSize: pagination.pageSize,
-            total: newsContentData?.total || 0,
+            total: contentData?.total || 0,
             showSizeChanger: true,
-            showTotal: (total) => `Total: ${total} conteúdos`,
+            showTotal: (total) => `Total: ${total} itens`,
           }}
           scroll={{ x: 1200 }}
         />
       </Card>
       
-      {/* Modal para adicionar/editar conteúdo */}
+      {/* Modal para criar/editar conteúdo */}
       <Modal
         title={editingContent ? 'Editar Conteúdo' : 'Criar Conteúdo'}
-        open={isModalVisible}
-        onCancel={handleCloseModal}
+        open={isCreateModalVisible}
+        onCancel={handleCloseCreateModal}
         width={1000}
-        footer={null}
+        footer={[
+          <Button key="cancel" onClick={handleCloseCreateModal}>
+            Cancelar
+          </Button>,
+          <Button 
+            key="submit" 
+            type="primary" 
+            onClick={handleSubmit}
+            loading={createContentMutation.isPending || updateContentMutation.isPending}
+          >
+            {editingContent ? 'Atualizar' : 'Criar'}
+          </Button>,
+        ]}
       >
         <Tabs activeKey={activeTab} onChange={setActiveTab}>
-          <TabPane tab="Editar" key="edit">
+          <TabPane tab="Conteúdo" key="content">
             <Form
-              form={form}
-              onFinish={handleSubmit}
+              form={contentForm}
               layout="vertical"
-              initialValues={{
-                isPublished: false,
-                category: 'news',
-                publishDate: dayjs(),
-              }}
+              initialValues={{ status: 'draft', category: 'news' }}
             >
               <Row gutter={16}>
                 <Col span={16}>
@@ -556,16 +584,49 @@ const NewsContentPage: React.FC = () => {
                 
                 <Col span={8}>
                   <Form.Item
+                    name="status"
+                    label="Status"
+                    rules={[{ required: true, message: 'Por favor, selecione um status' }]}
+                  >
+                    <Select>
+                      <Option value="draft">Rascunho</Option>
+                      <Option value="published">Publicado</Option>
+                    </Select>
+                  </Form.Item>
+                </Col>
+              </Row>
+              
+              <Row gutter={16}>
+                <Col span={8}>
+                  <Form.Item
                     name="category"
                     label="Categoria"
                     rules={[{ required: true, message: 'Por favor, selecione uma categoria' }]}
                   >
                     <Select>
-                      <Option value="news">Notícias</Option>
-                      <Option value="announcement">Anúncios</Option>
-                      <Option value="event">Eventos</Option>
-                      <Option value="blog">Blog</Option>
+                      {CATEGORY_OPTIONS.map(option => (
+                        <Option key={option.value} value={option.value}>{option.label}</Option>
+                      ))}
                     </Select>
+                  </Form.Item>
+                </Col>
+                
+                <Col span={8}>
+                  <Form.Item
+                    name="author"
+                    label="Autor"
+                    rules={[{ required: true, message: 'Por favor, insira o autor' }]}
+                  >
+                    <Input />
+                  </Form.Item>
+                </Col>
+                
+                <Col span={8}>
+                  <Form.Item
+                    name="publishDate"
+                    label="Data de Publicação"
+                  >
+                    <DatePicker style={{ width: '100%' }} />
                   </Form.Item>
                 </Col>
               </Row>
@@ -573,161 +634,195 @@ const NewsContentPage: React.FC = () => {
               <Form.Item
                 name="slug"
                 label="Slug"
-                rules={[
-                  { required: true, message: 'Por favor, insira um slug' },
-                  { pattern: /^[a-z0-9-]+$/, message: 'O slug deve conter apenas letras minúsculas, números e hífens' },
-                ]}
-                tooltip="URL amigável (ex: noticias-campeonato-2023)"
+                rules={[{ required: true, message: 'Por favor, insira um slug' }]}
               >
-                <Input />
-              </Form.Item>
-              
-              <Form.Item
-                name="summary"
-                label="Resumo"
-                rules={[{ required: true, message: 'Por favor, insira um resumo' }]}
-                tooltip="Breve resumo do conteúdo (exibido em cards e previews)"
-              >
-                <TextArea rows={2} />
-              </Form.Item>
-              
-              <Form.Item
-                name="content"
-                label="Conteúdo"
-                rules={[{ required: true, message: 'Por favor, insira o conteúdo' }]}
-              >
-                <ReactQuill
-                  theme="snow"
-                  modules={modules}
-                  formats={formats}
-                  style={{ height: 300, marginBottom: 50 }}
+                <Input 
+                  addonBefore={<LinkOutlined />}
+                  placeholder="titulo-da-noticia"
                 />
               </Form.Item>
               
               <Form.Item
-                name="imageUrl"
-                label="Imagem de Capa"
-                tooltip="Imagem exibida nos cards e no topo do artigo"
-                valuePropName="fileList"
+                name="excerpt"
+                label="Resumo"
+                rules={[{ required: true, message: 'Por favor, insira um resumo' }]}
               >
-                <Upload {...uploadProps}>
-                  {fileList.length < 1 && (
-                    <div>
-                      <PlusOutlined />
-                      <div style={{ marginTop: 8 }}>Upload</div>
-                    </div>
-                  )}
-                </Upload>
+                <TextArea rows={3} />
               </Form.Item>
-              
-              <Row gutter={16}>
-                <Col span={12}>
-                  <Form.Item
-                    name="authorId"
-                    label="ID do autor"
-                    rules={[{ required: true, message: 'Por favor, insira o ID do autor' }]}
-                  >
-                    <Input type="number" />
-                  </Form.Item>
-                </Col>
-                
-                <Col span={12}>
-                  <Form.Item
-                    name="publishDate"
-                    label="Data de publicação"
-                    rules={[{ required: true, message: 'Por favor, selecione uma data' }]}
-                  >
-                    <DatePicker showTime style={{ width: '100%' }} />
-                  </Form.Item>
-                </Col>
-              </Row>
               
               <Form.Item
-                name="isPublished"
-                label="Publicar imediatamente"
-                valuePropName="checked"
+                label="Conteúdo"
+                rules={[{ required: true, message: 'Por favor, insira o conteúdo' }]}
               >
-                <Switch checkedChildren="Publicado" unCheckedChildren="Rascunho" />
-              </Form.Item>
-              
-              <Form.Item>
-                <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                  <Button
-                    onClick={handlePreview}
-                    style={{ marginRight: 8 }}
-                  >
-                    Visualizar
-                  </Button>
-                  <Button
-                    style={{ marginRight: 8 }}
-                    onClick={handleCloseModal}
-                    disabled={createMutation.isPending || updateMutation.isPending}
-                  >
-                    Cancelar
-                  </Button>
-                  <Button
-                    type="primary"
-                    htmlType="submit"
-                    loading={createMutation.isPending || updateMutation.isPending}
-                  >
-                    {editingContent ? 'Atualizar' : 'Criar'}
-                  </Button>
-                </div>
+                <ReactQuill 
+                  theme="snow" 
+                  value={editorContent} 
+                  onChange={setEditorContent}
+                  modules={editorModules}
+                  style={{ height: 300, marginBottom: 50 }}
+                />
               </Form.Item>
             </Form>
           </TabPane>
           
-          <TabPane tab="Visualizar" key="preview" disabled={!isPreviewVisible}>
-            {isPreviewVisible && (
-              <div className="content-preview">
-                <h1>{form.getFieldValue('title')}</h1>
+          <TabPane tab="Mídias" key="media">
+            <Row gutter={16}>
+              <Col span={12}>
+                <Form.Item
+                  name="featuredImage"
+                  label="Imagem Destacada"
+                >
+                  <Input 
+                    addonAfter={
+                      <Upload {...uploadProps}>
+                        <Button icon={<UploadOutlined />}>Upload</Button>
+                      </Upload>
+                    }
+                    placeholder="URL da imagem"
+                  />
+                </Form.Item>
                 
-                {fileList.length > 0 && fileList[0].url && (
-                  <div style={{ marginBottom: 20 }}>
-                    <img 
-                      src={fileList[0].url} 
-                      alt={form.getFieldValue('title')} 
-                      style={{ maxWidth: '100%', maxHeight: 300, objectFit: 'cover' }} 
+                <div style={{ marginTop: 16 }}>
+                  {contentForm.getFieldValue('featuredImage') ? (
+                    <div style={{ marginBottom: 16 }}>
+                      <p>Imagem atual:</p>
+                      <Image 
+                        src={contentForm.getFieldValue('featuredImage')}
+                        alt="Imagem destacada"
+                        width={300}
+                        style={{ maxHeight: 200, objectFit: 'contain' }}
+                      />
+                    </div>
+                  ) : (
+                    <Empty 
+                      image={Empty.PRESENTED_IMAGE_SIMPLE} 
+                      description="Nenhuma imagem destacada"
                     />
-                  </div>
-                )}
-                
-                <div style={{ marginBottom: 20 }}>
-                  <Space split={<Divider type="vertical" />}>
-                    <Text type="secondary">
-                      {dayjs(form.getFieldValue('publishDate')).format('DD/MM/YYYY')}
-                    </Text>
-                    <Text type="secondary">
-                      <Tag>{form.getFieldValue('category')}</Tag>
-                    </Text>
-                    <Text type="secondary">
-                      {calculateReadTime(form.getFieldValue('content'))} min de leitura
-                    </Text>
-                  </Space>
+                  )}
                 </div>
+              </Col>
+              
+              <Col span={12}>
+                <Form.Item
+                  name="metaTitle"
+                  label="Meta Título (SEO)"
+                >
+                  <Input placeholder="Título para SEO" />
+                </Form.Item>
                 
-                <Paragraph style={{ marginBottom: 20 }}>
-                  <Text strong>{form.getFieldValue('summary')}</Text>
-                </Paragraph>
+                <Form.Item
+                  name="metaDescription"
+                  label="Meta Descrição (SEO)"
+                >
+                  <TextArea 
+                    rows={4}
+                    placeholder="Descrição para SEO"
+                  />
+                </Form.Item>
                 
-                <div
-                  className="content-html"
-                  dangerouslySetInnerHTML={{ __html: form.getFieldValue('content') }}
-                  style={{ marginBottom: 40 }}
-                />
-                
-                <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                  <Button
-                    type="primary"
-                    onClick={() => setActiveTab('edit')}
-                  >
-                    Voltar para Edição
-                  </Button>
-                </div>
-              </div>
-            )}
+                <Form.Item
+                  name="tags"
+                  label="Tags"
+                >
+                  <Select 
+                    mode="tags" 
+                    style={{ width: '100%' }}
+                    placeholder="Adicione tags"
+                    tokenSeparators={[',']}
+                  />
+                </Form.Item>
+              </Col>
+            </Row>
           </TabPane>
         </Tabs>
+      </Modal>
+      
+      {/* Modal para visualizar conteúdo */}
+      <Modal
+        title={contentDetails?.title || 'Visualização de Conteúdo'}
+        open={isPreviewModalVisible}
+        onCancel={() => setIsPreviewModalVisible(false)}
+        width={800}
+        footer={[
+          <Button key="close" onClick={() => setIsPreviewModalVisible(false)}>
+            Fechar
+          </Button>,
+          <Button 
+            key="edit" 
+            type="primary" 
+            onClick={() => {
+              setIsPreviewModalVisible(false);
+              if (previewContent) {
+                showEditModal(previewContent);
+              }
+            }}
+          >
+            Editar
+          </Button>,
+        ]}
+      >
+        {isLoadingDetails ? (
+          <div style={{ textAlign: 'center', padding: 40 }}>
+            <Spin size="large" />
+            <div style={{ marginTop: 16 }}>Carregando conteúdo...</div>
+          </div>
+        ) : contentDetails ? (
+          <div className="content-preview">
+            {contentDetails.featuredImage && (
+              <div style={{ marginBottom: 16 }}>
+                <Image 
+                  src={contentDetails.featuredImage}
+                  alt={contentDetails.title}
+                  style={{ maxWidth: '100%', maxHeight: 300, objectFit: 'contain' }}
+                />
+              </div>
+            )}
+            
+            <div style={{ marginBottom: 16 }}>
+              <Space>
+                <Tag color={STATUS_MAP[contentDetails.status]?.color}>
+                  {STATUS_MAP[contentDetails.status]?.text}
+                </Tag>
+                <Tag>
+                  {CATEGORY_OPTIONS.find(c => c.value === contentDetails.category)?.label || contentDetails.category}
+                </Tag>
+              </Space>
+            </div>
+            
+            <Title level={3}>{contentDetails.title}</Title>
+            
+            <Paragraph type="secondary">
+              Por {contentDetails.author || 'Desconhecido'} 
+              {contentDetails.publishDate && ` • ${dayjs(contentDetails.publishDate).format('DD/MM/YYYY')}`}
+            </Paragraph>
+            
+            <Paragraph strong>{contentDetails.excerpt}</Paragraph>
+            
+            <div 
+              className="content-html"
+              dangerouslySetInnerHTML={{ __html: contentDetails.content }}
+              style={{ 
+                border: '1px solid #f0f0f0', 
+                padding: 16, 
+                borderRadius: 4,
+                background: '#fff' 
+              }}
+            />
+            
+            {contentDetails.tags && contentDetails.tags.length > 0 && (
+              <div style={{ marginTop: 16 }}>
+                <Text strong>Tags: </Text>
+                <Space size={[0, 8]} wrap>
+                  {contentDetails.tags.map((tag, index) => (
+                    <Tag key={index}>{tag}</Tag>
+                  ))}
+                </Space>
+              </div>
+            )}
+          </div>
+        ) : (
+          <Empty description="Conteúdo não encontrado" />
+        )}
       </Modal>
     </div>
   );
