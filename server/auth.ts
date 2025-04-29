@@ -137,7 +137,7 @@ export function setupAuth(app: Express) {
       const profile = await storage.createUserProfile(user.id, {
         firstName: null,
         lastName: null,
-        birthDate: validatedData.birthDate ? new Date(validatedData.birthDate) : null,
+        birthDate: validatedData.birthDate || null,
         cpfEncrypted: null,
         addressStreet: null,
         addressNumber: null,
@@ -165,6 +165,7 @@ export function setupAuth(app: Express) {
       
       // Add welcome bonus
       await storage.createCoinTransaction(user.id, {
+        userId: user.id,
         amount: 100,
         transactionType: "signup_bonus",
         description: "Bônus de boas-vindas ao QG FURIOSO",
@@ -204,13 +205,13 @@ export function setupAuth(app: Express) {
       // Validate request body
       loginSchema.parse(req.body);
       
-      passport.authenticate("local", (err, user, info) => {
+      passport.authenticate("local", (err: any, user: User, info: any) => {
         if (err) return next(err);
         if (!user) {
           return res.status(401).json({ message: info?.message || "Credenciais inválidas" });
         }
         
-        req.login(user, async (loginErr) => {
+        req.login(user, async (loginErr: any) => {
           if (loginErr) return next(loginErr);
           
           // Get additional user data

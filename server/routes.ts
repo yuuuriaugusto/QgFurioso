@@ -243,6 +243,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Create redemption order
       const order = await storage.createRedemptionOrder(userId, {
+        userId,
         shopItemId: item.id,
         quantity,
         coinCost: totalCost,
