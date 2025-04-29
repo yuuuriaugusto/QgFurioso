@@ -1,4 +1,4 @@
-import type { Express } from "express";
+import type { Express, Request, Response, NextFunction } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth } from "./auth";
@@ -23,6 +23,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.put("/api/users/me/profile", requireAuth, async (req, res) => {
     try {
       const userId = req.user?.id;
+      if (!userId) {
+        return res.status(401).json({ message: "Usuário não autenticado" });
+      }
+      
       const validatedData = insertUserProfileSchema.partial().parse(req.body);
       
       let profile = await storage.getUserProfile(userId);
@@ -34,7 +38,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       res.json(profile);
     } catch (error) {
-      if (error instanceof ZodError || error instanceof z.ZodError) {
+      if (error instanceof z.ZodError) {
         return res.status(400).json({ message: "Dados inválidos", details: error.format() });
       }
       throw error;
@@ -45,6 +49,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/users/me/avatar", requireAuth, async (req, res) => {
     try {
       const userId = req.user?.id;
+      if (!userId) {
+        return res.status(401).json({ message: "Usuário não autenticado" });
+      }
       
       // Validate that avatar URL is provided
       if (!req.body.avatarUrl) {
@@ -94,6 +101,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.put("/api/users/me/preferences", requireAuth, async (req, res) => {
     try {
       const userId = req.user?.id;
+      if (!userId) {
+        return res.status(401).json({ message: "Usuário não autenticado" });
+      }
+      
       const validatedData = insertUserPreferencesSchema.partial().parse(req.body);
       
       let preferences = await storage.getUserPreferences(userId);
@@ -105,7 +116,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       res.json(preferences);
     } catch (error) {
-      if (error instanceof ZodError || error instanceof z.ZodError) {
+      if (error instanceof z.ZodError) {
         return res.status(400).json({ message: "Dados inválidos", details: error.format() });
       }
       throw error;
@@ -194,6 +205,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/redemptions", requireAuth, async (req, res) => {
     try {
       const userId = req.user?.id;
+      if (!userId) {
+        return res.status(401).json({ message: "Usuário não autenticado" });
+      }
+      
       const { shopItemId, quantity = 1 } = req.body;
       
       // Validate input
@@ -238,6 +253,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Deduct coins from user's balance
       await storage.createCoinTransaction(userId, {
+        userId,
         amount: -totalCost,
         transactionType: "redemption",
         description: `Resgate de "${item.name}" (${quantity}x)`,
@@ -247,7 +263,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       res.status(201).json(order);
     } catch (error) {
-      if (error instanceof ZodError || error instanceof z.ZodError) {
+      if (error instanceof z.ZodError) {
         return res.status(400).json({ message: "Dados inválidos", details: error.format() });
       }
       throw error;
@@ -342,6 +358,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/surveys/:id/responses", requireAuth, async (req, res) => {
     try {
       const userId = req.user?.id;
+      if (!userId) {
+        return res.status(401).json({ message: "Usuário não autenticado" });
+      }
+      
       const surveyId = parseInt(req.params.id);
       
       // Check if survey exists
@@ -401,7 +421,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         reward: survey.reward
       });
     } catch (error) {
-      if (error instanceof ZodError || error instanceof z.ZodError) {
+      if (error instanceof z.ZodError) {
         return res.status(400).json({ message: "Dados inválidos", details: error.format() });
       }
       throw error;
