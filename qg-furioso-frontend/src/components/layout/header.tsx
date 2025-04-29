@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
-import { Loader2, Menu, X, Bell, LogOut } from "lucide-react";
+import { Loader2, Menu, X, LogOut } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,6 +9,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { NotificationsManager } from "@/components/ui/notifications";
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -77,11 +78,8 @@ export default function Header() {
           {/* User menu (desktop) */}
           {user ? (
             <div className="hidden md:flex items-center space-x-4">
-              {/* Notification button */}
-              <button className="p-2 rounded-full hover:bg-muted relative">
-                <Bell className="h-5 w-5" />
-                <span className="absolute top-1 right-1 w-2 h-2 bg-primary rounded-full"></span>
-              </button>
+              {/* Notification component */}
+              <NotificationsManager />
 
               {/* User dropdown */}
               <DropdownMenu>
@@ -198,9 +196,21 @@ export default function Header() {
                 className="px-4 py-2 rounded-md text-sm font-medium bg-secondary hover:bg-secondary/80 flex items-center gap-1"
                 onClick={closeMenu}
               >
-                <Bell className="h-4 w-4" />
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M3 3v18h18"></path>
+                  <path d="M18.4 7.79a9.986 9.986 0 0 0-8.61-3.57 10.024 10.024 0 0 0-7.58 5.28A10 10 0 0 0 3.35 19.4"></path>
+                  <path d="m7 10 5 5"></path>
+                  <path d="m12 15 5-5"></path>
+                </svg>
                 Pesquisas
               </Link>
+              
+              <div 
+                className="px-4 py-2 rounded-md text-sm font-medium bg-secondary hover:bg-secondary/80 flex items-center gap-1"
+                onClick={closeMenu}
+              >
+                <NotificationsManager />
+              </div>
               
               <Link 
                 href="/configuracoes"
