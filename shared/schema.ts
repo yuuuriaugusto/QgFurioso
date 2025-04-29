@@ -1,4 +1,5 @@
 import { pgTable, text, serial, integer, boolean, date, timestamp, jsonb, uuid } from "drizzle-orm/pg-core";
+import { relations } from "drizzle-orm";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -14,6 +15,9 @@ export const users = pgTable("users", {
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
+
+// Necessário definir as tabelas antes de usar as relações
+// As relações serão definidas após todas as tabelas estarem declaradas
 
 // User profiles table
 export const userProfiles = pgTable("user_profiles", {
@@ -350,3 +354,111 @@ export type SurveyResponse = typeof surveyResponses.$inferSelect;
 export type InsertSurveyResponse = z.infer<typeof insertSurveyResponseSchema>;
 export type RegisterData = z.infer<typeof registerSchema>;
 export type LoginData = z.infer<typeof loginSchema>;
+
+// Definição das relações
+export const usersRelations = relations(users, ({ one, many }) => ({
+  profile: one(userProfiles),
+  preferences: one(userPreferences),
+  coinBalance: one(coinBalances),
+  socialLinks: many(socialLinks),
+  kycVerification: one(kycVerifications),
+  esportsProfiles: many(esportsProfileLinks),
+  coinTransactions: many(coinTransactions),
+  redemptionOrders: many(redemptionOrders),
+  authoredContent: many(newsContent, { relationName: "author" }),
+  surveyResponses: many(surveyResponses),
+}));
+
+export const userProfilesRelations = relations(userProfiles, ({ one }) => ({
+  user: one(users, {
+    fields: [userProfiles.userId],
+    references: [users.id]
+  })
+}));
+
+export const userPreferencesRelations = relations(userPreferences, ({ one }) => ({
+  user: one(users, {
+    fields: [userPreferences.userId],
+    references: [users.id]
+  })
+}));
+
+export const socialLinksRelations = relations(socialLinks, ({ one }) => ({
+  user: one(users, {
+    fields: [socialLinks.userId],
+    references: [users.id]
+  })
+}));
+
+export const kycVerificationsRelations = relations(kycVerifications, ({ one }) => ({
+  user: one(users, {
+    fields: [kycVerifications.userId],
+    references: [users.id]
+  })
+}));
+
+export const esportsProfileLinksRelations = relations(esportsProfileLinks, ({ one }) => ({
+  user: one(users, {
+    fields: [esportsProfileLinks.userId],
+    references: [users.id]
+  })
+}));
+
+export const coinBalancesRelations = relations(coinBalances, ({ one }) => ({
+  user: one(users, {
+    fields: [coinBalances.userId],
+    references: [users.id]
+  })
+}));
+
+export const coinTransactionsRelations = relations(coinTransactions, ({ one }) => ({
+  user: one(users, {
+    fields: [coinTransactions.userId],
+    references: [users.id]
+  })
+}));
+
+export const redemptionOrdersRelations = relations(redemptionOrders, ({ one }) => ({
+  user: one(users, {
+    fields: [redemptionOrders.userId],
+    references: [users.id]
+  }),
+  shopItem: one(shopItems, {
+    fields: [redemptionOrders.shopItemId],
+    references: [shopItems.id]
+  })
+}));
+
+export const newsContentRelations = relations(newsContent, ({ one }) => ({
+  author: one(users, {
+    fields: [newsContent.authorId],
+    references: [users.id]
+  })
+}));
+
+export const surveyResponsesRelations = relations(surveyResponses, ({ one }) => ({
+  user: one(users, {
+    fields: [surveyResponses.userId],
+    references: [users.id]
+  }),
+  survey: one(surveys, {
+    fields: [surveyResponses.surveyId],
+    references: [surveys.id]
+  })
+}));
+
+export const surveyQuestionsRelations = relations(surveyQuestions, ({ one }) => ({
+  survey: one(surveys, {
+    fields: [surveyQuestions.surveyId],
+    references: [surveys.id]
+  })
+}));
+
+export const shopItemsRelations = relations(shopItems, ({ many }) => ({
+  redemptionOrders: many(redemptionOrders)
+}));
+
+export const surveysRelations = relations(surveys, ({ many }) => ({
+  questions: many(surveyQuestions),
+  responses: many(surveyResponses)
+}));
