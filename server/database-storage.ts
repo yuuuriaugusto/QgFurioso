@@ -1,4 +1,4 @@
-import { eq, and, desc, sql } from 'drizzle-orm';
+import { eq, and, desc, asc, sql } from 'drizzle-orm';
 import { db } from './db';
 import connectPgSimple from 'connect-pg-simple';
 import session from 'express-session';
