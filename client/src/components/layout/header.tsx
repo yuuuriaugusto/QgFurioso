@@ -32,42 +32,45 @@ export default function Header() {
       <div className="container mx-auto px-4">
         <div className="h-16 flex items-center justify-between">
           {/* Logo */}
-          <Link href="/">
-            <a className="flex items-center">
-              <span className="text-xl font-bold text-primary font-rajdhani">QG FURIOSO</span>
-            </a>
+          <Link href="/" className="flex items-center">
+            <span className="text-xl font-bold text-primary font-rajdhani">QG FURIOSO</span>
           </Link>
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-1">
-            <Link href="/">
-              <a className={`px-3 py-2 rounded-md text-sm font-medium ${isActive("/") ? "bg-primary/10 text-primary" : "hover:bg-muted"}`}>
-                Início
-              </a>
+            <Link 
+              href="/" 
+              className={`px-3 py-2 rounded-md text-sm font-medium ${isActive("/") ? "bg-primary/10 text-primary" : "hover:bg-muted"}`}
+            >
+              Início
             </Link>
-            <Link href="/conteudo">
-              <a className={`px-3 py-2 rounded-md text-sm font-medium ${isActive("/conteudo") ? "bg-primary/10 text-primary" : "hover:bg-muted"}`}>
-                Conteúdo
-              </a>
+            <Link 
+              href="/conteudo" 
+              className={`px-3 py-2 rounded-md text-sm font-medium ${isActive("/conteudo") ? "bg-primary/10 text-primary" : "hover:bg-muted"}`}
+            >
+              Conteúdo
             </Link>
-            <Link href="/agenda">
-              <a className={`px-3 py-2 rounded-md text-sm font-medium ${isActive("/agenda") ? "bg-primary/10 text-primary" : "hover:bg-muted"}`}>
-                Agenda
-              </a>
+            <Link 
+              href="/agenda" 
+              className={`px-3 py-2 rounded-md text-sm font-medium ${isActive("/agenda") ? "bg-primary/10 text-primary" : "hover:bg-muted"}`}
+            >
+              Agenda
             </Link>
-            <Link href="/ao-vivo">
-              <a className={`px-3 py-2 rounded-md text-sm font-medium ${isActive("/ao-vivo") ? "bg-primary/10 text-primary" : "hover:bg-muted"}`}>
-                Ao Vivo
-                {/* Live indicator dot */}
-                <span className="relative inline-flex ml-1">
-                  <span className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
-                </span>
-              </a>
+            <Link 
+              href="/ao-vivo" 
+              className={`px-3 py-2 rounded-md text-sm font-medium ${isActive("/ao-vivo") ? "bg-primary/10 text-primary" : "hover:bg-muted"}`}
+            >
+              Ao Vivo
+              {/* Live indicator dot */}
+              <span className="relative inline-flex ml-1">
+                <span className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
+              </span>
             </Link>
-            <Link href="/loja">
-              <a className={`px-3 py-2 rounded-md text-sm font-medium ${isActive("/loja") ? "bg-primary/10 text-primary" : "hover:bg-muted"}`}>
-                Loja
-              </a>
+            <Link 
+              href="/loja" 
+              className={`px-3 py-2 rounded-md text-sm font-medium ${isActive("/loja") ? "bg-primary/10 text-primary" : "hover:bg-muted"}`}
+            >
+              Loja
             </Link>
           </nav>
 
@@ -106,20 +109,20 @@ export default function Header() {
                   <DropdownMenuSeparator />
 
                   <DropdownMenuItem asChild>
-                    <Link href="/meu-qg">
-                      <a className="w-full cursor-pointer">Meu perfil</a>
+                    <Link href="/meu-qg" className="w-full cursor-pointer">
+                      Meu perfil
                     </Link>
                   </DropdownMenuItem>
 
                   <DropdownMenuItem asChild>
-                    <Link href="/pesquisas">
-                      <a className="w-full cursor-pointer">Pesquisas</a>
+                    <Link href="/pesquisas" className="w-full cursor-pointer">
+                      Pesquisas
                     </Link>
                   </DropdownMenuItem>
 
                   <DropdownMenuItem asChild>
-                    <Link href="/configuracoes">
-                      <a className="w-full cursor-pointer">Configurações</a>
+                    <Link href="/configuracoes" className="w-full cursor-pointer">
+                      Configurações
                     </Link>
                   </DropdownMenuItem>
 
@@ -153,10 +156,11 @@ export default function Header() {
             </div>
           ) : (
             <div className="hidden md:block">
-              <Link href="/auth">
-                <a className="bg-primary text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-primary/90">
-                  Entrar
-                </a>
+              <Link 
+                href="/auth"
+                className="bg-primary text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-primary/90"
+              >
+                Entrar
               </Link>
             </div>
           )}
@@ -181,58 +185,53 @@ export default function Header() {
       {isMenuOpen && (
         <div className="md:hidden bg-card border-b border-border">
           <div className="container mx-auto px-4 py-2 space-y-1">
-            <Link href="/">
-              <a
-                className={`block px-3 py-2 rounded-md text-base font-medium ${
-                  isActive("/") ? "bg-primary/10 text-primary" : ""
-                }`}
-                onClick={closeMenu}
-              >
-                Início
-              </a>
+            <Link 
+              href="/"
+              className={`block px-3 py-2 rounded-md text-base font-medium ${
+                isActive("/") ? "bg-primary/10 text-primary" : ""
+              }`}
+              onClick={closeMenu}
+            >
+              Início
             </Link>
-            <Link href="/conteudo">
-              <a
-                className={`block px-3 py-2 rounded-md text-base font-medium ${
-                  isActive("/conteudo") ? "bg-primary/10 text-primary" : ""
-                }`}
-                onClick={closeMenu}
-              >
-                Conteúdo
-              </a>
+            <Link 
+              href="/conteudo"
+              className={`block px-3 py-2 rounded-md text-base font-medium ${
+                isActive("/conteudo") ? "bg-primary/10 text-primary" : ""
+              }`}
+              onClick={closeMenu}
+            >
+              Conteúdo
             </Link>
-            <Link href="/agenda">
-              <a
-                className={`block px-3 py-2 rounded-md text-base font-medium ${
-                  isActive("/agenda") ? "bg-primary/10 text-primary" : ""
-                }`}
-                onClick={closeMenu}
-              >
-                Agenda
-              </a>
+            <Link 
+              href="/agenda"
+              className={`block px-3 py-2 rounded-md text-base font-medium ${
+                isActive("/agenda") ? "bg-primary/10 text-primary" : ""
+              }`}
+              onClick={closeMenu}
+            >
+              Agenda
             </Link>
-            <Link href="/ao-vivo">
-              <a
-                className={`block px-3 py-2 rounded-md text-base font-medium ${
-                  isActive("/ao-vivo") ? "bg-primary/10 text-primary" : ""
-                }`}
-                onClick={closeMenu}
-              >
-                Ao Vivo
-                <span className="relative inline-flex ml-1">
-                  <span className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
-                </span>
-              </a>
+            <Link 
+              href="/ao-vivo"
+              className={`block px-3 py-2 rounded-md text-base font-medium ${
+                isActive("/ao-vivo") ? "bg-primary/10 text-primary" : ""
+              }`}
+              onClick={closeMenu}
+            >
+              Ao Vivo
+              <span className="relative inline-flex ml-1">
+                <span className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
+              </span>
             </Link>
-            <Link href="/loja">
-              <a
-                className={`block px-3 py-2 rounded-md text-base font-medium ${
-                  isActive("/loja") ? "bg-primary/10 text-primary" : ""
-                }`}
-                onClick={closeMenu}
-              >
-                Loja
-              </a>
+            <Link 
+              href="/loja"
+              className={`block px-3 py-2 rounded-md text-base font-medium ${
+                isActive("/loja") ? "bg-primary/10 text-primary" : ""
+              }`}
+              onClick={closeMenu}
+            >
+              Loja
             </Link>
 
             {user ? (
@@ -268,29 +267,26 @@ export default function Header() {
                     )}
                   </div>
                   <div className="mt-3 space-y-1 px-2">
-                    <Link href="/meu-qg">
-                      <a
-                        className="block px-3 py-2 rounded-md text-base font-medium hover:bg-muted"
-                        onClick={closeMenu}
-                      >
-                        Meu perfil
-                      </a>
+                    <Link 
+                      href="/meu-qg"
+                      className="block px-3 py-2 rounded-md text-base font-medium hover:bg-muted"
+                      onClick={closeMenu}
+                    >
+                      Meu perfil
                     </Link>
-                    <Link href="/pesquisas">
-                      <a
-                        className="block px-3 py-2 rounded-md text-base font-medium hover:bg-muted"
-                        onClick={closeMenu}
-                      >
-                        Pesquisas
-                      </a>
+                    <Link 
+                      href="/pesquisas"
+                      className="block px-3 py-2 rounded-md text-base font-medium hover:bg-muted"
+                      onClick={closeMenu}
+                    >
+                      Pesquisas
                     </Link>
-                    <Link href="/configuracoes">
-                      <a
-                        className="block px-3 py-2 rounded-md text-base font-medium hover:bg-muted"
-                        onClick={closeMenu}
-                      >
-                        Configurações
-                      </a>
+                    <Link 
+                      href="/configuracoes"
+                      className="block px-3 py-2 rounded-md text-base font-medium hover:bg-muted"
+                      onClick={closeMenu}
+                    >
+                      Configurações
                     </Link>
                     <button
                       className="w-full text-left block px-3 py-2 rounded-md text-base font-medium text-red-500 hover:bg-muted"
@@ -307,13 +303,12 @@ export default function Header() {
               </>
             ) : (
               <div className="pt-4 pb-3 border-t border-border">
-                <Link href="/auth">
-                  <a
-                    className="block w-full text-center bg-primary text-white px-4 py-2 rounded-md text-base font-medium hover:bg-primary/90"
-                    onClick={closeMenu}
-                  >
-                    Entrar
-                  </a>
+                <Link 
+                  href="/auth"
+                  className="block w-full text-center bg-primary text-white px-4 py-2 rounded-md text-base font-medium hover:bg-primary/90"
+                  onClick={closeMenu}
+                >
+                  Entrar
                 </Link>
               </div>
             )}

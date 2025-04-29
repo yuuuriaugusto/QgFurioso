@@ -432,23 +432,33 @@ export class DatabaseStorage implements IStorage {
   
   // News content
   async getNewsContent(filters?: { isPublished?: boolean, category?: string, limit?: number }): Promise<NewsContent[]> {
-    let query = db.select().from(newsContent);
+    // Create base query
+    let baseQuery = db.select().from(newsContent);
+    
+    // Apply filters
+    const conditions = [];
     
     if (filters?.isPublished !== undefined) {
-      query = query.where(eq(newsContent.isPublished, filters.isPublished));
+      conditions.push(eq(newsContent.isPublished, filters.isPublished));
     }
     
     if (filters?.category) {
-      query = query.where(eq(newsContent.category, filters.category));
+      conditions.push(eq(newsContent.category, filters.category));
     }
     
-    query = query.orderBy(desc(newsContent.publishDate));
+    // Apply all conditions if any exist
+    if (conditions.length > 0) {
+      baseQuery = baseQuery.where(and(...conditions));
+    }
+    
+    // Order and limit
+    baseQuery = baseQuery.orderBy(desc(newsContent.publishDate));
     
     if (filters?.limit) {
-      query = query.limit(filters.limit);
+      baseQuery = baseQuery.limit(filters.limit);
     }
     
-    return await query;
+    return await baseQuery;
   }
 
   async getNewsContentBySlug(slug: string): Promise<NewsContent | undefined> {
