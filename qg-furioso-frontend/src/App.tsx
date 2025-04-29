@@ -16,6 +16,7 @@ import SchedulePage from "@/pages/schedule-page";
 import LivePage from "@/pages/live-page";
 import SurveysPage from "@/pages/surveys-page";
 import SettingsPage from "@/pages/settings-page";
+import WebSocketTestPage from "@/pages/websocket-test-page";
 import BottomNav from "@/components/layout/bottom-nav";
 import { useEffect } from "react";
 
@@ -30,6 +31,7 @@ function Router() {
       <ProtectedRoute path="/ao-vivo" component={LivePage} />
       <ProtectedRoute path="/pesquisas" component={SurveysPage} />
       <ProtectedRoute path="/configuracoes" component={SettingsPage} />
+      <ProtectedRoute path="/ws-test" component={WebSocketTestPage} />
       <Route path="/auth" component={AuthPage} />
       <Route component={NotFound} />
     </Switch>
