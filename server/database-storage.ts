@@ -106,7 +106,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createUserPreferences(userId: number, preferences: InsertUserPreferences): Promise<UserPreferences> {
-    const [userPreferences] = await db
+    const [userPreferencesResult] = await db
       .insert(userPreferences)
       .values({
         userId,
@@ -114,7 +114,7 @@ export class DatabaseStorage implements IStorage {
       })
       .returning();
     
-    return userPreferences;
+    return userPreferencesResult;
   }
 
   async updateUserPreferences(userId: number, preferences: Partial<InsertUserPreferences>): Promise<UserPreferences | undefined> {

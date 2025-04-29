@@ -43,6 +43,149 @@ async function comparePasswords(supplied: string, stored: string) {
   return timingSafeEqual(hashedBuf, suppliedBuf);
 }
 
+// Função para criar um usuário de teste
+export async function createTestUser() {
+  try {
+    // Verificar se já existe o usuário de teste
+    const existingUser = await storage.getUserByPrimaryIdentity("teste@furia.com");
+    if (existingUser) {
+      console.log("Usuário de teste já existe.");
+      return;
+    }
+
+    console.log("Criando usuário de teste...");
+    
+    // Criar hash da senha
+    const passwordHash = await hashPassword("furiafan123");
+    
+    // Criar o usuário
+    const user = await storage.createUser({
+      primaryIdentity: "teste@furia.com",
+      identityType: "email",
+      passwordHash,
+      status: "active",
+    });
+    
+    // Criar perfil
+    const profile = await storage.createUserProfile(user.id, {
+      firstName: "Furia",
+      lastName: "Fan",
+      birthDate: "1995-10-15",
+      cpfEncrypted: null,
+      addressStreet: null,
+      addressNumber: null,
+      addressComplement: null,
+      addressNeighborhood: null,
+      addressCity: "São Paulo",
+      addressState: null,
+      addressZipCode: null,
+      interests: null,
+      activitiesEvents: null,
+      avatarUrl: "https://via.placeholder.com/150x150.png?text=FF"
+    });
+    
+    // Criar preferências
+    await storage.createUserPreferences(user.id, {
+      emailNotifications: true,
+      pushNotifications: true,
+      marketingConsent: false,
+      theme: "dark",
+      language: "pt-BR"
+    });
+    
+    // Criar saldo de moedas
+    const coinBalance = await storage.createCoinBalance(user.id);
+    
+    // Adicionar transações de teste
+    await storage.createCoinTransaction(user.id, {
+      userId: user.id,
+      amount: 500,
+      transactionType: "earning",
+      description: "Bônus de cadastro",
+      relatedEntityType: null,
+      relatedEntityId: null
+    });
+    
+    await storage.createCoinTransaction(user.id, {
+      userId: user.id,
+      amount: 250,
+      transactionType: "earning",
+      description: "Pesquisa completa",
+      relatedEntityType: "survey",
+      relatedEntityId: 1
+    });
+    
+    // Criar itens de loja de teste
+    const shopItems = [
+      {
+        name: "FURIA Jersey 2024",
+        description: "Camisa oficial da FURIA para 2024",
+        imageUrl: "https://via.placeholder.com/300x300.png?text=FURIA+Jersey",
+        coinPrice: 500,
+        type: "physical",
+        stock: 100,
+        isActive: true
+      },
+      {
+        name: "FURIA Cap",
+        description: "Boné exclusivo FURIA Esports",
+        imageUrl: "https://via.placeholder.com/300x300.png?text=FURIA+Cap",
+        coinPrice: 300,
+        type: "physical",
+        stock: 150,
+        isActive: true
+      },
+      {
+        name: "Pacote VIP - Próximo Evento",
+        description: "Acesso VIP para o próximo evento da FURIA, inclui meet & greet",
+        imageUrl: "https://via.placeholder.com/300x300.png?text=VIP+Package",
+        coinPrice: 2000,
+        type: "digital",
+        stock: 10,
+        isActive: true
+      }
+    ];
+    
+    for (const item of shopItems) {
+      await storage.createShopItem(item);
+    }
+    
+    // Criar notícias de teste
+    const newsContents = [
+      {
+        title: "FURIA anuncia nova lineup para IEM Katowice 2024",
+        slug: "furia-anuncia-nova-lineup",
+        content: "A organização brasileira FURIA Esports revelou hoje sua nova formação para o próximo major. A equipe conta com a adição de um novo jogador...",
+        excerpt: "A organização brasileira FURIA Esports revelou hoje sua nova formação para o próximo major.",
+        imageUrl: "https://via.placeholder.com/800x400.png?text=FURIA+CS2+Team",
+        category: "CS2",
+        authorId: null,
+        publishDate: new Date(),
+        isPublished: true
+      },
+      {
+        title: "FURIA Valorant conquista título do VALORANT Masters São Paulo",
+        slug: "furia-valorant-conquista-titulo",
+        content: "Em uma final emocionante, a equipe da FURIA venceu por 3-1 e garantiu o primeiro título internacional para o Brasil...",
+        excerpt: "Em uma final emocionante, a equipe da FURIA venceu por 3-1 e garantiu o primeiro título internacional para o Brasil.",
+        imageUrl: "https://via.placeholder.com/800x400.png?text=FURIA+Valorant+Team",
+        category: "VALORANT",
+        authorId: null,
+        publishDate: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000), // 4 dias atrás
+        isPublished: true
+      }
+    ];
+    
+    for (const content of newsContents) {
+      await storage.createNewsContent(content);
+    }
+    
+    console.log("Usuário de teste criado com sucesso!");
+  } catch (error) {
+    console.error("Erro ao criar usuário de teste:", error);
+  }
+}
+
 export function setupAuth(app: Express) {
   const sessionSettings: session.SessionOptions = {
     secret: process.env.SESSION_SECRET || "furia-qg-furioso-secret-key",
