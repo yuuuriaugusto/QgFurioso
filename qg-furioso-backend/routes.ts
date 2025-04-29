@@ -7,6 +7,7 @@ import { fromZodError } from "zod-validation-error";
 import { insertUserProfileSchema, insertUserPreferencesSchema, insertSurveyResponseSchema } from "./schema";
 import analyticsRouter from "./analytics-routes";
 import auditRouter from "./audit-routes";
+import { initializeWebSocketServer, EventType } from "./websocket-server";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Setup authentication routes and middleware
@@ -461,6 +462,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Initialize HTTP server
   const httpServer = createServer(app);
+  
+  // Initialize WebSocket server
+  const wsManager = initializeWebSocketServer(httpServer);
+  console.log('WebSocket server initialized and attached to HTTP server');
+  
+  // Create a WebSocket authentication endpoint
+  app.post('/api/ws/auth', requireAuth, (req, res) => {
+    const userId = req.user?.id;
+    const clientId = req.body.clientId;
+    
+    if (!userId || !clientId) {
+      return res.status(400).json({ message: 'ID de cliente WebSocket ou usuário inválido' });
+    }
+    
+    // Authenticate WebSocket connection with user ID
+    const wsManager = getWebSocketManager();
+    if (wsManager) {
+      wsManager.authenticateClient(clientId, userId);
+      return res.status(200).json({ message: 'Autenticado com sucesso' });
+    } else {
+      return res.status(500).json({ message: 'Servidor WebSocket não inicializado' });
+    }
+  });
   
   return httpServer;
 }

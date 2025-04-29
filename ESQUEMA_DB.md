@@ -1,5 +1,27 @@
 # Documentação do Esquema de Banco de Dados - QG FURIOSO
 
+## Introdução
+
+Este documento apresenta o esquema de banco de dados do projeto QG FURIOSO, uma plataforma de engajamento de fãs desenvolvida para a FURIA Esports. Esta documentação é destinada a desenvolvedores, arquitetos de banco de dados e administradores de sistema que trabalham no projeto.
+
+### Propósito
+
+O esquema de banco de dados foi projetado para atender aos seguintes objetivos:
+
+- Armazenar e gerenciar dados de usuários, incluindo perfis, preferências e credenciais
+- Suportar um sistema de economia virtual com moedas, transações e resgates
+- Gerenciar conteúdo digital como notícias, transmissões e calendário de partidas
+- Facilitar a coleta de dados por meio de pesquisas e análises
+- Implementar um sistema de auditoria para rastrear ações administrativas
+- Fornecer uma base robusta para geração de relatórios e métricas
+
+### Tecnologias Utilizadas
+
+- **Banco de Dados:** PostgreSQL
+- **ORM:** Drizzle ORM
+- **Validação:** Zod
+- **Conectividade:** Node.js com pg-neon
+
 ## Visão Geral
 
 O banco de dados do QG FURIOSO está estruturado para suportar uma plataforma de engajamento de fãs completa. Abaixo está a documentação detalhada de todas as tabelas, colunas e relações que compõem o esquema do banco de dados.
@@ -426,6 +448,27 @@ Armazena respostas dos usuários às pesquisas.
 - Todas as chaves estrangeiras têm restrições de integridade referencial
 - Exclusão em cascata não está ativada para preservar histórico e integridade dos dados
 
+## Migrações e Atualizações do Esquema
+
+Este projeto usa Drizzle ORM para gerenciar o esquema de banco de dados PostgreSQL. Para aplicar alterações ao esquema:
+
+1. Atualize as definições das tabelas em `shared/schema.ts` e `shared/audit-schema.ts`
+2. Execute o comando de migração para aplicar alterações:
+   ```
+   npm run db:push
+   ```
+
+Drizzle gerencia automaticamente a criação ou alteração de tabelas sem a necessidade de escrever migrações SQL manualmente.
+
+### Melhores Práticas para Alterações no Esquema
+
+- **Adicionar nova coluna:** Defina-a como nullable ou com um valor padrão
+- **Remover coluna:** Crie uma versão temporária com a coluna marcada como nullable antes de removê-la 
+- **Renomear coluna:** Crie uma nova coluna, migre os dados, e então remova a antiga
+- **Alteração de tipo:** Avalie a compatibilidade e considere uma estratégia de migração gradual
+- **Adicionar tabela:** Defina relações claras com tabelas existentes
+- **Backup:** Sempre faça backup do banco de dados antes de alterações significativas
+
 ## Esquemas de Validação
 
 O sistema utiliza o Zod para validação de dados com esquemas para:
@@ -448,4 +491,99 @@ O sistema utiliza o Zod para validação de dados com esquemas para:
 
 - A maioria das tabelas inclui campos `createdAt` e `updatedAt` para trilha de auditoria
 - As transações de moedas fornecem um histórico completo da economia virtual
-- O sistema de logs de auditoria é implementado separadamente e registra ações administrativas
+- O sistema de logs de auditoria registra ações administrativas usando uma tabela dedicada
+
+### Tabela: `audit_logs`
+Armazena um registro detalhado de todas as ações de administradores no sistema.
+
+| Coluna         | Tipo      | Descrição                                       |
+|----------------|-----------|--------------------------------------------------|
+| id             | serial    | ID único do log (PK)                             |
+| adminId        | integer   | ID do administrador que executou a ação          |
+| adminIdentity  | text      | Identidade do administrador (email, nome)        |
+| action         | text      | Tipo de ação (create, update, delete, etc.)      |
+| entityType     | text      | Tipo de entidade afetada (user, content, etc.)   |
+| entityId       | text      | ID da entidade afetada (opcional)                |
+| metadata       | jsonb     | Metadados adicionais da ação (detalhes, antes/depois) |
+| ipAddress      | text      | Endereço IP do administrador                     |
+| userAgent      | text      | User-Agent do navegador utilizado                |
+| timestamp      | timestamp | Data e hora da ação                              |
+
+## Sistema de Analytics
+
+A plataforma também inclui um sistema de analytics completo para monitoramento e análise de dados. Embora não use tabelas dedicadas (utiliza consultas em tempo real nas tabelas existentes), o sistema gera diversas métricas:
+
+### Métricas de Usuários
+- Total de usuários
+- Usuários ativos
+- Novos usuários
+- Taxa de retenção
+- Duração média de sessão
+
+### Métricas de Conteúdo
+- Total de visualizações
+- Visualizações únicas
+- Taxa média de engajamento
+- Categorias populares
+
+### Métricas de Pesquisas
+- Total de pesquisas
+- Total de respostas
+- Taxa média de conclusão
+- Tempo médio de resposta
+- Distribuição de pesquisas
+
+### Métricas de Economia
+- Total de moedas emitidas
+- Total de moedas gastas
+- Saldo ativo de moedas
+- Saldo médio por usuário
+- Principais acumuladores
+- Principais gastadores
+
+### Métricas de Loja
+- Total de pedidos
+- Receita total
+- Itens populares
+- Tendência de pedidos
+
+### Métricas de Engajamento
+- Total de interações
+- Interações por tipo
+- Tendência de engajamento
+- Principais engajadores
+
+### Dados Demográficos
+- Distribuição por idade
+- Distribuição por gênero
+- Distribuição por localização
+
+### Métricas de Transmissões
+- Total de transmissões
+- Total de espectadores
+- Média de espectadores
+- Pico de espectadores
+- Duração da transmissão
+- Retenção de espectadores
+
+## Conclusão e Próximos Passos
+
+O esquema de banco de dados do QG FURIOSO foi projetado para ser escalável e extensível, permitindo que a plataforma cresça com as necessidades dos usuários e da organização. A arquitetura relacional facilita consultas complexas e relatórios personalizados, enquanto a estrutura de tabelas modulares permite a adição de novas funcionalidades sem impactar as existentes.
+
+### Recomendações para Manutenção
+
+1. **Monitoramento de desempenho**: Estabelecer métricas de desempenho e monitorar regularmente as consultas mais frequentes para otimização.
+2. **Revisão periódica de índices**: Analisar e ajustar índices com base nos padrões de acesso aos dados.
+3. **Backup automatizado**: Implementar rotinas diárias de backup com retenção de pelo menos 30 dias.
+4. **Auditoria de segurança**: Revisar regularmente os logs de auditoria para identificar padrões suspeitos.
+5. **Documentação atualizada**: Manter esta documentação atualizada sempre que houver alterações no esquema.
+
+### Futuras Expansões
+
+O esquema atual oferece suporte às funcionalidades principais da plataforma, mas pode ser expandido no futuro para incluir:
+
+- Integração com fornecedores externos de eventos e produtos
+- Sistema de afiliados e recompensas por indicação
+- Análise preditiva de comportamento do usuário
+- Integração com plataformas adicionais de streaming e redes sociais
+- Expansão do sistema de gamificação para incluir desafios e conquistas
