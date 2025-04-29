@@ -13,6 +13,7 @@ import {
   LogoutOutlined,
   SettingOutlined,
   BellOutlined,
+  BarChartOutlined,
 } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
 import { useAuthStore } from '@store/authStore';
@@ -76,6 +77,11 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
           label: <Link to="/content/surveys">Pesquisas</Link>,
         },
       ],
+    },
+    {
+      key: '/analytics',
+      icon: <BarChartOutlined />,
+      label: <Link to="/analytics">Analytics</Link>,
     },
     {
       key: '/audit',

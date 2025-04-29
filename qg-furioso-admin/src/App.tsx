@@ -17,6 +17,7 @@ import CoinRulesPage from '@pages/rewards/CoinRulesPage';
 import NewsContentPage from '@pages/content/NewsContentPage';
 import SurveysPage from '@pages/content/SurveysPage';
 import AuditLogsPage from '@pages/audit/AuditLogsPage';
+import AnalyticsDashboardPage from '@pages/analytics/AnalyticsDashboardPage';
 import NotFoundPage from '@pages/NotFoundPage';
 
 // API
@@ -137,6 +138,14 @@ function App() {
           <ProtectedRoute>
             <AdminLayout>
               <AuditLogsPage />
+            </AdminLayout>
+          </ProtectedRoute>
+        } />
+        
+        <Route path="/analytics" element={
+          <ProtectedRoute>
+            <AdminLayout>
+              <AnalyticsDashboardPage />
             </AdminLayout>
           </ProtectedRoute>
         } />
