@@ -343,13 +343,20 @@ export class DatabaseStorage implements IStorage {
   
   // Shop items
   async getShopItems(filters?: { isActive?: boolean }): Promise<ShopItem[]> {
-    let query = db.select().from(shopItems);
+    // Create base query
+    let baseQuery = db.select().from(shopItems);
     
+    // Apply active filter if provided
     if (filters?.isActive !== undefined) {
-      query = query.where(eq(shopItems.isActive, filters.isActive));
+      baseQuery = baseQuery.where(eq(shopItems.isActive, filters.isActive));
     }
     
-    return await query;
+    // Sort by price (lowest first) then by name
+    baseQuery = baseQuery
+      .orderBy(asc(shopItems.price))
+      .orderBy(asc(shopItems.name));
+    
+    return await baseQuery;
   }
 
   async getShopItem(id: number): Promise<ShopItem | undefined> {
@@ -506,23 +513,33 @@ export class DatabaseStorage implements IStorage {
   
   // Matches
   async getMatches(filters?: { status?: string, game?: string, limit?: number }): Promise<Match[]> {
-    let query = db.select().from(matches);
+    // Create base query
+    let baseQuery = db.select().from(matches);
+    
+    // Apply filters
+    const conditions = [];
     
     if (filters?.status) {
-      query = query.where(eq(matches.status, filters.status));
+      conditions.push(eq(matches.status, filters.status));
     }
     
     if (filters?.game) {
-      query = query.where(eq(matches.game, filters.game));
+      conditions.push(eq(matches.game, filters.game));
     }
     
-    query = query.orderBy(desc(matches.scheduledDate));
+    // Apply all conditions if any exist
+    if (conditions.length > 0) {
+      baseQuery = baseQuery.where(and(...conditions));
+    }
+    
+    // Order and limit
+    baseQuery = baseQuery.orderBy(desc(matches.scheduledDate));
     
     if (filters?.limit) {
-      query = query.limit(filters.limit);
+      baseQuery = baseQuery.limit(filters.limit);
     }
     
-    return await query;
+    return await baseQuery;
   }
 
   async getMatch(id: number): Promise<Match | undefined> {
@@ -562,17 +579,23 @@ export class DatabaseStorage implements IStorage {
   
   // Streams
   async getStreams(filters?: { status?: string, limit?: number }): Promise<Stream[]> {
-    let query = db.select().from(streams);
+    // Create base query
+    let baseQuery = db.select().from(streams);
     
+    // Apply filters
     if (filters?.status) {
-      query = query.where(eq(streams.status, filters.status));
+      baseQuery = baseQuery.where(eq(streams.status, filters.status));
     }
     
+    // Order by startTime desc (most recent streams first)
+    baseQuery = baseQuery.orderBy(desc(streams.startTime));
+    
+    // Apply limit if specified
     if (filters?.limit) {
-      query = query.limit(filters.limit);
+      baseQuery = baseQuery.limit(filters.limit);
     }
     
-    return await query;
+    return await baseQuery;
   }
 
   async getStream(id: number): Promise<Stream | undefined> {
@@ -611,21 +634,29 @@ export class DatabaseStorage implements IStorage {
   
   // Surveys
   async getSurveys(filters?: { status?: string, userId?: number, responded?: boolean }): Promise<Survey[]> {
-    let query = db.select().from(surveys);
+    // Create base query
+    let baseQuery = db.select().from(surveys);
     
+    // Apply status filter if provided
     if (filters?.status) {
-      query = query.where(eq(surveys.status, filters.status));
+      baseQuery = baseQuery.where(eq(surveys.status, filters.status));
     }
     
-    const result = await query;
+    // Order by newest first
+    baseQuery = baseQuery.orderBy(desc(surveys.createdAt));
     
-    // Filter by user response status if needed
+    // Execute the query
+    const result = await baseQuery;
+    
+    // Handle response filtering if needed
     if (filters?.userId !== undefined && filters?.responded !== undefined) {
+      // Get surveys this user has already responded to
       const userResponses = await this.getUserSurveyResponses(filters.userId);
-      const respondedSurveyIds = userResponses.map(r => r.surveyId);
+      const respondedSurveyIds = new Set(userResponses.map(r => r.surveyId));
       
+      // Filter surveys based on response status
       return result.filter(survey => {
-        const hasResponded = respondedSurveyIds.includes(survey.id);
+        const hasResponded = respondedSurveyIds.has(survey.id);
         return filters.responded ? hasResponded : !hasResponded;
       });
     }
