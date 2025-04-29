@@ -6,6 +6,7 @@ import { z } from "zod";
 import { fromZodError } from "zod-validation-error";
 import { insertUserProfileSchema, insertUserPreferencesSchema, insertSurveyResponseSchema } from "./schema";
 import analyticsRouter from "./analytics-routes";
+import auditRouter from "./audit-routes";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Setup authentication routes and middleware
@@ -454,6 +455,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Montar as rotas de analytics em /api/admin/analytics
   app.use('/api/admin/analytics', isAdmin, analyticsRouter);
+  
+  // Montar as rotas de auditoria em /api/admin/audit
+  app.use('/api/admin/audit', isAdmin, auditRouter);
   
   // Initialize HTTP server
   const httpServer = createServer(app);
