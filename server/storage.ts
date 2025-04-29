@@ -186,6 +186,53 @@ export class MemStorage implements IStorage {
   }
   
   private initializeData(): void {
+    // Add a test user
+    const testUser: InsertUser & { passwordHash: string } = {
+      primaryIdentity: "teste@furia.com",
+      identityType: "email",
+      passwordHash: "$2b$10$2xZuGKKkPx2z3/8vIkMsGusB08c0xgG2zxuQPbiiKt9LTsJrV.j6W", // senha: furiafan123
+      status: "active"
+    };
+    
+    const user = this.createUser(testUser);
+    
+    // Add user profile
+    this.createUserProfile(user.id, {
+      userId: user.id,
+      firstName: "Furia",
+      lastName: "Fan",
+      birthDate: "1995-10-15",
+      gender: "preferNotToSay",
+      country: "Brasil",
+      city: "São Paulo",
+      avatarUrl: "https://via.placeholder.com/150x150.png?text=FF"
+    });
+    
+    // Add coin balance
+    const coinBalance = this.createCoinBalance(user.id);
+    
+    // Add some transactions
+    this.createCoinTransaction(user.id, {
+      userId: user.id,
+      amount: 500,
+      transactionType: "earning",
+      description: "Bônus de cadastro",
+      relatedEntityType: null,
+      relatedEntityId: null
+    });
+    
+    this.createCoinTransaction(user.id, {
+      userId: user.id,
+      amount: 250,
+      transactionType: "earning",
+      description: "Pesquisa completa",
+      relatedEntityType: "survey",
+      relatedEntityId: 1
+    });
+    
+    // Update balance
+    this.updateCoinBalance(user.id, 750);
+    
     // Add initial shop items
     const shopItems: InsertShopItem[] = [
       {

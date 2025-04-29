@@ -11,7 +11,17 @@ import { fromZodError } from "zod-validation-error";
 
 declare global {
   namespace Express {
-    interface User extends User {
+    // Extend the default Express User
+    interface User {
+      id: number;
+      publicId: string;
+      primaryIdentity: string;
+      identityType: string;
+      passwordHash: string;
+      status: string;
+      lastLoginAt: Date | null;
+      createdAt: Date;
+      updatedAt: Date;
       profile?: UserProfile;
       coinBalance?: CoinBalance;
     }

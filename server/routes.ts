@@ -41,6 +41,49 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
+  // Avatar update endpoint
+  app.post("/api/users/me/avatar", requireAuth, async (req, res) => {
+    try {
+      const userId = req.user?.id;
+      
+      // Validate that avatar URL is provided
+      if (!req.body.avatarUrl) {
+        return res.status(400).json({ message: "URL da imagem de avatar é obrigatória" });
+      }
+      
+      // Update only the avatar URL
+      const profile = await storage.getUserProfile(userId);
+      if (profile) {
+        const updatedProfile = await storage.updateUserProfile(userId, { 
+          avatarUrl: req.body.avatarUrl 
+        });
+        res.json(updatedProfile);
+      } else {
+        // Create profile if it doesn't exist
+        const newProfile = await storage.createUserProfile(userId, {
+          firstName: null,
+          lastName: null,
+          birthDate: null,
+          cpfEncrypted: null,
+          addressStreet: null,
+          addressNumber: null,
+          addressComplement: null,
+          addressNeighborhood: null,
+          addressCity: null,
+          addressState: null,
+          addressZipCode: null,
+          interests: null,
+          activitiesEvents: null,
+          avatarUrl: req.body.avatarUrl
+        });
+        res.json(newProfile);
+      }
+    } catch (error) {
+      console.error("Error updating avatar:", error);
+      res.status(500).json({ message: "Erro ao atualizar avatar" });
+    }
+  });
+  
   // User Preferences routes
   app.get("/api/users/me/preferences", requireAuth, async (req, res) => {
     const userId = req.user?.id;
@@ -99,8 +142,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/users/me/coin-transactions", requireAuth, async (req, res) => {
     const userId = req.user?.id;
     const limit = req.query.limit ? parseInt(req.query.limit as string) : undefined;
-    const transactions = await storage.getCoinTransactions(userId, limit);
-    res.json(transactions);
+    const page = req.query.page ? parseInt(req.query.page as string) : 1;
+    const offset = (page - 1) * (limit || 10);
+    
+    // Get all transactions for this user
+    const allTransactions = await storage.getCoinTransactions(userId);
+    
+    // Calculate total pages
+    const totalItems = allTransactions.length;
+    const totalPages = limit ? Math.ceil(totalItems / limit) : 1;
+    
+    // Get paginated transactions
+    const transactions = limit ? allTransactions.slice(offset, offset + limit) : allTransactions;
+    
+    res.json({
+      data: transactions,
+      pagination: {
+        page,
+        limit: limit || totalItems,
+        totalItems,
+        totalPages
+      }
+    });
   });
   
   // Shop Item routes
@@ -312,6 +375,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Create response
       const response = await storage.createSurveyResponse(validatedData);
+      
+      // Add reward to user's account
+      if (survey.reward > 0) {
+        await storage.createCoinTransaction(userId, {
+          userId,
+          amount: survey.reward,
+          transactionType: "survey_reward",
+          description: `Recompensa por completar a pesquisa: ${survey.title}`,
+          relatedEntityType: "survey",
+          relatedEntityId: surveyId
+        });
+        
+        // Update user's coin balance
+        const currentBalance = await storage.getCoinBalance(userId);
+        if (currentBalance) {
+          await storage.updateCoinBalance(userId, currentBalance.balance + survey.reward);
+        }
+      }
       
       res.status(201).json({
         id: response.id,
