@@ -1,4 +1,4 @@
-import { eq, and, desc, asc, sql } from 'drizzle-orm';
+import { eq, and, sql } from 'drizzle-orm';
 import { db } from './db';
 import connectPgSimple from 'connect-pg-simple';
 import session from 'express-session';
@@ -293,7 +293,7 @@ export class DatabaseStorage implements IStorage {
       .select()
       .from(coinTransactions)
       .where(eq(coinTransactions.userId, userId))
-      .orderBy(desc(coinTransactions.createdAt));
+      .orderBy(sql`${coinTransactions.createdAt} DESC`);
     
     if (limit) {
       query = query.limit(limit);
@@ -351,12 +351,16 @@ export class DatabaseStorage implements IStorage {
       baseQuery = baseQuery.where(eq(shopItems.isActive, filters.isActive));
     }
     
-    // Sort by price (lowest first) then by name
-    baseQuery = baseQuery
-      .orderBy(asc(shopItems.price))
-      .orderBy(asc(shopItems.name));
+    // Get unsorted results first
+    const result = await baseQuery;
     
-    return await baseQuery;
+    // Sort in memory by coinPrice (lowest first) then by name
+    return result.sort((a, b) => {
+      if (a.coinPrice !== b.coinPrice) {
+        return a.coinPrice - b.coinPrice; // Sort by coinPrice first (ascending)
+      }
+      return a.name.localeCompare(b.name); // Then sort by name (alphabetically)
+    });
   }
 
   async getShopItem(id: number): Promise<ShopItem | undefined> {
@@ -396,9 +400,12 @@ export class DatabaseStorage implements IStorage {
       .select()
       .from(redemptionOrders)
       .where(eq(redemptionOrders.userId, userId))
-      .orderBy(desc(redemptionOrders.createdAt));
+      .orderBy(redemptionOrders.createdAt);
     
-    return orders;
+    // Sort in-memory by newest first
+    return orders.sort((a, b) => 
+      (new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+    );
   }
 
   async getRedemptionOrder(id: number): Promise<RedemptionOrder | undefined> {
@@ -458,14 +465,19 @@ export class DatabaseStorage implements IStorage {
       baseQuery = baseQuery.where(and(...conditions));
     }
     
-    // Order and limit
-    baseQuery = baseQuery.orderBy(desc(newsContent.publishDate));
+    // Basic ordering by date (will sort in memory later)
+    baseQuery = baseQuery.orderBy(newsContent.publishDate);
     
+    // Apply limit if specified
     if (filters?.limit) {
       baseQuery = baseQuery.limit(filters.limit);
     }
     
-    return await baseQuery;
+    // Get results and sort in memory (newest first)
+    const result = await baseQuery;
+    return result.sort((a, b) => 
+      (new Date(b.publishDate).getTime() - new Date(a.publishDate).getTime())
+    );
   }
 
   async getNewsContentBySlug(slug: string): Promise<NewsContent | undefined> {
@@ -532,14 +544,19 @@ export class DatabaseStorage implements IStorage {
       baseQuery = baseQuery.where(and(...conditions));
     }
     
-    // Order and limit
-    baseQuery = baseQuery.orderBy(desc(matches.scheduledDate));
+    // Basic ordering (will sort in memory later)
+    baseQuery = baseQuery.orderBy(matches.scheduledDate);
     
+    // Apply limit if specified
     if (filters?.limit) {
       baseQuery = baseQuery.limit(filters.limit);
     }
     
-    return await baseQuery;
+    // Get results and sort in memory (newest first)
+    const result = await baseQuery;
+    return result.sort((a, b) => 
+      (new Date(b.scheduledDate).getTime() - new Date(a.scheduledDate).getTime())
+    );
   }
 
   async getMatch(id: number): Promise<Match | undefined> {
@@ -587,15 +604,20 @@ export class DatabaseStorage implements IStorage {
       baseQuery = baseQuery.where(eq(streams.status, filters.status));
     }
     
-    // Order by startTime desc (most recent streams first)
-    baseQuery = baseQuery.orderBy(desc(streams.startTime));
+    // Execute the query without any ordering at DB level
+    const result = await baseQuery;
     
-    // Apply limit if specified
-    if (filters?.limit) {
-      baseQuery = baseQuery.limit(filters.limit);
+    // Sort results manually in memory by startTime (newest first)
+    let sortedResult = [...result].sort((a, b) => {
+      return new Date(b.startTime).getTime() - new Date(a.startTime).getTime();
+    });
+    
+    // Apply limit in memory if specified
+    if (filters?.limit && sortedResult.length > filters.limit) {
+      sortedResult = sortedResult.slice(0, filters.limit);
     }
     
-    return await baseQuery;
+    return sortedResult;
   }
 
   async getStream(id: number): Promise<Stream | undefined> {
@@ -642,11 +664,13 @@ export class DatabaseStorage implements IStorage {
       baseQuery = baseQuery.where(eq(surveys.status, filters.status));
     }
     
-    // Order by newest first
-    baseQuery = baseQuery.orderBy(desc(surveys.createdAt));
-    
-    // Execute the query
+    // Execute the query without any ordering at DB level
     const result = await baseQuery;
+    
+    // Sort result in memory (newest first)
+    const sortedResult = [...result].sort((a, b) => 
+      (new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+    );
     
     // Handle response filtering if needed
     if (filters?.userId !== undefined && filters?.responded !== undefined) {
@@ -655,13 +679,13 @@ export class DatabaseStorage implements IStorage {
       const respondedSurveyIds = new Set(userResponses.map(r => r.surveyId));
       
       // Filter surveys based on response status
-      return result.filter(survey => {
+      return sortedResult.filter(survey => {
         const hasResponded = respondedSurveyIds.has(survey.id);
         return filters.responded ? hasResponded : !hasResponded;
       });
     }
     
-    return result;
+    return sortedResult;
   }
 
   async getSurvey(id: number): Promise<Survey | undefined> {

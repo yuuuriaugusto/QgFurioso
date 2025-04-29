@@ -47,11 +47,31 @@ export const queryClient = new QueryClient({
       queryFn: getQueryFn({ on401: "throw" }),
       refetchInterval: false,
       refetchOnWindowFocus: false,
-      staleTime: Infinity,
+      staleTime: 5 * 60 * 1000, // 5 minutos
       retry: false,
+      // Adicionando cache de 10 minutos para melhorar performance
+      gcTime: 10 * 60 * 1000,
     },
     mutations: {
       retry: false,
     },
   },
 });
+
+// Prefetch helpers para melhorar navegação
+export const prefetchHomeData = async () => {
+  await Promise.all([
+    queryClient.prefetchQuery({ queryKey: ['/api/matches'] }),
+    queryClient.prefetchQuery({ queryKey: ['/api/streams'] }),
+    queryClient.prefetchQuery({ queryKey: ['/api/content/news'] }),
+    queryClient.prefetchQuery({ queryKey: ['/api/surveys'] })
+  ]);
+};
+
+export const prefetchContentData = async () => {
+  await queryClient.prefetchQuery({ queryKey: ['/api/content/news'] });
+};
+
+export const prefetchShopData = async () => {
+  await queryClient.prefetchQuery({ queryKey: ['/api/shop/items'] });
+};
