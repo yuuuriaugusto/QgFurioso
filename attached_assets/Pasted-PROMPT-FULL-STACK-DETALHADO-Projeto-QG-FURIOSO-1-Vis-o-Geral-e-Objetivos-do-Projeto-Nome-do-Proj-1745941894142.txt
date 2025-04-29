@@ -1,0 +1,477 @@
+PROMPT FULL-STACK DETALHADO: Projeto QG FURIOSO
+
+1. Visão Geral e Objetivos do Projeto
+
+Nome do Projeto: QG FURIOSO
+
+Objetivo Principal: Desenvolver uma plataforma digital completa e integrada (PWA + Backend + DB) para ser o hub central da experiência do fã da FURIA Esports. A plataforma visa:
+
+Centralizar informações (notícias, agenda, resultados, streams).
+
+Engajar os fãs continuamente através de interações e conteúdo relevante.
+
+Implementar um sistema de recompensas ("Furia Coins") para incentivar a participação.
+
+Permitir que os fãs criem perfis detalhados ("Know Your Fan"), incluindo verificação de identidade (KYC) e vinculação de contas externas.
+
+Fornecer à FURIA insights valiosos (agregados e anônimos) sobre sua base de fãs.
+
+Componentes Principais a serem Gerados/Desenvolvidos:
+
+PWA (Progressive Web App) do Fã: Interface web principal, responsiva e instalável.
+
+Backend API: Lógica de negócios, gerenciamento de dados, orquestração de serviços e integrações.
+
+Banco de Dados: Estrutura relacional completa para persistência dos dados.
+
+Filosofia de Desenvolvimento: Foco no usuário, funcionalidade real (sem mockups), segurança e privacidade desde o design (Privacy by Design), arquitetura escalável e manutenível.
+
+2. Arquitetura Geral Proposta
+
+Frontend: PWA (Single Page Application) usando um framework moderno (React, Vue, Angular, Svelte).
+
+Backend: API RESTful (ou GraphQL) construída sobre um framework robusto (ex: Node.js/Express/NestJS, Python/Django/Flask). Arquitetura de Monólito Modular ou Microserviços.
+
+Banco de Dados: Relacional (PostgreSQL recomendado devido ao JSONB e robustez). Cache (Redis) para performance e sessões.
+
+Comunicação: Frontend <-> Backend via HTTPS (API). Backend <-> Serviços Externos via APIs seguras. WebSockets podem ser usados para funcionalidades em tempo real (notificações, chat - se adicionado posteriormente).
+
+3. Especificação Detalhada do Frontend (PWA do Fã)
+
+(Reutilizando e expandindo o prompt anterior do PWA, garantindo que cada elemento de UI tenha uma contraparte lógica esperada do backend)
+
+Tipo: Progressive Web App (Manifest, Service Worker para caching e instalação).
+
+Responsividade: Mobile-First, adaptação perfeita para Tablet e Desktop.
+
+Estilo Visual: Identidade FURIA (Preto, Branco, Rosa Choque/Magenta), fontes modernas, energia, limpeza, intuitividade.
+
+Seções Principais (Navegação Clara): Home (Painel), Meu QG (Perfil), Loja FURIOSA, Conteúdo, Agenda & Resultados, Ao Vivo, Pesquisas, Configurações.
+
+Funcionalidades Detalhadas por Seção:
+
+A. Autenticação:
+
+Login: Campos Identificador Principal, Senha. Chamada ao endpoint POST /api/auth/login. Tratamento de erro (credenciais inválidas). Armazenamento seguro de token JWT/sessão. Opção "Lembrar-me". Social Login (Google, Twitch) - Implementar fluxo OAuth 2.0 completo no frontend/backend.
+
+Registro: Campos Identificador, Senha (com validação de força), Confirmação, Data Nasc.. Checkboxes Termos/Privacidade. Chamada ao endpoint POST /api/auth/register. Tratamento de erros (identificador já existe, senhas não conferem).
+
+Esqueci Senha: Campo de entrada. Chamada ao endpoint POST /api/auth/forgot-password. Exibir mensagem de sucesso/erro.
+
+B. Home (Painel FURIOSO):
+
+Boas-Vindas: Exibir nome (GET /api/users/me/profile).
+
+Saldo Coins: Exibir valor (GET /api/users/me/coin-balance). Botão linka para Histórico na Loja.
+
+Próxima Partida: Buscar dados (GET /api/matches?status=upcoming&limit=1). Link para Agenda.
+
+Ao Vivo Agora: Buscar dados (GET /api/streams?status=live&limit=3). Link para Seção Ao Vivo.
+
+Últimas Notícias: Buscar dados (GET /api/content/news?limit=3). Link para Central de Conteúdo.
+
+Ações Rápidas: Lógica condicional baseada no estado do usuário (GET /api/users/me/profile, GET /api/users/me/kyc-status, GET /api/surveys?status=active&responded=false).
+
+C. Meu QG (Perfil Completo):
+
+Estrutura: Abas (Visão Geral, Dados Pessoais, Segurança & Conexões, Preferências, Histórico). Carregar dados iniciais (GET /api/users/me/profile, GET /api/users/me/social-links, etc.).
+
+Visão Geral: Exibir foto (com upload/crop -> POST /api/users/me/avatar), nome, status KYC (GET /api/users/me/kyc-status), saldo coins.
+
+Dados Pessoais: Formulário vinculado aos dados de user_profiles. Botão "Salvar" chama PUT /api/users/me/profile. Validação de campos no frontend e backend. Tratamento seguro de CPF (exibição mascarada, envio seguro).
+
+Segurança & Conexões:
+
+KYC: Exibir status (GET /api/users/me/kyc-status). Botão "Iniciar Verificação" chama POST /api/kyc/start (backend lida com provedor). Frontend precisa lidar com possíveis redirecionamentos ou widgets do provedor KYC e exibir atualizações de status (via polling ou WebSocket).
+
+Contas Sociais: Listar plataformas. Para cada, exibir status (GET /api/users/me/social-links). Botão "Conectar" inicia fluxo OAuth 2.0 (backend lida com callback e troca de token). Botão "Desconectar" chama DELETE /api/users/me/social-links/{platform}.
+
+Perfis E-sports: Input URL + Botão "Adicionar" (POST /api/users/me/esports-profiles, backend inicia validação). Lista de perfis (GET /api/users/me/esports-profiles) com URL, status (backend atualiza após validação), botão "Remover" (DELETE /api/users/me/esports-profiles/{id}).
+
+Senha: Botão "Alterar Senha" abre formulário que chama PUT /api/users/me/password.
+
+D. Loja FURIOSA (Coins & Recompensas):
+
+Navegação: Abas Loja/Meus Resgates. Saldo visível.
+
+Loja: Buscar itens (GET /api/shop/items com filtros/paginação). Exibir catálogo. Busca (GET /api/shop/items?search=...). Detalhe do Item (GET /api/shop/items/{id}). Botão "Resgatar" desabilitado se saldo < custo.
+
+Fluxo Resgate: Modal de confirmação. Botão "Confirmar" chama POST /api/redemptions (backend verifica saldo, deduz coins, cria ordem). Exibir sucesso/erro.
+
+Meus Resgates: Buscar pedidos (GET /api/users/me/redemptions). Exibir lista com status e detalhes.
+
+E. Central de Conteúdo:
+
+Feed: Buscar notícias/artigos (GET /api/content/news com filtros/paginação). Exibir cards.
+
+Página de Conteúdo: Buscar conteúdo específico (GET /api/content/news/{slug_or_id}). Exibir. Botões de compartilhamento (usar APIs de compartilhamento do navegador/libs JS).
+
+F. Agenda & Resultados:
+
+Visualização: Buscar partidas (GET /api/matches com filtros de status/jogo/time). Exibir em lista/calendário.
+
+Detalhes: Link externo ou (futuramente) modal/página com mais detalhes (GET /api/matches/{id}). Botão "Adicionar ao Calendário" (gerar .ics no frontend/backend).
+
+G. Ao Vivo:
+
+Grid: Buscar streams ativas (GET /api/streams?status=live). Exibir cards com dados (título, jogo, viewers - via API Twitch/etc. chamada pelo backend).
+
+Ação: Link externo ou Player Embedado (requer SDKs/iframes do Twitch/YouTube).
+
+H. Pesquisas & Enquetes:
+
+Lista Ativas: Buscar pesquisas (GET /api/surveys?status=active&responded=false). Exibir título, recompensa. Botão "Responder".
+
+Interface Resposta: Buscar perguntas (GET /api/surveys/{id}/questions). Apresentar formulário dinâmico. Botão "Enviar" chama POST /api/surveys/{id}/responses.
+
+Respondidas: Buscar respostas (GET /api/users/me/survey-responses). Exibir lista.
+
+I. Configurações:
+
+Preferências: Carregar (GET /api/users/me/preferences), Salvar (PUT /api/users/me/preferences).
+
+Links: Para edição de perfil, alteração de senha, política de privacidade, termos.
+
+Excluir Conta: Botão chama DELETE /api/users/me (requer confirmação forte, backend lida com exclusão/anonimização).
+
+Logout: Botão limpa token/sessão do cliente e chama POST /api/auth/logout (backend invalida token se necessário).
+
+4. Especificação Detalhada do Backend (API e Serviços)
+
+Framework: Node.js (Express/NestJS) ou Python (Django/Flask) - Escolha deve ser consistente.
+
+API: RESTful ou GraphQL. Documentação via Swagger/OpenAPI obrigatória. Versionamento da API (ex: /api/v1/...).
+
+Serviços Principais (Lógica de Negócios):
+
+Auth Service: Registro, Login (com hash bcrypt/argon2), Geração/Validação JWT, Refresh Tokens, Fluxo "Esqueci Senha" (geração de token seguro, envio de email/SMS - requer integração com serviço de envio), Gerenciamento Social Login (Callbacks OAuth, criação/vinculação de usuário).
+
+User Service: CRUD para users, user_profiles, user_preferences. Gerenciamento de avatar (upload para S3/similar, atualização do link no DB). Lógica para exclusão/anonimização de usuário.
+
+KYC Service: Orquestração do fluxo com o provedor terceiro. Endpoints para iniciar verificação, receber callbacks/webhooks do provedor (com validação de assinatura), atualizar status em kyc_verifications, notificar usuário (via WebSocket ou outro meio).
+
+Social Link Service: Gerenciamento do fluxo OAuth para cada plataforma. Armazenamento seguro e criptografado de tokens. Lógica para usar tokens para buscar dados das APIs sociais (com tratamento de erro, limites de taxa, refresh token).
+
+Esports Profile Service: Receber URL, disparar job assíncrono para validação (scraping/análise LLM), atualizar status em esports_profile_links.
+
+Coin Service: Gerenciamento de coin_balances e coin_transactions. Lógica transacional para garantir consistência (adição e dedução devem ser atômicas com a ação que as gerou). Regras de negócio para ganho de coins.
+
+Shop & Redemption Service: CRUD para shop_items. Lógica de resgate (verificar saldo, verificar estoque, deduzir coins, criar redemption_orders, decrementar estoque se físico).
+
+Content Service: CRUD para Notícias/Artigos (se gerenciado internamente) ou agregação de fontes externas (RSS, APIs).
+
+Match & Stream Service: Integração com APIs de e-sports/streaming para buscar agenda, resultados, status ao vivo. Implementar caching robusto.
+
+Survey Service: CRUD para surveys, survey_questions. Lógica para receber survey_responses e validar.
+
+Notification Service (Opcional): Lógica para enviar notificações (Push via PWA, Email, SMS - requer integrações) com base nas preferências do usuário e eventos da plataforma.
+
+Admin Service: Endpoints específicos para o Admin Panel (com autorização baseada em roles).
+
+Analytics Service (Background): Job assíncrono para processar chatbot_interactions (se houver), survey_responses, dados de perfil anonimizados para gerar insights agregados (para Admin Panel).
+
+Segurança Backend: Autenticação via JWT/Sessão em todos os endpoints protegidos. Autorização baseada em roles (usuário comum vs. admin). Input validation rigorosa em todos os endpoints. Proteção contra OWASP Top 10 (SQL Injection, XSS, CSRF - se aplicável). Rate limiting. CORS configurado corretamente. Logging de segurança.
+
+Tratamento de Erros: Respostas de API padronizadas para erros (ex: 400 Bad Request, 401 Unauthorized, 403 Forbidden, 404 Not Found, 500 Internal Server Error) com mensagens claras.
+
+5. Especificação Detalhada do Banco de Dados (Esquema Relacional)
+
+(Incorporar aqui o esquema completo e detalhado da tabela users até a user_preferences e as tabelas de Survey, conforme descrito na resposta anterior, incluindo nomes de tabelas, colunas, tipos de dados, constraints PK/FK, índices e relacionamentos)
+
+-- SCHEMA COMPLETO DO BANCO DE DADOS QG FURIOSO --
+
+-- Tabela users
+CREATE TABLE users (
+    id BIGSERIAL PRIMARY KEY,
+    public_id UUID NOT NULL UNIQUE DEFAULT gen_random_uuid(),
+    primary_identity VARCHAR(255) NOT NULL UNIQUE,
+    identity_type VARCHAR(10) NOT NULL CHECK (identity_type IN ('email', 'phone')),
+    password_hash VARCHAR(255) NOT NULL,
+    status VARCHAR(20) NOT NULL DEFAULT 'pending_verification' CHECK (status IN ('active', 'inactive', 'suspended', 'pending_verification')),
+    last_login_at TIMESTAMPTZ NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+CREATE INDEX idx_users_primary_identity ON users(primary_identity);
+CREATE INDEX idx_users_public_id ON users(public_id);
+CREATE INDEX idx_users_status ON users(status);
+
+-- Tabela user_profiles
+CREATE TABLE user_profiles (
+    user_id BIGINT PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+    first_name VARCHAR(100) NULL,
+    last_name VARCHAR(100) NULL,
+    birth_date DATE NULL,
+    cpf_encrypted TEXT NULL, -- Usar extensão pgcrypto ou similar para criptografia
+    address_street VARCHAR(255) NULL,
+    address_number VARCHAR(20) NULL,
+    address_complement VARCHAR(100) NULL,
+    address_neighborhood VARCHAR(100) NULL,
+    address_city VARCHAR(100) NULL,
+    address_state VARCHAR(2) NULL,
+    address_zip_code VARCHAR(10) NULL,
+    interests JSONB NULL,
+    activities_events TEXT NULL,
+    purchase_history_summary TEXT NULL,
+    profile_completed_at TIMESTAMPTZ NULL,
+    avatar_url TEXT NULL, -- Adicionado para foto de perfil
+    created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Tabela kyc_verifications
+CREATE TABLE kyc_verifications (
+    id BIGSERIAL PRIMARY KEY,
+    user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    provider VARCHAR(50) NOT NULL,
+    provider_reference_id VARCHAR(255) NULL UNIQUE,
+    status VARCHAR(20) NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'approved', 'rejected', 'failed', 'expired')),
+    rejection_reason_code VARCHAR(100) NULL,
+    rejection_reason_message TEXT NULL,
+    requested_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    completed_at TIMESTAMPTZ NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+CREATE INDEX idx_kyc_user_id ON kyc_verifications(user_id);
+CREATE INDEX idx_kyc_provider_ref ON kyc_verifications(provider_reference_id);
+CREATE INDEX idx_kyc_status ON kyc_verifications(status);
+
+-- Tabela social_account_links
+CREATE TABLE social_account_links (
+    id BIGSERIAL PRIMARY KEY,
+    user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    platform VARCHAR(30) NOT NULL CHECK (platform IN ('twitter', 'twitch', 'instagram', 'facebook', 'youtube', 'discord', 'google')), -- Adicionado Google
+    platform_user_id VARCHAR(100) NOT NULL,
+    platform_username VARCHAR(100) NULL,
+    access_token_encrypted TEXT NOT NULL,
+    refresh_token_encrypted TEXT NULL,
+    token_expires_at TIMESTAMPTZ NULL,
+    scopes TEXT NULL,
+    linked_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    last_sync_status VARCHAR(15) NULL CHECK (last_sync_status IN ('success', 'failed', 'pending')),
+    last_sync_at TIMESTAMPTZ NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (user_id, platform)
+);
+CREATE INDEX idx_social_user_id ON social_account_links(user_id);
+CREATE INDEX idx_social_platform ON social_account_links(platform);
+CREATE INDEX idx_social_platform_user_id ON social_account_links(platform_user_id);
+
+-- Tabela esports_profile_links
+CREATE TABLE esports_profile_links (
+    id BIGSERIAL PRIMARY KEY,
+    user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    platform_name VARCHAR(50) NOT NULL,
+    profile_url TEXT NOT NULL,
+    validation_status VARCHAR(20) NOT NULL DEFAULT 'pending' CHECK (validation_status IN ('pending', 'verified', 'irrelevant', 'failed_validation', 'unreachable')),
+    validation_method VARCHAR(20) NULL CHECK (validation_method IN ('keyword_check', 'scraping_analysis', 'llm_assessment')),
+    validation_details TEXT NULL,
+    submitted_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    last_validated_at TIMESTAMPTZ NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (user_id, profile_url)
+);
+CREATE INDEX idx_esports_user_id ON esports_profile_links(user_id);
+CREATE INDEX idx_esports_validation_status ON esports_profile_links(validation_status);
+
+-- Tabela coin_balances
+CREATE TABLE coin_balances (
+    user_id BIGINT PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+    balance BIGINT NOT NULL DEFAULT 0 CHECK (balance >= 0),
+    last_updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Tabela coin_transactions
+CREATE TABLE coin_transactions (
+    id BIGSERIAL PRIMARY KEY,
+    user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE RESTRICT,
+    transaction_type VARCHAR(50) NOT NULL,
+    amount BIGINT NOT NULL,
+    balance_before BIGINT NOT NULL,
+    balance_after BIGINT NOT NULL,
+    description TEXT NULL,
+    related_entity_type VARCHAR(50) NULL,
+    related_entity_id BIGINT NULL,
+    transaction_timestamp TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+CREATE INDEX idx_cointrans_user_id ON coin_transactions(user_id);
+CREATE INDEX idx_cointrans_type ON coin_transactions(transaction_type);
+CREATE INDEX idx_cointrans_timestamp ON coin_transactions(transaction_timestamp);
+CREATE INDEX idx_cointrans_related ON coin_transactions(related_entity_type, related_entity_id);
+
+-- Tabela shop_items
+CREATE TABLE shop_items (
+    id BIGSERIAL PRIMARY KEY,
+    sku VARCHAR(100) NULL UNIQUE,
+    name VARCHAR(255) NOT NULL,
+    description TEXT NULL,
+    image_url TEXT NULL,
+    cost_in_coins BIGINT NOT NULL CHECK (cost_in_coins > 0),
+    item_type VARCHAR(30) NOT NULL CHECK (item_type IN ('digital_voucher', 'physical_merch', 'exclusive_content', 'partner_offer')),
+    stock_quantity INTEGER NULL CHECK (stock_quantity >= 0),
+    requires_shipping BOOLEAN NOT NULL DEFAULT false,
+    is_active BOOLEAN NOT NULL DEFAULT true,
+    available_from TIMESTAMPTZ NULL,
+    available_until TIMESTAMPTZ NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+CREATE INDEX idx_shopitems_sku ON shop_items(sku);
+CREATE INDEX idx_shopitems_type ON shop_items(item_type);
+CREATE INDEX idx_shopitems_active ON shop_items(is_active);
+
+-- Tabela redemption_orders
+CREATE TABLE redemption_orders (
+    id BIGSERIAL PRIMARY KEY,
+    public_order_id UUID NOT NULL UNIQUE DEFAULT gen_random_uuid(),
+    user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE RESTRICT,
+    shop_item_id BIGINT NOT NULL REFERENCES shop_items(id) ON DELETE RESTRICT,
+    coins_spent BIGINT NOT NULL,
+    status VARCHAR(30) NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'processing', 'shipped', 'delivered', 'cancelled_user', 'cancelled_admin', 'failed')),
+    order_timestamp TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    shipping_address_snapshot JSONB NULL,
+    tracking_number VARCHAR(100) NULL,
+    notes TEXT NULL,
+    processed_by_admin_user_id BIGINT NULL REFERENCES users(id) ON DELETE SET NULL, -- Referencia users, admin logic no app
+    processed_at TIMESTAMPTZ NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+CREATE INDEX idx_redemptions_user_id ON redemption_orders(user_id);
+CREATE INDEX idx_redemptions_item_id ON redemption_orders(shop_item_id);
+CREATE INDEX idx_redemptions_status ON redemption_orders(status);
+CREATE INDEX idx_redemptions_processed_by ON redemption_orders(processed_by_admin_user_id);
+
+-- Tabela chatbot_interactions (Manter se o chatbot for integrado ou planejado)
+-- ... (schema da resposta anterior) ...
+
+-- Tabela admin_roles (Simplificado, pode ser coluna em users ou tabela separada)
+CREATE TABLE admin_roles (
+    user_id BIGINT PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+    role VARCHAR(30) NOT NULL CHECK (role IN ('super_admin', 'shop_manager', 'content_editor', 'support_agent', 'analyst')),
+    is_active BOOLEAN NOT NULL DEFAULT true,
+    granted_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    granted_by_user_id BIGINT NULL REFERENCES users(id) ON DELETE SET NULL,
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Tabela admin_action_logs
+-- ... (schema da resposta anterior, ajustando FK para users.id ou admin_roles.user_id) ...
+
+-- Tabela user_preferences
+CREATE TABLE user_preferences (
+    user_id BIGINT PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+    preferred_language VARCHAR(5) NOT NULL DEFAULT 'pt-BR',
+    preferred_games JSONB NULL,
+    notification_prefs JSONB NOT NULL DEFAULT '{"live_game_start": true, "news": true, "promotions": false, "coin_earnings": true, "new_surveys": true }',
+    created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Tabelas de Surveys
+CREATE TABLE surveys (
+    id BIGSERIAL PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    description TEXT NULL,
+    created_by_admin_user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE RESTRICT,
+    status VARCHAR(15) NOT NULL DEFAULT 'draft' CHECK (status IN ('draft', 'active', 'closed')),
+    start_date TIMESTAMPTZ NULL,
+    end_date TIMESTAMPTZ NULL,
+    reward_coins INTEGER NOT NULL DEFAULT 0,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+CREATE INDEX idx_surveys_status ON surveys(status);
+
+CREATE TABLE survey_questions (
+    id BIGSERIAL PRIMARY KEY,
+    survey_id BIGINT NOT NULL REFERENCES surveys(id) ON DELETE CASCADE,
+    question_text TEXT NOT NULL,
+    question_type VARCHAR(30) NOT NULL CHECK (question_type IN ('multiple_choice_single', 'multiple_choice_multiple', 'text', 'rating_scale_5', 'rating_scale_10')),
+    options JSONB NULL, -- Para multiple_choice
+    order_index INTEGER NOT NULL DEFAULT 0,
+    is_required BOOLEAN NOT NULL DEFAULT false,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+CREATE INDEX idx_surveyq_survey_id ON survey_questions(survey_id);
+
+CREATE TABLE survey_responses (
+    id BIGSERIAL PRIMARY KEY,
+    survey_question_id BIGINT NOT NULL REFERENCES survey_questions(id) ON DELETE CASCADE,
+    user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    response_text TEXT NULL, -- Para tipo 'text'
+    selected_options JSONB NULL, -- Para tipo 'multiple_choice'
+    rating_value INTEGER NULL, -- Para tipo 'rating_scale'
+    responded_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (survey_question_id, user_id) -- Usuário responde cada pergunta uma vez
+);
+CREATE INDEX idx_surveyresp_user_id ON survey_responses(user_id);
+CREATE INDEX idx_surveyresp_question_id ON survey_responses(survey_question_id);
+
+-- FIM DO SCHEMA --
+Use code with caution.
+SQL
+6. Contexto de Ferramentas Externas e APIs (Necessidades Reais)
+
+Plataforma de Hospedagem: Cloud (AWS, GCP, Azure) ou PaaS (Render, Heroku).
+
+Banco de Dados: PostgreSQL (Hospedado ou Gerenciado).
+
+Cache: Redis (Hospedado ou Gerenciado).
+
+API de E-sports: PandaScore, Strafe API, Abios, etc. (Requer subscrição/chave de API).
+
+Provedor de KYC: Unico Check, idwall, Sumsub, Veriff, etc. (Requer contrato/API Keys/SDKs).
+
+Plataformas de Streaming: Twitch API, YouTube Data API (Requer chaves de API, consentimento OAuth para algumas ações).
+
+Plataformas Sociais (Login/Dados): Google Identity Platform, Twitter API, Facebook Login, etc. (Requer setup de App, chaves, tratamento de OAuth).
+
+LLM API (Para Chatbot/Validação IA): Google Gemini API / Vertex AI (Requer conta Google Cloud, API Key).
+
+Serviço de Envio de Email/SMS: SendGrid, AWS SES, Twilio (Para confirmação de conta, recuperação de senha, notificações).
+
+Serviço de Armazenamento de Arquivos: AWS S3, Google Cloud Storage (Para avatares, possivelmente documentos KYC temporários).
+
+(Opcional) Ferramenta de APM: Datadog, New Relic, Sentry (Para monitoramento de performance e erros).
+
+(Opcional) Message Queue: RabbitMQ, Kafka, AWS SQS (Para jobs assíncronos como validação de perfil, processamento de analytics).
+
+7. Requisitos Não Funcionais Chave
+
+Performance: Tempo de carregamento rápido do PWA (LCP, FID, CLS), respostas rápidas da API (<500ms para a maioria das requisições).
+
+Escalabilidade: Arquitetura capaz de lidar com aumento de usuários e dados. Backend deve ser escalável horizontalmente (stateless onde possível).
+
+Segurança: Implementação de todas as práticas do OWASP Top 10, criptografia de dados sensíveis em trânsito e repouso, gerenciamento seguro de segredos (API Keys), Rate Limiting, WAF (Web Application Firewall). Conformidade com LGPD.
+
+Confiabilidade: Alta disponibilidade (uptime > 99.9%), backups regulares do banco de dados, tratamento de erros robusto.
+
+Manutenibilidade: Código limpo, bem documentado, testes automatizados (unitários, integração, e2e), CI/CD pipeline.
+
+Acessibilidade: Conformidade com WCAG 2.1 Nível AA no PWA.
+
+Observabilidade: Logging estruturado em todos os serviços, monitoramento de métricas chave (CPU, memória, latência API, taxa de erro), tracing distribuído (se microserviços).
+
+8. Entregável Esperado (Full-Stack)
+
+Código Fonte Completo: Repositórios Git organizados para Frontend (PWA), Backend (API/Serviços).
+
+PWA Funcional: Construído e otimizado, comunicando-se com o Backend API real.
+
+Backend API Funcional: Todos os endpoints implementados, documentados (Swagger/OpenAPI) e testados. Lógica de negócios implementada.
+
+Banco de Dados: Scripts de migração para criar o schema completo.
+
+Integrações Configuradas: Conexão funcional com serviços externos essenciais (em ambiente de desenvolvimento/sandbox, com chaves/contas de teste).
+
+Documentação Técnica: READMEs detalhados em cada repositório, explicando arquitetura, setup, variáveis de ambiente, como rodar testes, decisões de design importantes, guia de contribuição (se aplicável).
+
+(Ideal) Configuração de Deploy: Arquivos de configuração para deploy (Dockerfile, docker-compose.yml, scripts de deploy para a plataforma de hospedagem escolhida).
+
+(Ideal) Pipeline CI/CD: Configuração básica para testes automatizados e deploy em ambiente de staging/produção.
