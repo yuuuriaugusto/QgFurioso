@@ -7,6 +7,7 @@ import { fromZodError } from "zod-validation-error";
 import { insertUserProfileSchema, insertUserPreferencesSchema, insertSurveyResponseSchema } from "./schema";
 import analyticsRouter from "./analytics-routes";
 import auditRouter from "./audit-routes";
+import wsTestRouter from "./ws-test-routes";
 import { initializeWebSocketServer, EventType } from "./websocket-server";
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -459,6 +460,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Montar as rotas de auditoria em /api/admin/audit
   app.use('/api/admin/audit', isAdmin, auditRouter);
+  
+  // Montar as rotas de teste de WebSocket - apenas em ambiente de desenvolvimento
+  if (process.env.NODE_ENV === "development") {
+    app.use('/api/ws-test', wsTestRouter);
+    console.log('Rotas de teste de WebSocket ativadas');
+  }
   
   // Initialize HTTP server
   const httpServer = createServer(app);
