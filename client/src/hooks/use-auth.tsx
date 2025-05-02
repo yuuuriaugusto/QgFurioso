@@ -4,9 +4,26 @@ import {
   useMutation,
   UseMutationResult,
 } from "@tanstack/react-query";
-import { User, InsertUser } from "@shared/schema";
+import { 
+  User as BaseUser, 
+  InsertUser, 
+  UserProfile,
+  CoinBalance,
+  UserPreferences,
+  SocialLink,
+  EsportsProfileLink
+} from "@shared/schema";
 import { getQueryFn, apiRequest, queryClient } from "../lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+
+// Extend User type to include related data
+interface User extends BaseUser {
+  profile?: UserProfile;
+  coinBalance?: CoinBalance;
+  preferences?: UserPreferences;
+  socialLinks?: SocialLink[];
+  esportsProfiles?: EsportsProfileLink[];
+}
 
 type AuthContextType = {
   user: User | null;
