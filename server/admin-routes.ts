@@ -3,6 +3,7 @@ import { scrypt, randomBytes, timingSafeEqual } from 'crypto';
 import { promisify } from 'util';
 import { storage } from './storage';
 import { adminLoginSchema, AdminLoginData, AdminUser, AdminRole } from '@shared/schema';
+import { hashPassword } from './auth';
 
 const scryptAsync = promisify(scrypt);
 
