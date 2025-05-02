@@ -131,6 +131,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json(socialLinks);
   });
   
+  // WebSocket authentication route
+  app.post("/api/ws/auth", requireAuth, (req, res) => {
+    // Se o usuário está autenticado, gerar token para WS
+    // Na prática, estamos apenas retornando sucesso, pois a autenticação
+    // já está sendo feita pelo cookie de sessão
+    res.json({ 
+      success: true, 
+      message: "WebSocket authentication successful" 
+    });
+  });
+  
   // Esports Profiles routes
   app.get("/api/users/me/esports-profiles", requireAuth, async (req, res) => {
     const userId = req.user?.id;
@@ -438,6 +449,85 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Initialize HTTP server
   const httpServer = createServer(app);
+  
+  // Initialize WebSocket server on a distinct path to avoid conflicts with Vite's HMR
+  const wss = new WebSocketServer({ server: httpServer, path: '/ws' });
+  
+  // WebSocket connection handling
+  wss.on('connection', (ws) => {
+    console.log('WebSocket client connected');
+    
+    // Send welcome message
+    ws.send(JSON.stringify({
+      type: 'connection_established',
+      payload: { message: 'Conexão WebSocket estabelecida com QG FURIOSO' },
+      timestamp: Date.now()
+    }));
+    
+    // Handle messages from clients
+    ws.on('message', (message) => {
+      try {
+        const data = JSON.parse(message.toString());
+        console.log('Received message:', data);
+        
+        // Handle different message types
+        switch (data.type) {
+          case 'ping':
+            ws.send(JSON.stringify({
+              type: 'pong',
+              payload: { timestamp: Date.now() },
+              timestamp: Date.now()
+            }));
+            break;
+          
+          case 'authenticate':
+            // In a real app, we would validate the session/token here
+            ws.send(JSON.stringify({
+              type: 'auth_success',
+              payload: { message: 'Autenticado com sucesso' },
+              timestamp: Date.now()
+            }));
+            break;
+            
+          default:
+            console.log(`Unhandled message type: ${data.type}`);
+        }
+      } catch (error) {
+        console.error('Error processing WebSocket message:', error);
+      }
+    });
+    
+    // Handle disconnection
+    ws.on('close', () => {
+      console.log('WebSocket client disconnected');
+    });
+  });
+  
+  // Store wss to make it accessible from other modules
+  global.webSocketServer = wss;
+  
+  // Function to broadcast a message to all connected clients
+  const broadcastMessage = (type: string, payload: any) => {
+    if (!wss) return;
+    
+    const message = JSON.stringify({
+      type,
+      payload,
+      timestamp: Date.now()
+    });
+    
+    wss.clients.forEach((client) => {
+      if (client.readyState === WebSocket.OPEN) {
+        client.send(message);
+      }
+    });
+  };
+  
+  // Helper function to get WebSocket manager for other modules
+  global.getWebSocketManager = () => ({
+    broadcast: broadcastMessage,
+    server: wss
+  });
   
   return httpServer;
 }

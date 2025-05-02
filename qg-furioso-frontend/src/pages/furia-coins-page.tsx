@@ -15,11 +15,12 @@ export default function FuriaCoinsPage() {
 
   // Fetch coin transactions
   const { data: transactions, isLoading: transactionsLoading } = useQuery({
-    queryKey: ["/api/coins/transactions"],
+    queryKey: ["/api/users/me/coin-transactions"],
     queryFn: async () => {
-      const res = await fetch("/api/coins/transactions");
+      const res = await fetch("/api/users/me/coin-transactions");
       if (!res.ok) throw new Error("Failed to fetch transactions");
-      return res.json();
+      const data = await res.json();
+      return data.data; // Extrair array de transactions do objeto retornado
     },
     enabled: !!user,
   });
@@ -36,9 +37,9 @@ export default function FuriaCoinsPage() {
 
   // Fetch redemption history
   const { data: redemptions, isLoading: redemptionsLoading } = useQuery({
-    queryKey: ["/api/shop/redemptions"],
+    queryKey: ["/api/users/me/redemptions"],
     queryFn: async () => {
-      const res = await fetch("/api/shop/redemptions");
+      const res = await fetch("/api/users/me/redemptions");
       if (!res.ok) throw new Error("Failed to fetch redemptions");
       return res.json();
     },
