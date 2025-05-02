@@ -1248,6 +1248,118 @@ export class MemStorage implements IStorage {
     this.adminUsers.set(id, updatedAdmin);
     return updatedAdmin;
   }
+
+  async getDashboardMetrics(): Promise<{
+    totalUsers: number;
+    activeUsers: {
+      last24h: number;
+      last7d: number;
+      last30d: number;
+    };
+    newRegistrations: {
+      last24h: number;
+      last7d: number;
+      last30d: number;
+    };
+    totalCoins: {
+      inCirculation: number;
+      earned: number;
+      spent: number;
+    };
+    pendingRedemptions: number;
+  }> {
+    // Calcular datas de referência
+    const now = new Date();
+    const oneDayAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+    const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+    const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+    
+    // Contar usuários ativos por último login
+    let activeUsersLast24h = 0;
+    let activeUsersLast7d = 0;
+    let activeUsersLast30d = 0;
+    
+    // Contar novos registros por data de criação
+    let newRegistrationsLast24h = 0;
+    let newRegistrationsLast7d = 0;
+    let newRegistrationsLast30d = 0;
+    
+    // Percorrer todos os usuários para contagens
+    for (const user of this.users.values()) {
+      // Contar usuários ativos
+      if (user.lastLoginAt) {
+        if (user.lastLoginAt >= oneDayAgo) {
+          activeUsersLast24h++;
+          activeUsersLast7d++;
+          activeUsersLast30d++;
+        } else if (user.lastLoginAt >= sevenDaysAgo) {
+          activeUsersLast7d++;
+          activeUsersLast30d++;
+        } else if (user.lastLoginAt >= thirtyDaysAgo) {
+          activeUsersLast30d++;
+        }
+      }
+      
+      // Contar novos registros
+      if (user.createdAt >= oneDayAgo) {
+        newRegistrationsLast24h++;
+        newRegistrationsLast7d++;
+        newRegistrationsLast30d++;
+      } else if (user.createdAt >= sevenDaysAgo) {
+        newRegistrationsLast7d++;
+        newRegistrationsLast30d++;
+      } else if (user.createdAt >= thirtyDaysAgo) {
+        newRegistrationsLast30d++;
+      }
+    }
+    
+    // Calcular totais de moedas
+    let totalCoinsInCirculation = 0;
+    let totalCoinsEarned = 0;
+    let totalCoinsSpent = 0;
+    
+    // Somar os saldos das moedas em circulação
+    for (const balance of this.coinBalances.values()) {
+      totalCoinsInCirculation += balance.balance;
+    }
+    
+    // Analisar transações para totais de moedas ganhas/gastas
+    for (const transaction of this.coinTransactions.values()) {
+      if (transaction.transactionType === 'earning') {
+        totalCoinsEarned += transaction.amount;
+      } else if (transaction.transactionType === 'spending') {
+        totalCoinsSpent += transaction.amount;
+      }
+    }
+    
+    // Contar resgates pendentes
+    let pendingRedemptions = 0;
+    for (const order of this.redemptionOrders.values()) {
+      if (order.status === 'pending') {
+        pendingRedemptions++;
+      }
+    }
+    
+    return {
+      totalUsers: this.users.size,
+      activeUsers: {
+        last24h: activeUsersLast24h,
+        last7d: activeUsersLast7d,
+        last30d: activeUsersLast30d
+      },
+      newRegistrations: {
+        last24h: newRegistrationsLast24h,
+        last7d: newRegistrationsLast7d,
+        last30d: newRegistrationsLast30d
+      },
+      totalCoins: {
+        inCirculation: totalCoinsInCirculation,
+        earned: totalCoinsEarned,
+        spent: totalCoinsSpent
+      },
+      pendingRedemptions
+    };
+  }
 }
 
 // Usando a implementação de memória para desenvolvimento
