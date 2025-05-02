@@ -3,11 +3,12 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useAuth } from "@/hooks/use-auth";
-import { insertUserSchema } from "../shared/schema";
+import { insertUserSchema } from "@shared/schema";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Loader2 } from "lucide-react";
 
 // Login form schema
@@ -24,6 +25,9 @@ const registerSchema = insertUserSchema.extend({
     .min(8, "Senha deve ter pelo menos 8 caracteres")
     .max(100, "Senha deve ter no máximo 100 caracteres"),
   confirmPassword: z.string(),
+  termsAccepted: z.boolean().default(false).refine(val => val === true, {
+    message: "Você precisa aceitar os termos de uso e política de privacidade."
+  }),
 }).refine(data => data.password === data.confirmPassword, {
   message: "As senhas não coincidem",
   path: ["confirmPassword"],
@@ -53,6 +57,7 @@ export function AuthForms() {
       password: "",
       confirmPassword: "",
       status: "active",
+      termsAccepted: false,
     },
   });
 
