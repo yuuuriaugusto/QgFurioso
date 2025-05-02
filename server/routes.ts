@@ -214,6 +214,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json(redemptions);
   });
   
+  // Teste de WebSocket - envia uma notificação para todos os clientes conectados
+  app.post("/api/broadcast-test", requireAuth, (req, res) => {
+    try {
+      const { type, payload } = req.body;
+      
+      if (!type) {
+        return res.status(400).json({ message: "O tipo de mensagem é obrigatório" });
+      }
+      
+      // Obter o gerenciador WebSocket
+      const wsManager = global.getWebSocketManager();
+      
+      // Enviar mensagem para todos os clientes conectados
+      wsManager.broadcast(type, payload || {});
+      
+      res.json({ 
+        success: true, 
+        message: `Mensagem do tipo '${type}' enviada para ${wsManager.server.clients.size} cliente(s)` 
+      });
+    } catch (error) {
+      console.error("Erro ao enviar mensagem broadcast:", error);
+      res.status(500).json({ message: "Erro ao enviar mensagem broadcast" });
+    }
+  });
+  
   app.post("/api/redemptions", requireAuth, async (req, res) => {
     try {
       const userId = req.user?.id;

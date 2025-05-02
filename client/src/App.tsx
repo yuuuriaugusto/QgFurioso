@@ -4,6 +4,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/hooks/use-auth";
+import { ReactNode, useEffect } from "react";
 import { ProtectedRoute } from "@/lib/protected-route";
 import NotFound from "@/pages/not-found";
 import AuthPage from "@/pages/auth-page";
@@ -16,7 +17,11 @@ import LivePage from "@/pages/live-page";
 import SurveysPage from "@/pages/surveys-page";
 import SettingsPage from "@/pages/settings-page";
 import BottomNav from "@/components/layout/bottom-nav";
-import { useEffect } from "react";
+
+// WebSocketProvider fallback até que o provider real seja configurado
+const WebSocketProvider = ({ children }: { children: ReactNode }) => {
+  return <>{children}</>;
+};
 
 function Router() {
   return (
@@ -59,10 +64,12 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <TooltipProvider>
-          <Toaster />
-          <AppContent />
-        </TooltipProvider>
+        <WebSocketProvider>
+          <TooltipProvider>
+            <Toaster />
+            <AppContent />
+          </TooltipProvider>
+        </WebSocketProvider>
       </AuthProvider>
     </QueryClientProvider>
   );
