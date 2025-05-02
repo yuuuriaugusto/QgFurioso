@@ -16,6 +16,7 @@ import SchedulePage from "@/pages/schedule-page";
 import LivePage from "@/pages/live-page";
 import SurveysPage from "@/pages/surveys-page";
 import SettingsPage from "@/pages/settings-page";
+// Remover a importação do WebSocketTestPage até configurar corretamente o WebSocketProvider
 import BottomNav from "@/components/layout/bottom-nav";
 
 // WebSocketProvider fallback até que o provider real seja configurado
