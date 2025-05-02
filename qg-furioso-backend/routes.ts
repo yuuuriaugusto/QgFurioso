@@ -102,6 +102,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json(preferences || {});
   });
   
+  // Coin routes
+  app.get("/api/coins/balance", requireAuth, async (req, res) => {
+    const userId = req.user?.id;
+    if (!userId) {
+      return res.status(401).json({ message: "Usuário não autenticado" });
+    }
+    
+    const balance = await storage.getCoinBalance(userId);
+    res.json(balance || { balance: 0, lifetimeEarned: 0, lifetimeSpent: 0 });
+  });
+  
+  app.get("/api/coins/transactions", requireAuth, async (req, res) => {
+    const userId = req.user?.id;
+    if (!userId) {
+      return res.status(401).json({ message: "Usuário não autenticado" });
+    }
+    
+    const limit = req.query.limit ? parseInt(req.query.limit as string) : undefined;
+    const transactions = await storage.getCoinTransactions(userId, limit);
+    res.json(transactions);
+  });
+  
   app.put("/api/users/me/preferences", requireAuth, async (req, res) => {
     try {
       const userId = req.user?.id;
@@ -202,6 +224,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Redemption routes
   app.get("/api/users/me/redemptions", requireAuth, async (req, res) => {
     const userId = req.user?.id;
+    if (!userId) {
+      return res.status(401).json({ message: "Usuário não autenticado" });
+    }
+    const redemptions = await storage.getRedemptionOrders(userId);
+    res.json(redemptions);
+  });
+  
+  // Nova rota para exibir histórico de resgates de um usuário
+  app.get("/api/shop/redemptions", requireAuth, async (req, res) => {
+    const userId = req.user?.id;
+    if (!userId) {
+      return res.status(401).json({ message: "Usuário não autenticado" });
+    }
     const redemptions = await storage.getRedemptionOrders(userId);
     res.json(redemptions);
   });

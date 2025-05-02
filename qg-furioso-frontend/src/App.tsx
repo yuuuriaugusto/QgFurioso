@@ -43,6 +43,16 @@ function Router() {
   );
 }
 
+// Componente de loading para usar com Suspense
+const PageLoading = () => (
+  <div className="flex items-center justify-center min-h-screen">
+    <div className="flex flex-col items-center gap-4">
+      <Loader2 className="h-10 w-10 animate-spin text-primary" />
+      <p className="text-lg text-muted-foreground">Carregando...</p>
+    </div>
+  </div>
+);
+
 function AppContent() {
   const [location] = useLocation();
   
@@ -57,7 +67,9 @@ function AppContent() {
   
   return (
     <>
-      <Router />
+      <Suspense fallback={<PageLoading />}>
+        <Router />
+      </Suspense>
       {showBottomNav && <BottomNav />}
     </>
   );
