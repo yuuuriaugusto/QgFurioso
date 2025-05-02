@@ -1,9 +1,8 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useAuth } from "@/hooks/use-auth";
-import { insertUserSchema } from "../../../shared/schema";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -19,11 +18,14 @@ const loginSchema = z.object({
 
 type LoginFormValues = z.infer<typeof loginSchema>;
 
-// Registration form schema - extend the user insert schema
-const registerSchema = insertUserSchema.extend({
+// Registration form schema
+const registerSchema = z.object({
+  primaryIdentity: z.string().min(3, "Email deve ter pelo menos 3 caracteres"),
+  identityType: z.enum(["email", "phone"]).default("email"),
   password: z.string()
     .min(8, "Senha deve ter pelo menos 8 caracteres")
     .max(100, "Senha deve ter no máximo 100 caracteres"),
+  status: z.string().default("active"),
   confirmPassword: z.string(),
   termsAccepted: z.boolean().default(false).refine(val => val === true, {
     message: "Você precisa aceitar os termos de uso e política de privacidade."
@@ -70,6 +72,7 @@ export function AuthForms() {
   const onRegisterSubmit = (data: RegisterFormValues) => {
     // Remove confirmPassword as it's not part of the API
     const { confirmPassword, ...registerData } = data;
+    console.log("Registering with data:", registerData);
     registerMutation.mutate(registerData);
   };
 
@@ -227,25 +230,28 @@ export function AuthForms() {
               control={registerForm.control}
               name="termsAccepted"
               render={({ field }) => (
-                <FormItem className="flex flex-row items-start space-x-3 space-y-0 py-2">
+                <FormItem className="flex flex-row items-start space-x-3 space-y-0 pt-2">
                   <FormControl>
                     <Checkbox
                       checked={field.value}
                       onCheckedChange={field.onChange}
+                      id="terms"
                     />
                   </FormControl>
-                  <div className="space-y-1 leading-none">
-                    <FormLabel>
+                  <div className="leading-none">
+                    <FormLabel htmlFor="terms" className="text-sm font-medium">
                       Aceito os Termos de Uso e Política de Privacidade
                     </FormLabel>
                     <FormDescription className="text-xs">
-                      Ao criar uma conta, você concorda com os nossos Termos de Uso e Política de Privacidade.
+                      Ao criar uma conta, você concorda com os nossos <a href="#" className="text-primary hover:underline">Termos de Uso</a> e <a href="#" className="text-primary hover:underline">Política de Privacidade</a>.
                     </FormDescription>
                   </div>
-                  <FormMessage />
                 </FormItem>
               )}
             />
+            <FormMessage className="text-red-500">
+              {registerForm.formState.errors.termsAccepted && registerForm.formState.errors.termsAccepted.message}
+            </FormMessage>
             
             <Button 
               type="submit" 
