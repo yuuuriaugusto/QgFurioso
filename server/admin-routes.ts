@@ -4,6 +4,14 @@ import { promisify } from 'util';
 import { storage } from './storage';
 import { adminLoginSchema, AdminLoginData, AdminUser, AdminRole } from '@shared/schema';
 import { hashPassword } from './auth';
+import session from 'express-session';
+
+// Estender a interface Session para incluir adminId
+declare module 'express-session' {
+  interface SessionData {
+    adminId?: number;
+  }
+}
 
 const scryptAsync = promisify(scrypt);
 
@@ -91,8 +99,8 @@ adminRouter.post('/auth/login', async (req: Request, res: Response) => {
     const { passwordHash, ...adminData } = admin;
     
     res.status(200).json(adminData);
-  } catch (error) {
-    if (error.name === 'ZodError') {
+  } catch (error: any) {
+    if (error?.name === 'ZodError') {
       return res.status(400).json({ message: 'Dados de login inválidos', errors: error.errors });
     }
     console.error('Erro no login de admin:', error);
@@ -109,6 +117,10 @@ adminRouter.post('/auth/logout', (req: Request, res: Response) => {
 // Obter dados do administrador atual
 adminRouter.get('/auth/me', requireAdminAuth, async (req: Request, res: Response) => {
   try {
+    if (!req.session.adminId) {
+      return res.status(401).json({ message: 'Acesso não autorizado' });
+    }
+    
     const admin = await storage.getAdmin(req.session.adminId);
     
     if (!admin) {
@@ -120,7 +132,7 @@ adminRouter.get('/auth/me', requireAdminAuth, async (req: Request, res: Response
     const { passwordHash, ...adminData } = admin;
     
     res.status(200).json(adminData);
-  } catch (error) {
+  } catch (error: any) {
     console.error('Erro ao obter dados do admin:', error);
     res.status(500).json({ message: 'Erro no servidor' });
   }
@@ -159,7 +171,7 @@ adminRouter.post('/dev/reset-admin', async (req: Request, res: Response) => {
     } else {
       res.status(500).json({ message: 'Falha ao atualizar dados do admin' });
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error('Erro ao resetar senha do admin:', error);
     res.status(500).json({ message: 'Erro ao resetar senha do admin' });
   }
@@ -168,30 +180,11 @@ adminRouter.post('/dev/reset-admin', async (req: Request, res: Response) => {
 // Rota para obter métricas do dashboard
 adminRouter.get('/dashboard/metrics', requireAdminAuth, async (req: Request, res: Response) => {
   try {
-    // Aqui você pode implementar a lógica para obter métricas
-    // Exemplo simplificado:
-    const metrics = {
-      totalUsers: 0,
-      activeUsers: {
-        last24h: 0,
-        last7d: 0,
-        last30d: 0
-      },
-      newRegistrations: {
-        last24h: 0,
-        last7d: 0,
-        last30d: 0
-      },
-      totalCoins: {
-        inCirculation: 0,
-        earned: 0,
-        spent: 0
-      },
-      pendingRedemptions: 0
-    };
+    // Usar o método implementado no storage para obter métricas reais
+    const metrics = await storage.getDashboardMetrics();
     
     res.status(200).json(metrics);
-  } catch (error) {
+  } catch (error: any) {
     console.error('Erro ao obter métricas do dashboard:', error);
     res.status(500).json({ message: 'Erro ao obter métricas' });
   }

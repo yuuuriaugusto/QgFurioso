@@ -3,6 +3,9 @@ import { relations } from "drizzle-orm";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
+// Tipos personalizados
+export type AdminRole = "super_admin" | "admin" | "editor" | "viewer";
+
 // Users table
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
