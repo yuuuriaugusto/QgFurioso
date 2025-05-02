@@ -57,13 +57,13 @@ export default function BottomNav() {
         </OptimizedLink>
         
         <OptimizedLink
-          href="/loja"
+          href="/furia-coins"
           className={`flex flex-col items-center justify-center ${
-            isActive("/loja") ? "text-primary" : "text-muted-foreground"
+            isActive("/furia-coins") ? "text-primary" : "text-muted-foreground"
           }`}
         >
           <ShoppingBag className="h-5 w-5" />
-          <span className="text-xs mt-1">Loja</span>
+          <span className="text-xs mt-1">Coins</span>
         </OptimizedLink>
       </div>
     </div>

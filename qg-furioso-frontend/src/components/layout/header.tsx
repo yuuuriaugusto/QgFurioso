@@ -68,10 +68,10 @@ export default function Header() {
               </span>
             </Link>
             <Link 
-              href="/loja" 
-              className={`px-3 py-2 rounded-md text-sm font-medium ${isActive("/loja") ? "bg-primary/10 text-primary" : "hover:bg-muted"}`}
+              href="/furia-coins" 
+              className={`px-3 py-2 rounded-md text-sm font-medium ${isActive("/furia-coins") ? "bg-primary/10 text-primary" : "hover:bg-muted"}`}
             >
-              Loja
+              FURIA Coins
             </Link>
           </nav>
 
