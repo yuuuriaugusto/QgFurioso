@@ -1,6 +1,6 @@
 import { useLocation } from "wouter";
 import { Home, BookOpen, Calendar, Play, Coins } from "lucide-react";
-import { OptimizedLink } from "@/components/ui/optimized-link";
+import OptimizedLink from "@/components/ui/optimized-link";
 
 export default function BottomNav() {
   const [location] = useLocation();

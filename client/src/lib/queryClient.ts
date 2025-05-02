@@ -49,8 +49,12 @@ export const queryClient = new QueryClient({
       refetchOnWindowFocus: false,
       staleTime: 5 * 60 * 1000, // 5 minutos
       retry: false,
-      // Adicionando cache de 10 minutos para melhorar performance
-      gcTime: 10 * 60 * 1000,
+      // Aumentando o cache para melhorar performance
+      gcTime: 30 * 60 * 1000, // 30 minutos
+      // Melhoria para carregar mais rápido caso haja dados em cache
+      refetchOnMount: "always",
+      // Se houver dados em cache, mostre-os imediatamente
+      keepPreviousData: true,
     },
     mutations: {
       retry: false,
@@ -64,7 +68,9 @@ export const prefetchHomeData = async () => {
     queryClient.prefetchQuery({ queryKey: ['/api/matches'] }),
     queryClient.prefetchQuery({ queryKey: ['/api/streams'] }),
     queryClient.prefetchQuery({ queryKey: ['/api/content/news'] }),
-    queryClient.prefetchQuery({ queryKey: ['/api/surveys'] })
+    queryClient.prefetchQuery({ queryKey: ['/api/surveys'] }),
+    queryClient.prefetchQuery({ queryKey: ['/api/users/me/coin-balance'] }),
+    prefetchContentData()
   ]);
 };
 
@@ -73,5 +79,19 @@ export const prefetchContentData = async () => {
 };
 
 export const prefetchShopData = async () => {
-  await queryClient.prefetchQuery({ queryKey: ['/api/shop/items'] });
+  await Promise.all([
+    queryClient.prefetchQuery({ queryKey: ['/api/shop/items'] }),
+    queryClient.prefetchQuery({ queryKey: ['/api/users/me/coin-balance'] }),
+    queryClient.prefetchQuery({ queryKey: ['/api/users/me/redemptions'] })
+  ]);
+};
+
+export const prefetchProfileData = async () => {
+  await Promise.all([
+    queryClient.prefetchQuery({ queryKey: ['/api/users/me/profile'] }),
+    queryClient.prefetchQuery({ queryKey: ['/api/users/me/coin-balance'] }),
+    queryClient.prefetchQuery({ queryKey: ['/api/users/me/social-links'] }),
+    queryClient.prefetchQuery({ queryKey: ['/api/users/me/esports-profiles'] }),
+    queryClient.prefetchQuery({ queryKey: ['/api/users/me/redemptions'] })
+  ]);
 };

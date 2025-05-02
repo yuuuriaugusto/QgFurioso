@@ -55,8 +55,37 @@ function AppContent() {
   // Prefetcha dados da tela inicial quando o app carrega
   useEffect(() => {
     // Carrega os dados da home apenas uma vez ao iniciar a aplicação
-    prefetchHomeData();
+    const prefetch = async () => {
+      // Usando requestIdleCallback para executar o prefetch quando o navegador estiver ocioso
+      if ('requestIdleCallback' in window) {
+        (window as any).requestIdleCallback(() => {
+          prefetchHomeData();
+        });
+      } else {
+        // Fallback para navegadores que não suportam requestIdleCallback
+        setTimeout(() => {
+          prefetchHomeData();
+        }, 200);
+      }
+    };
+    
+    prefetch();
   }, []);
+  
+  // Prefetch adicional baseado na rota atual
+  useEffect(() => {
+    // Otimização: só carrega dados quando necessário, baseado na rota atual
+    const loadRouteData = async () => {
+      // Espera um pequeno tempo para não bloquear a renderização inicial
+      setTimeout(() => {
+        if (location === '/meu-qg') import('@/pages/profile-page');
+        if (location === '/furia-coins') import('@/pages/shop-page');
+        if (location === '/conteudo') import('@/pages/content-page');
+      }, 300);
+    };
+    
+    loadRouteData();
+  }, [location]);
   
   // Não mostrar o BottomNav na tela de login
   const showBottomNav = location !== "/auth";

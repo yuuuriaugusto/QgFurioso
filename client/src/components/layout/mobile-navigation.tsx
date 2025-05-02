@@ -1,5 +1,6 @@
 import { useLocation } from "wouter";
 import { Home, ShoppingBag, Calendar, Play, FileText, User } from "lucide-react";
+import OptimizedLink from "@/components/ui/optimized-link";
 
 export default function MobileNavigation() {
   const [location] = useLocation();
@@ -12,7 +13,7 @@ export default function MobileNavigation() {
   return (
     <div className="fixed bottom-0 left-0 right-0 bg-card border-t border-border z-40 md:hidden">
       <div className="flex justify-around items-center h-16">
-        <a
+        <OptimizedLink
           href="/"
           className={`flex flex-col items-center justify-center h-full w-full ${
             isActive("/") ? "text-primary" : "text-muted-foreground"
@@ -20,8 +21,8 @@ export default function MobileNavigation() {
         >
           <Home className="h-5 w-5" />
           <span className="text-xs mt-1">Início</span>
-        </a>
-        <a
+        </OptimizedLink>
+        <OptimizedLink
           href="/conteudo"
           className={`flex flex-col items-center justify-center h-full w-full ${
             isActive("/conteudo") ? "text-primary" : "text-muted-foreground"
@@ -29,8 +30,8 @@ export default function MobileNavigation() {
         >
           <FileText className="h-5 w-5" />
           <span className="text-xs mt-1">Conteúdo</span>
-        </a>
-        <a
+        </OptimizedLink>
+        <OptimizedLink
           href="/agenda"
           className={`flex flex-col items-center justify-center h-full w-full ${
             isActive("/agenda") ? "text-primary" : "text-muted-foreground"
@@ -38,8 +39,8 @@ export default function MobileNavigation() {
         >
           <Calendar className="h-5 w-5" />
           <span className="text-xs mt-1">Agenda</span>
-        </a>
-        <a
+        </OptimizedLink>
+        <OptimizedLink
           href="/ao-vivo"
           className={`flex flex-col items-center justify-center h-full w-full ${
             isActive("/ao-vivo") ? "text-primary" : "text-muted-foreground"
@@ -50,8 +51,8 @@ export default function MobileNavigation() {
             <span className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
           </div>
           <span className="text-xs mt-1">Ao Vivo</span>
-        </a>
-        <a
+        </OptimizedLink>
+        <OptimizedLink
           href="/meu-qg"
           className={`flex flex-col items-center justify-center h-full w-full ${
             isActive("/meu-qg") ? "text-primary" : "text-muted-foreground"
@@ -59,7 +60,7 @@ export default function MobileNavigation() {
         >
           <User className="h-5 w-5" />
           <span className="text-xs mt-1">Perfil</span>
-        </a>
+        </OptimizedLink>
       </div>
     </div>
   );
