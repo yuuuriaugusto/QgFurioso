@@ -8,7 +8,7 @@ export default function ContentPage() {
   const [selectedCategory, setSelectedCategory] = useState('all');
 
   // Fetch news content
-  const { data: newsContent, isLoading } = useQuery({
+  const { data: newsContent = [], isLoading } = useQuery({
     queryKey: ["/api/content/news"],
     queryFn: async () => {
       const res = await fetch("/api/content/news");
@@ -23,7 +23,7 @@ export default function ContentPage() {
   }, []);
 
   // Filter news by category
-  const filteredNews = newsContent?.filter(item => 
+  const filteredNews = newsContent.filter(item => 
     selectedCategory === 'all' || item.category === selectedCategory
   );
 

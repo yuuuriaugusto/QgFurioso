@@ -4,7 +4,8 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/hooks/use-auth";
-import { ReactNode, useEffect, lazy, Suspense } from "react";
+import { WebSocketProvider } from "@/hooks/use-websocket";
+import { useEffect, lazy, Suspense } from "react";
 import { ProtectedRoute } from "@/lib/protected-route";
 // Carregamento preguiçoso (Lazy loading) para melhorar a performance
 const NotFound = lazy(() => import("@/pages/not-found"));
@@ -17,13 +18,7 @@ const SchedulePage = lazy(() => import("@/pages/schedule-page"));
 const LivePage = lazy(() => import("@/pages/live-page"));
 const SurveysPage = lazy(() => import("@/pages/surveys-page"));
 const SettingsPage = lazy(() => import("@/pages/settings-page"));
-// Remover a importação do WebSocketTestPage até configurar corretamente o WebSocketProvider
 import BottomNav from "@/components/layout/bottom-nav";
-
-// WebSocketProvider fallback até que o provider real seja configurado
-const WebSocketProvider = ({ children }: { children: ReactNode }) => {
-  return <>{children}</>;
-};
 
 // Componente de carregamento
 const Loading = () => (
