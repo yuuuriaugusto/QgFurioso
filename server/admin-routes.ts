@@ -126,6 +126,45 @@ adminRouter.get('/auth/me', requireAdminAuth, async (req: Request, res: Response
   }
 });
 
+// Rota de inicialização/reset do admin - apenas para desenvolvimento
+adminRouter.post('/dev/reset-admin', async (req: Request, res: Response) => {
+  if (process.env.NODE_ENV === 'production') {
+    return res.status(404).json({ message: 'Rota não disponível em produção' });
+  }
+  
+  try {
+    // Buscar o admin existente
+    const admin = await storage.getAdminByEmail('admin@furia.com');
+    
+    if (!admin) {
+      return res.status(404).json({ message: 'Usuário admin não encontrado' });
+    }
+    
+    // Gerar nova senha hash com o formato correto
+    const newPasswordHash = await hashPassword('admin123');
+    
+    // Atualizar admin
+    const updatedAdmin = await storage.updateAdmin(admin.id, { 
+      passwordHash: newPasswordHash,
+      isActive: true
+    });
+    
+    if (updatedAdmin) {
+      const { passwordHash, ...adminData } = updatedAdmin;
+      res.status(200).json({ 
+        message: 'Senha do admin resetada com sucesso',
+        adminId: admin.id,
+        email: admin.email
+      });
+    } else {
+      res.status(500).json({ message: 'Falha ao atualizar dados do admin' });
+    }
+  } catch (error) {
+    console.error('Erro ao resetar senha do admin:', error);
+    res.status(500).json({ message: 'Erro ao resetar senha do admin' });
+  }
+});
+
 // Rota para obter métricas do dashboard
 adminRouter.get('/dashboard/metrics', requireAdminAuth, async (req: Request, res: Response) => {
   try {

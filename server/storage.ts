@@ -108,6 +108,27 @@ export interface IStorage {
   createAdmin(admin: InsertAdminUser & { passwordHash: string }): Promise<AdminUser>;
   updateAdmin(id: number, data: Partial<AdminUser>): Promise<AdminUser | undefined>;
   
+  // Dashboard statistics
+  getDashboardMetrics(): Promise<{
+    totalUsers: number;
+    activeUsers: {
+      last24h: number;
+      last7d: number;
+      last30d: number;
+    };
+    newRegistrations: {
+      last24h: number;
+      last7d: number;
+      last30d: number;
+    };
+    totalCoins: {
+      inCirculation: number;
+      earned: number;
+      spent: number;
+    };
+    pendingRedemptions: number;
+  }>;
+  
   sessionStore: session.SessionStore;
 }
 
