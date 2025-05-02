@@ -53,10 +53,7 @@ adminRouter.post('/auth/login', async (req: Request, res: Response) => {
   try {
     const data = adminLoginSchema.parse(req.body);
     
-    const [admin] = await db
-      .select()
-      .from(adminUsers)
-      .where(eq(adminUsers.email, data.email));
+    const admin = await storage.getAdminByEmail(data.email);
     
     if (!admin) {
       return res.status(401).json({ message: 'Credenciais inválidas' });
@@ -72,10 +69,7 @@ adminRouter.post('/auth/login', async (req: Request, res: Response) => {
     }
     
     // Atualiza a data do último login
-    await db
-      .update(adminUsers)
-      .set({ lastLoginAt: new Date() })
-      .where(eq(adminUsers.id, admin.id));
+    await storage.updateAdmin(admin.id, { lastLoginAt: new Date() });
     
     // Armazena o ID do admin na sessão
     req.session.adminId = admin.id;

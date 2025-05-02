@@ -167,6 +167,7 @@ export class MemStorage implements IStorage {
     this.surveys = new Map();
     this.surveyQuestions = new Map();
     this.surveyResponses = new Map();
+    this.adminUsers = new Map();
     
     // Initialize IDs
     this.currentId = {
@@ -182,7 +183,8 @@ export class MemStorage implements IStorage {
       streams: 1,
       surveys: 1,
       surveyQuestions: 1,
-      surveyResponses: 1
+      surveyResponses: 1,
+      adminUsers: 1
     };
     
     // Setup session store
@@ -202,6 +204,17 @@ export class MemStorage implements IStorage {
       passwordHash: "$2b$10$2xZuGKKkPx2z3/8vIkMsGusB08c0xgG2zxuQPbiiKt9LTsJrV.j6W", // senha: furiafan123
       status: "active"
     };
+    
+    // Add a test admin user (email: admin@furia.com, senha: admin123)
+    const testAdmin: InsertAdminUser & { passwordHash: string } = {
+      name: "Administrador",
+      email: "admin@furia.com",
+      passwordHash: "$2b$10$WfJLKGY8SNw2y9UzHYDUC.q1SvR1W.F/jBU08TyHWMCEF8MwQUHoC", // senha: admin123
+      role: "super_admin",
+      isActive: true
+    };
+    
+    this.createAdmin(testAdmin);
     
     const user = this.createUser(testUser);
     
@@ -1172,9 +1185,49 @@ export class MemStorage implements IStorage {
       response => response.userId === userId && response.surveyId === surveyId
     );
   }
+  
+  // Admin user methods
+  async getAdmin(id: number): Promise<AdminUser | undefined> {
+    return this.adminUsers.get(id);
+  }
+  
+  async getAdminByEmail(email: string): Promise<AdminUser | undefined> {
+    return Array.from(this.adminUsers.values()).find(
+      (admin) => admin.email === email
+    );
+  }
+  
+  async createAdmin(adminData: InsertAdminUser & { passwordHash: string }): Promise<AdminUser> {
+    const id = this.currentId.adminUsers++;
+    const now = new Date();
+    const admin: AdminUser = {
+      id,
+      name: adminData.name,
+      email: adminData.email,
+      passwordHash: adminData.passwordHash,
+      role: adminData.role,
+      isActive: adminData.isActive ?? true,
+      lastLoginAt: null,
+      createdAt: now,
+      updatedAt: now
+    };
+    this.adminUsers.set(id, admin);
+    return admin;
+  }
+  
+  async updateAdmin(id: number, data: Partial<AdminUser>): Promise<AdminUser | undefined> {
+    const admin = this.adminUsers.get(id);
+    if (!admin) return undefined;
+    
+    const updatedAdmin = { 
+      ...admin, 
+      ...data, 
+      updatedAt: new Date() 
+    };
+    this.adminUsers.set(id, updatedAdmin);
+    return updatedAdmin;
+  }
 }
 
-import { DatabaseStorage } from './database-storage';
-
-// exportar a implementação de banco de dados PostgreSQL em vez da memória
-export const storage = new DatabaseStorage();
+// Usando a implementação de memória para desenvolvimento
+export const storage = new MemStorage();
