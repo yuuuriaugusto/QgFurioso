@@ -186,6 +186,21 @@ export const streams = pgTable("streams", {
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
+// Admin users table
+export const adminUsers = pgTable("admin_users", {
+  id: serial("id").primaryKey(),
+  username: text("username").notNull().unique(),
+  email: text("email").notNull().unique(),
+  passwordHash: text("password_hash").notNull(),
+  firstName: text("first_name").notNull(),
+  lastName: text("last_name").notNull(),
+  role: text("role").notNull().default("viewer"),
+  isActive: boolean("is_active").notNull().default(true),
+  lastLoginAt: timestamp("last_login_at"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
 // Surveys table
 export const surveys = pgTable("surveys", {
   id: serial("id").primaryKey(),
@@ -303,6 +318,14 @@ export const insertSurveyResponseSchema = createInsertSchema(surveyResponses).om
   completedAt: true,
 });
 
+export const insertAdminUserSchema = createInsertSchema(adminUsers).omit({
+  id: true,
+  passwordHash: true,
+  lastLoginAt: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
 // Auth schemas
 export const registerSchema = z.object({
   primaryIdentity: z.string().min(3),
@@ -317,6 +340,12 @@ export const registerSchema = z.object({
 export const loginSchema = z.object({
   primaryIdentity: z.string(),
   password: z.string(),
+  rememberMe: z.boolean().optional()
+});
+
+export const adminLoginSchema = z.object({
+  email: z.string().email("Email inválido"),
+  password: z.string().min(6, "Senha deve ter pelo menos 6 caracteres"),
   rememberMe: z.boolean().optional()
 });
 
@@ -354,6 +383,9 @@ export type SurveyResponse = typeof surveyResponses.$inferSelect;
 export type InsertSurveyResponse = z.infer<typeof insertSurveyResponseSchema>;
 export type RegisterData = z.infer<typeof registerSchema>;
 export type LoginData = z.infer<typeof loginSchema>;
+export type AdminLoginData = z.infer<typeof adminLoginSchema>;
+export type AdminUser = typeof adminUsers.$inferSelect;
+export type InsertAdminUser = z.infer<typeof insertAdminUserSchema>;
 
 // Definição das relações
 export const usersRelations = relations(users, ({ one, many }) => ({

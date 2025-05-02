@@ -3,7 +3,8 @@ import {
   SocialLink, InsertSocialLink, KycVerification, InsertKycVerification, EsportsProfile, InsertEsportsProfile,
   CoinBalance, CoinTransaction, InsertCoinTransaction, ShopItem, InsertShopItem, RedemptionOrder, InsertRedemptionOrder,
   NewsContent, InsertNewsContent, Match, InsertMatch, Stream, InsertStream,
-  Survey, InsertSurvey, SurveyQuestion, InsertSurveyQuestion, SurveyResponse, InsertSurveyResponse
+  Survey, InsertSurvey, SurveyQuestion, InsertSurveyQuestion, SurveyResponse, InsertSurveyResponse,
+  AdminUser, InsertAdminUser
 } from "@shared/schema";
 import session from "express-session";
 import createMemoryStore from "memorystore";
@@ -101,6 +102,12 @@ export interface IStorage {
   updateSurveyResponse(id: number, data: Partial<InsertSurveyResponse>): Promise<SurveyResponse | undefined>;
   hasUserRespondedToSurvey(userId: number, surveyId: number): Promise<boolean>;
   
+  // Admin users
+  getAdmin(id: number): Promise<AdminUser | undefined>;
+  getAdminByEmail(email: string): Promise<AdminUser | undefined>;
+  createAdmin(admin: InsertAdminUser & { passwordHash: string }): Promise<AdminUser>;
+  updateAdmin(id: number, data: Partial<AdminUser>): Promise<AdminUser | undefined>;
+  
   sessionStore: session.SessionStore;
 }
 
@@ -121,6 +128,7 @@ export class MemStorage implements IStorage {
   private surveys: Map<number, Survey>;
   private surveyQuestions: Map<number, SurveyQuestion>;
   private surveyResponses: Map<number, SurveyResponse>;
+  private adminUsers: Map<number, AdminUser>;
   
   currentId: {
     users: number;
@@ -136,6 +144,7 @@ export class MemStorage implements IStorage {
     surveys: number;
     surveyQuestions: number;
     surveyResponses: number;
+    adminUsers: number;
   };
   
   sessionStore: session.SessionStore;
