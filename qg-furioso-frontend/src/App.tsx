@@ -7,19 +7,22 @@ import { AuthProvider } from "@/hooks/use-auth";
 import { WebSocketProvider } from "@/contexts/websocket-provider";
 import { ProtectedRoute } from "@/lib/protected-route";
 import NotFound from "@/pages/not-found";
-import AuthPage from "@/pages/auth-page";
-import HomePage from "@/pages/home-page";
-import ProfilePage from "@/pages/profile-page";
-import ShopPage from "@/pages/shop-page";
-import FuriaCoinsPage from "@/pages/furia-coins-page";
-import ContentPage from "@/pages/content-page";
-import SchedulePage from "@/pages/schedule-page";
-import LivePage from "@/pages/live-page";
-import SurveysPage from "@/pages/surveys-page";
-import SettingsPage from "@/pages/settings-page";
-import WebSocketTestPage from "@/pages/websocket-test-page";
+import { Suspense, lazy, useEffect } from "react";
+import { Loader2 } from "lucide-react";
 import BottomNav from "@/components/layout/bottom-nav";
-import { useEffect } from "react";
+
+// Lazy load components for better performance
+const AuthPage = lazy(() => import("@/pages/auth-page"));
+const HomePage = lazy(() => import("@/pages/home-page"));
+const ProfilePage = lazy(() => import("@/pages/profile-page"));
+const ShopPage = lazy(() => import("@/pages/shop-page"));
+const FuriaCoinsPage = lazy(() => import("@/pages/furia-coins-page"));
+const ContentPage = lazy(() => import("@/pages/content-page"));
+const SchedulePage = lazy(() => import("@/pages/schedule-page"));
+const LivePage = lazy(() => import("@/pages/live-page"));
+const SurveysPage = lazy(() => import("@/pages/surveys-page"));
+const SettingsPage = lazy(() => import("@/pages/settings-page"));
+const WebSocketTestPage = lazy(() => import("@/pages/websocket-test-page"));
 
 function Router() {
   return (
