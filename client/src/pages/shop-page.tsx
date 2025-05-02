@@ -21,7 +21,7 @@ export default function ShopPage() {
 
   useEffect(() => {
     // Set page title
-    document.title = "Loja | FURIA Esports";
+    document.title = "Recompensas | FURIA Esports";
   }, []);
 
   // Filter items by category
@@ -41,7 +41,7 @@ export default function ShopPage() {
         <div className="flex-grow">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
             <div>
-              <h1 className="text-2xl font-bold font-rajdhani">LOJA FURIA</h1>
+              <h1 className="text-2xl font-bold font-rajdhani">RECOMPENSAS FURIA</h1>
               <p className="text-muted-foreground">Resgate produtos e experiências exclusivas com seus FURIA Coins</p>
             </div>
             

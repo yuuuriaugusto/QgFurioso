@@ -13,6 +13,7 @@ const AuthPage = lazy(() => import("@/pages/auth-page"));
 const HomePage = lazy(() => import("@/pages/home-page"));
 const ProfilePage = lazy(() => import("@/pages/profile-page"));
 const ShopPage = lazy(() => import("@/pages/shop-page"));
+const FuriaCoinsPage = lazy(() => import("@/pages/furia-coins-page"));
 const ContentPage = lazy(() => import("@/pages/content-page"));
 const SchedulePage = lazy(() => import("@/pages/schedule-page"));
 const LivePage = lazy(() => import("@/pages/live-page"));
@@ -36,7 +37,8 @@ function Router() {
       <Switch>
         <ProtectedRoute path="/" component={HomePage} />
         <ProtectedRoute path="/meu-qg" component={ProfilePage} />
-        <ProtectedRoute path="/furia-coins" component={ShopPage} />
+        <ProtectedRoute path="/furia-coins" component={FuriaCoinsPage} />
+        <ProtectedRoute path="/shop" component={ShopPage} />
         <ProtectedRoute path="/conteudo" component={ContentPage} />
         <ProtectedRoute path="/agenda" component={SchedulePage} />
         <ProtectedRoute path="/ao-vivo" component={LivePage} />
@@ -79,7 +81,8 @@ function AppContent() {
       // Espera um pequeno tempo para não bloquear a renderização inicial
       setTimeout(() => {
         if (location === '/meu-qg') import('@/pages/profile-page');
-        if (location === '/furia-coins') import('@/pages/shop-page');
+        if (location === '/furia-coins') import('@/pages/furia-coins-page');
+        if (location === '/shop') import('@/pages/shop-page');
         if (location === '/conteudo') import('@/pages/content-page');
       }, 300);
     };

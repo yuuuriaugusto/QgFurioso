@@ -75,13 +75,13 @@ export default function Sidebar() {
             </li>
             <li>
               <a 
-                href="/loja" 
+                href="/furia-coins" 
                 className={`flex items-center px-4 py-3 text-sm font-medium ${
-                  isActive("/loja") ? "bg-primary/10 text-primary border-l-2 border-primary" : "hover:bg-muted"
+                  isActive("/furia-coins") ? "bg-primary/10 text-primary border-l-2 border-primary" : "hover:bg-muted"
                 }`}
               >
                 <ShoppingBag className="h-5 w-5 mr-3" />
-                Loja
+                FURIA Coins
               </a>
             </li>
             <li>
