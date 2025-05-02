@@ -320,8 +320,8 @@ export default function FuriaCoinsPage() {
               <div className="bg-card p-6 rounded-xl shadow-sm border border-border">
                 <div className="flex justify-between items-center mb-4">
                   <h2 className="text-xl font-bold font-rajdhani">Recompensas em Destaque</h2>
-                  <a href="/shop" className="text-primary text-sm hover:underline flex items-center">
-                    Ver loja
+                  <a href="#rewards" className="text-primary text-sm hover:underline flex items-center" onClick={() => setActiveTab("redemptions")}>
+                    Ver todas
                     <ArrowUpCircle className="h-3 w-3 ml-1 rotate-90" />
                   </a>
                 </div>
