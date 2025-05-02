@@ -3,12 +3,13 @@ import { useQuery } from "@tanstack/react-query";
 import Header from "@/components/layout/header";
 import Sidebar from "@/components/layout/sidebar";
 import MobileNavigation from "@/components/layout/mobile-navigation";
+import { NewsContent } from "@shared/schema";
 
 export default function ContentPage() {
   const [selectedCategory, setSelectedCategory] = useState('all');
 
   // Fetch news content
-  const { data: newsContent = [], isLoading } = useQuery({
+  const { data: newsContent = [], isLoading } = useQuery<NewsContent[]>({
     queryKey: ["/api/content/news"],
     queryFn: async () => {
       const res = await fetch("/api/content/news");
