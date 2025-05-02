@@ -318,9 +318,12 @@ export default function ProfilePage() {
                 
                 <div className="mb-6">
                   <h3 className="text-lg font-medium mb-2">Jogos favoritos</h3>
-                  {user?.profile?.interests?.games?.length > 0 ? (
+                  {user?.profile?.interests && typeof user.profile.interests === 'object' && 
+                   'games' in (user.profile.interests as Record<string, any>) && 
+                   Array.isArray((user.profile.interests as Record<string, any>).games) && 
+                   (user.profile.interests as Record<string, any>).games.length > 0 ? (
                     <div className="flex flex-wrap gap-2">
-                      {user.profile.interests.games.map((game) => (
+                      {((user.profile.interests as Record<string, any>).games as string[]).map((game: string) => (
                         <Badge key={game} variant="secondary">{game}</Badge>
                       ))}
                     </div>
@@ -331,9 +334,12 @@ export default function ProfilePage() {
                 
                 <div className="mb-6">
                   <h3 className="text-lg font-medium mb-2">Times favoritos</h3>
-                  {user?.profile?.interests?.teams?.length > 0 ? (
+                  {user?.profile?.interests && typeof user.profile.interests === 'object' && 
+                   'teams' in (user.profile.interests as Record<string, any>) && 
+                   Array.isArray((user.profile.interests as Record<string, any>).teams) && 
+                   (user.profile.interests as Record<string, any>).teams.length > 0 ? (
                     <div className="flex flex-wrap gap-2">
-                      {user.profile.interests.teams.map((team) => (
+                      {((user.profile.interests as Record<string, any>).teams as string[]).map((team: string) => (
                         <Badge key={team} variant="secondary">{team}</Badge>
                       ))}
                     </div>
@@ -355,9 +361,12 @@ export default function ProfilePage() {
               <div className="bg-card rounded-xl p-6 mb-6">
                 <h2 className="text-xl font-bold mb-4 font-rajdhani">HISTÓRICO DE EVENTOS</h2>
                 
-                {user?.profile?.activitiesEvents?.length > 0 ? (
+                {user?.profile?.activitiesEvents && 
+                  typeof user.profile.activitiesEvents === 'object' && 
+                  Array.isArray(user.profile.activitiesEvents) && 
+                  user.profile.activitiesEvents.length > 0 ? (
                   <div className="space-y-4">
-                    {user.profile.activitiesEvents.map((event, index) => (
+                    {(user.profile.activitiesEvents as Array<{name: string, date: string, description: string}>).map((event, index) => (
                       <div key={index} className="p-3 border border-border rounded-md">
                         <h3 className="font-medium">{event.name}</h3>
                         <p className="text-sm text-muted-foreground">{event.date}</p>
