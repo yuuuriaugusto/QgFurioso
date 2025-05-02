@@ -2,11 +2,7 @@ import { Router, Request, Response, NextFunction } from 'express';
 import { scrypt, randomBytes, timingSafeEqual } from 'crypto';
 import { promisify } from 'util';
 import { storage } from './storage';
-import { adminLoginSchema, AdminLoginData, AdminUser } from '@shared/schema';
-import { db } from './db';
-import { eq } from 'drizzle-orm';
-import { adminUsers } from '@shared/schema';
-import { AdminRole } from '@shared/schema';
+import { adminLoginSchema, AdminLoginData, AdminUser, AdminRole } from '@shared/schema';
 
 const scryptAsync = promisify(scrypt);
 
@@ -42,10 +38,26 @@ export const requireAdminRole = (roles: AdminRole[]) => {
 
 // Função auxiliar para comparar senhas
 async function comparePasswords(supplied: string, stored: string) {
-  const [hashed, salt] = stored.split('.');
-  const hashedBuf = Buffer.from(hashed, 'hex');
-  const suppliedBuf = (await scryptAsync(supplied, salt, 64)) as Buffer;
-  return timingSafeEqual(hashedBuf, suppliedBuf);
+  try {
+    const [hashed, salt] = stored.split('.');
+    if (!hashed || !salt) {
+      console.error('Formato de senha inválido');
+      return false;
+    }
+    
+    const hashedBuf = Buffer.from(hashed, 'hex');
+    const suppliedBuf = (await scryptAsync(supplied, salt, 64)) as Buffer;
+    
+    if (hashedBuf.length !== suppliedBuf.length) {
+      console.error('Comprimentos de buffer diferentes:', hashedBuf.length, suppliedBuf.length);
+      return false;
+    }
+    
+    return timingSafeEqual(hashedBuf, suppliedBuf);
+  } catch (error) {
+    console.error('Erro ao comparar senhas:', error);
+    return false;
+  }
 }
 
 // Login de administrador

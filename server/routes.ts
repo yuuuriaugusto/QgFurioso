@@ -6,6 +6,7 @@ import { setupAuth } from "./auth";
 import { z } from "zod";
 import { fromZodError } from "zod-validation-error";
 import { insertUserProfileSchema, insertUserPreferencesSchema, insertSurveyResponseSchema } from "@shared/schema";
+import { adminRouter } from "./admin-routes";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Setup authentication routes and middleware
@@ -471,6 +472,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     const responses = await storage.getUserSurveyResponses(userId);
     res.json(responses);
   });
+  
+  // Roteador de administração - rotas prefixadas com /api/admin
+  app.use("/api/admin", adminRouter);
   
   // Initialize HTTP server
   const httpServer = createServer(app);
