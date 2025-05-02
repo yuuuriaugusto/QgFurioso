@@ -23,6 +23,7 @@ import { pt } from "date-fns/locale";
 export default function FuriaCoinsPage() {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState("overview");
+  const [transactionFilter, setTransactionFilter] = useState<'all' | 'earned' | 'spent'>('all');
 
   // Fetch coin transactions
   const { data: transactions, isLoading: transactionsLoading } = useQuery({
@@ -361,9 +362,12 @@ export default function FuriaCoinsPage() {
                               {item.coinPrice}
                               <Coins className="h-4 w-4 ml-1" />
                             </div>
-                            <a href={`/shop?item=${item.id}`} className="text-xs px-3 py-1.5 bg-primary text-white rounded-md hover:bg-primary/90">
-                              Ver detalhes
-                            </a>
+                            <button
+                              onClick={() => setActiveTab("redemptions")}
+                              className="text-xs px-3 py-1.5 bg-primary text-white rounded-md hover:bg-primary/90"
+                            >
+                              Resgatar
+                            </button>
                           </div>
                         </div>
                       </div>
@@ -384,20 +388,26 @@ export default function FuriaCoinsPage() {
                 
                 <div className="flex gap-2 mb-4 overflow-x-auto pb-2">
                   <button 
-                    className="px-3 py-1.5 rounded-full whitespace-nowrap bg-primary text-white"
-                    onClick={() => {}}
+                    className={`px-3 py-1.5 rounded-full whitespace-nowrap ${
+                      transactionFilter === 'all' ? 'bg-primary text-white' : 'bg-muted hover:bg-muted/80'
+                    }`}
+                    onClick={() => setTransactionFilter('all')}
                   >
                     Todas
                   </button>
                   <button 
-                    className="px-3 py-1.5 rounded-full whitespace-nowrap bg-muted hover:bg-muted/80"
-                    onClick={() => {}}
+                    className={`px-3 py-1.5 rounded-full whitespace-nowrap ${
+                      transactionFilter === 'earned' ? 'bg-primary text-white' : 'bg-muted hover:bg-muted/80'
+                    }`}
+                    onClick={() => setTransactionFilter('earned')}
                   >
                     Recebidas
                   </button>
                   <button 
-                    className="px-3 py-1.5 rounded-full whitespace-nowrap bg-muted hover:bg-muted/80"
-                    onClick={() => {}}
+                    className={`px-3 py-1.5 rounded-full whitespace-nowrap ${
+                      transactionFilter === 'spent' ? 'bg-primary text-white' : 'bg-muted hover:bg-muted/80'
+                    }`}
+                    onClick={() => setTransactionFilter('spent')}
                   >
                     Gastas
                   </button>
@@ -418,9 +428,9 @@ export default function FuriaCoinsPage() {
                       </div>
                     ))}
                   </div>
-                ) : transactions && transactions.length > 0 ? (
+                ) : transactions && getFilteredTransactions(transactionFilter).length > 0 ? (
                   <div className="space-y-1 divide-y">
-                    {transactions.map((transaction) => (
+                    {getFilteredTransactions(transactionFilter).map((transaction) => (
                       <div key={transaction.id} className="flex justify-between py-4 items-center">
                         <div className="flex gap-4 items-center">
                           <div className={`h-10 w-10 rounded-full flex items-center justify-center ${
@@ -452,7 +462,12 @@ export default function FuriaCoinsPage() {
                   </div>
                 ) : (
                   <div className="text-center py-8 text-muted-foreground">
-                    Nenhuma transação encontrada.
+                    {transactionFilter === 'all' 
+                      ? 'Nenhuma transação encontrada.' 
+                      : transactionFilter === 'earned' 
+                        ? 'Nenhuma transação de moedas recebidas encontrada.'
+                        : 'Nenhuma transação de moedas gastas encontrada.'
+                    }
                   </div>
                 )}
               </div>
