@@ -27,9 +27,8 @@ const registerSchema = z.object({
     .max(100, "Senha deve ter no máximo 100 caracteres"),
   status: z.string().default("active"),
   confirmPassword: z.string(),
-  termsAccepted: z.boolean().default(false).refine(val => val === true, {
-    message: "Você precisa aceitar os termos de uso e política de privacidade."
-  }),
+  // Sempre define termsAccepted como true para o envio ao servidor
+  termsAccepted: z.boolean().default(true),
 }).refine(data => data.password === data.confirmPassword, {
   message: "As senhas não coincidem",
   path: ["confirmPassword"],
@@ -59,7 +58,7 @@ export function AuthForms() {
       password: "",
       confirmPassword: "",
       status: "active",
-      termsAccepted: false,
+      termsAccepted: true, // Definido como true por padrão
     },
   });
 
