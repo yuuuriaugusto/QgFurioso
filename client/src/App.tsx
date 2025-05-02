@@ -38,7 +38,7 @@ function Router() {
         <ProtectedRoute path="/" component={HomePage} />
         <ProtectedRoute path="/meu-qg" component={ProfilePage} />
         <ProtectedRoute path="/furia-coins" component={FuriaCoinsPage} />
-        <ProtectedRoute path="/shop" component={ShopPage} />
+        <ProtectedRoute path="/loja" component={FuriaCoinsPage} />
         <ProtectedRoute path="/conteudo" component={ContentPage} />
         <ProtectedRoute path="/agenda" component={SchedulePage} />
         <ProtectedRoute path="/ao-vivo" component={LivePage} />
@@ -82,7 +82,7 @@ function AppContent() {
       setTimeout(() => {
         if (location === '/meu-qg') import('@/pages/profile-page');
         if (location === '/furia-coins') import('@/pages/furia-coins-page');
-        if (location === '/shop') import('@/pages/shop-page');
+        if (location === '/loja') import('@/pages/furia-coins-page');
         if (location === '/conteudo') import('@/pages/content-page');
       }, 300);
     };

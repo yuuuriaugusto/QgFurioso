@@ -1154,105 +1154,37 @@ export default function ProfilePage() {
           </Tabs>
           
           {/* Link para FURIA Coins */}
-          <div className="bg-card rounded-xl p-6 mb-6 text-center">
-            <h2 className="text-xl font-bold mb-4 font-rajdhani">FURIA COINS</h2>
-            
-            <p className="mb-4">Gerencie suas FURIA Coins, confira seu histórico de transações e acesse suas recompensas resgatadas na página dedicada.</p>
-            
-            <a href="/furia-coins" className="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90 inline-flex items-center">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="12" cy="12" r="10" />
-                <path d="M12 6v12" />
-                <path d="M8 12h8" />
-              </svg>
-              Acessar FURIA Coins
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-primary ml-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <circle cx="12" cy="12" r="10" />
-                    <path d="M12 6v12" />
-                    <path d="M8 12h8" />
-                  </svg>
-                </div>
+          <div className="bg-card rounded-xl p-6 mb-6">
+            <div className="flex flex-col md:flex-row items-center justify-between">
+              <div className="mb-4 md:mb-0">
+                <h2 className="text-xl font-bold font-rajdhani">FURIA COINS</h2>
+                <p className="text-muted-foreground max-w-md">
+                  Gerencie suas FURIA Coins, confira seu histórico de transações e acesse recompensas exclusivas.
+                </p>
               </div>
               
-              <div className="bg-muted p-4 rounded-lg flex-1 min-w-[200px]">
-                <div className="text-sm text-muted-foreground mb-1">Total ganho</div>
-                <div className="text-2xl font-bold text-green-500 flex items-center">
-                  {user?.coinBalance?.lifetimeEarned || 0}
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 ml-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <circle cx="12" cy="12" r="10" />
-                    <path d="M12 6v12" />
-                    <path d="M8 12h8" />
-                  </svg>
-                </div>
-              </div>
-              
-              <div className="bg-muted p-4 rounded-lg flex-1 min-w-[200px]">
-                <div className="text-sm text-muted-foreground mb-1">Total gasto</div>
-                <div className="text-2xl font-bold text-red-500 flex items-center">
-                  {user?.coinBalance?.lifetimeSpent || 0}
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 ml-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <circle cx="12" cy="12" r="10" />
-                    <path d="M12 6v12" />
-                    <path d="M8 12h8" />
-                  </svg>
-                </div>
-              </div>
-            </div>
-            
-            <div className="mt-4">
-              <a href="/furia-coins" className="text-sm bg-primary text-white px-4 py-2 rounded-md hover:bg-primary/90 inline-block">
-                Ver histórico de transações
-              </a>
-            </div>
-          </div>
-          
-          {/* Redemption History */}
-          <div className="bg-card rounded-xl p-6">
-            <h2 className="text-xl font-bold mb-4 font-rajdhani">HISTÓRICO DE RESGATES</h2>
-            
-            {redemptions && redemptions.length > 0 ? (
-              <div className="space-y-4">
-                {redemptions.map((redemption) => (
-                  <div key={redemption.id} className="border rounded-md p-4">
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <h3 className="font-medium">{redemption.shopItem.name}</h3>
-                        <p className="text-sm text-muted-foreground">{redemption.shopItem.description}</p>
-                      </div>
-                      <Badge variant={
-                        redemption.status === 'completed' ? 'default' :
-                        redemption.status === 'pending' ? 'outline' :
-                        redemption.status === 'processing' ? 'secondary' :
-                        'destructive'
-                      }>
-                        {redemption.status === 'completed' ? 'Concluído' :
-                         redemption.status === 'pending' ? 'Pendente' :
-                         redemption.status === 'processing' ? 'Em processamento' :
-                         'Cancelado'}
-                      </Badge>
-                    </div>
-                    <div className="flex justify-between mt-2 text-sm">
-                      <div className="flex items-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-primary mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <circle cx="12" cy="12" r="10" />
-                          <path d="M12 6v12" />
-                          <path d="M8 12h8" />
-                        </svg>
-                        {redemption.coinCost}
-                      </div>
-                      <span className="text-muted-foreground">
-                        {new Date(redemption.createdAt).toLocaleDateString()}
-                      </span>
-                    </div>
+              <div className="flex flex-col items-center md:items-end">
+                <div className="bg-muted p-4 rounded-lg mb-3 text-center">
+                  <div className="text-sm text-muted-foreground">Saldo Disponível</div>
+                  <div className="text-2xl font-bold flex items-center justify-center">
+                    {user?.coinBalance?.balance || 0}
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-primary ml-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <circle cx="12" cy="12" r="10" />
+                      <path d="M12 6v12" />
+                      <path d="M8 12h8" />
+                    </svg>
                   </div>
-                ))}
+                </div>
+                
+                <a href="/furia-coins" className="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90 inline-flex items-center">
+                  Acessar FURIA Coins
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M5 12h14" />
+                    <path d="m12 5 7 7-7 7" />
+                  </svg>
+                </a>
               </div>
-            ) : (
-              <div className="text-center py-8 text-muted-foreground">
-                <p>Você ainda não realizou nenhum resgate.</p>
-                <p className="mt-2">Visite a <a href="/furia-coins" className="text-primary hover:underline">FURIA Coins</a> para conferir os itens disponíveis.</p>
-              </div>
-            )}
+            </div>
           </div>
         </div>
       </div>
