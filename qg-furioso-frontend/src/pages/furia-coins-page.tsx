@@ -109,7 +109,7 @@ export default function FuriaCoinsPage() {
             
             {user?.coinBalance && (
               <div className="bg-card border border-primary rounded-lg px-6 py-3 flex items-center">
-                <Coin className="h-5 w-5 text-primary mr-2" />
+                <Coins className="h-5 w-5 text-primary mr-2" />
                 <div>
                   <div className="text-xs uppercase text-muted-foreground">Saldo disponível</div>
                   <div className="text-2xl font-bold">{user.coinBalance.balance}</div>
@@ -122,7 +122,7 @@ export default function FuriaCoinsPage() {
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             <TabsList className="w-full grid grid-cols-3 mb-8">
               <TabsTrigger value="overview" className="flex items-center gap-2">
-                <Coin className="h-4 w-4" />
+                <Coins className="h-4 w-4" />
                 <span className="hidden sm:inline">Visão Geral</span>
                 <span className="sm:hidden">Geral</span>
               </TabsTrigger>
@@ -219,7 +219,7 @@ export default function FuriaCoinsPage() {
                           <div className="flex justify-between items-center mt-2">
                             <div className="flex items-center">
                               <span className="font-bold">{item.coinPrice}</span>
-                              <Coin className="h-4 w-4 text-primary ml-1" />
+                              <Coins className="h-4 w-4 text-primary ml-1" />
                             </div>
                             <button 
                               className="px-3 py-1 bg-primary text-white text-sm rounded-md hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
@@ -282,7 +282,7 @@ export default function FuriaCoinsPage() {
                           <div className="flex justify-between items-center mt-3">
                             <div className="flex items-center">
                               <span className="font-bold text-lg">{item.coinPrice}</span>
-                              <Coin className="h-5 w-5 text-primary ml-1" />
+                              <Coins className="h-5 w-5 text-primary ml-1" />
                             </div>
                             <button 
                               className="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"

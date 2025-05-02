@@ -11,6 +11,7 @@ import AuthPage from "@/pages/auth-page";
 import HomePage from "@/pages/home-page";
 import ProfilePage from "@/pages/profile-page";
 import ShopPage from "@/pages/shop-page";
+import FuriaCoinsPage from "@/pages/furia-coins-page";
 import ContentPage from "@/pages/content-page";
 import SchedulePage from "@/pages/schedule-page";
 import LivePage from "@/pages/live-page";
@@ -26,6 +27,7 @@ function Router() {
       <ProtectedRoute path="/" component={HomePage} />
       <ProtectedRoute path="/meu-qg" component={ProfilePage} />
       <ProtectedRoute path="/loja" component={ShopPage} />
+      <ProtectedRoute path="/furia-coins" component={FuriaCoinsPage} />
       <ProtectedRoute path="/conteudo" component={ContentPage} />
       <ProtectedRoute path="/agenda" component={SchedulePage} />
       <ProtectedRoute path="/ao-vivo" component={LivePage} />
