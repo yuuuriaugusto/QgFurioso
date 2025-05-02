@@ -1153,15 +1153,19 @@ export default function ProfilePage() {
             </Form>
           </Tabs>
           
-          {/* FURIA Coins Section */}
-          <div className="bg-card rounded-xl p-6 mb-6">
+          {/* Link para FURIA Coins */}
+          <div className="bg-card rounded-xl p-6 mb-6 text-center">
             <h2 className="text-xl font-bold mb-4 font-rajdhani">FURIA COINS</h2>
             
-            <div className="flex flex-wrap gap-4">
-              <div className="bg-muted p-4 rounded-lg flex-1 min-w-[200px]">
-                <div className="text-sm text-muted-foreground mb-1">Saldo disponível</div>
-                <div className="text-2xl font-bold flex items-center">
-                  {user?.coinBalance?.balance || 0}
+            <p className="mb-4">Gerencie suas FURIA Coins, confira seu histórico de transações e acesse suas recompensas resgatadas na página dedicada.</p>
+            
+            <a href="/furia-coins" className="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90 inline-flex items-center">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="10" />
+                <path d="M12 6v12" />
+                <path d="M8 12h8" />
+              </svg>
+              Acessar FURIA Coins
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-primary ml-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <circle cx="12" cy="12" r="10" />
                     <path d="M12 6v12" />
