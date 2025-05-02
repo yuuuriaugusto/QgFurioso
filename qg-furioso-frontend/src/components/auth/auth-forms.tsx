@@ -9,6 +9,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Loader2 } from "lucide-react";
+import { FaGoogle, FaFacebook, FaTwitter } from "react-icons/fa";
+import { Separator } from "@/components/ui/separator";
 
 // Login form schema
 const loginSchema = z.object({
@@ -147,7 +149,46 @@ export function AuthForms() {
           </form>
         </Form>
         
-        <div className="mt-4 text-center">
+        <div className="relative my-6">
+          <div className="absolute inset-0 flex items-center">
+            <Separator className="w-full" />
+          </div>
+          <div className="relative flex justify-center">
+            <span className="bg-background px-2 text-xs text-muted-foreground">
+              Ou continue com
+            </span>
+          </div>
+        </div>
+        
+        <div className="flex flex-col gap-2">
+          <a
+            href="/auth/google"
+            className="inline-flex h-10 items-center justify-center rounded-md border border-input bg-transparent px-4 py-2 text-sm font-medium ring-offset-background transition-colors hover:bg-accent hover:text-accent-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+          >
+            <FaGoogle className="mr-2 h-4 w-4" />
+            Entrar com Google
+          </a>
+          
+          <a
+            href="#"
+            className="inline-flex h-10 items-center justify-center rounded-md border border-input bg-transparent px-4 py-2 text-sm font-medium ring-offset-background transition-colors hover:bg-accent hover:text-accent-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+            onClick={(e) => { e.preventDefault(); alert("Login com Facebook em breve disponível"); }}
+          >
+            <FaFacebook className="mr-2 h-4 w-4 text-blue-600" />
+            Entrar com Facebook
+          </a>
+          
+          <a
+            href="#"
+            className="inline-flex h-10 items-center justify-center rounded-md border border-input bg-transparent px-4 py-2 text-sm font-medium ring-offset-background transition-colors hover:bg-accent hover:text-accent-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+            onClick={(e) => { e.preventDefault(); alert("Login com Twitter em breve disponível"); }}
+          >
+            <FaTwitter className="mr-2 h-4 w-4 text-blue-400" />
+            Entrar com Twitter
+          </a>
+        </div>
+        
+        <div className="mt-6 text-center">
           <button 
             onClick={() => setActiveTab("register")} 
             className="text-sm text-primary hover:underline"
@@ -268,7 +309,46 @@ export function AuthForms() {
           </form>
         </Form>
         
-        <div className="mt-4 text-center">
+        <div className="relative my-6">
+          <div className="absolute inset-0 flex items-center">
+            <Separator className="w-full" />
+          </div>
+          <div className="relative flex justify-center">
+            <span className="bg-background px-2 text-xs text-muted-foreground">
+              Ou continue com
+            </span>
+          </div>
+        </div>
+        
+        <div className="flex flex-col gap-2">
+          <a
+            href="/auth/google"
+            className="inline-flex h-10 items-center justify-center rounded-md border border-input bg-transparent px-4 py-2 text-sm font-medium ring-offset-background transition-colors hover:bg-accent hover:text-accent-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+          >
+            <FaGoogle className="mr-2 h-4 w-4" />
+            Registrar com Google
+          </a>
+          
+          <a
+            href="#"
+            className="inline-flex h-10 items-center justify-center rounded-md border border-input bg-transparent px-4 py-2 text-sm font-medium ring-offset-background transition-colors hover:bg-accent hover:text-accent-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+            onClick={(e) => { e.preventDefault(); alert("Registro com Facebook em breve disponível"); }}
+          >
+            <FaFacebook className="mr-2 h-4 w-4 text-blue-600" />
+            Registrar com Facebook
+          </a>
+          
+          <a
+            href="#"
+            className="inline-flex h-10 items-center justify-center rounded-md border border-input bg-transparent px-4 py-2 text-sm font-medium ring-offset-background transition-colors hover:bg-accent hover:text-accent-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+            onClick={(e) => { e.preventDefault(); alert("Registro com Twitter em breve disponível"); }}
+          >
+            <FaTwitter className="mr-2 h-4 w-4 text-blue-400" />
+            Registrar com Twitter
+          </a>
+        </div>
+        
+        <div className="mt-6 text-center">
           <button 
             onClick={() => setActiveTab("login")} 
             className="text-sm text-primary hover:underline"

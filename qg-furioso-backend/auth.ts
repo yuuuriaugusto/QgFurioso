@@ -1,5 +1,6 @@
 import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
+import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import { Express, Request, Response, NextFunction } from "express";
 import session from "express-session";
 import { scrypt, randomBytes, timingSafeEqual } from "crypto";
@@ -203,6 +204,7 @@ export function setupAuth(app: Express) {
   app.use(passport.initialize());
   app.use(passport.session());
 
+  // Estratégia local com username/password
   passport.use(
     new LocalStrategy(
       {
@@ -226,6 +228,94 @@ export function setupAuth(app: Express) {
       }
     )
   );
+  
+  // Estratégia Google OAuth
+  if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
+    passport.use(
+      new GoogleStrategy(
+        {
+          clientID: process.env.GOOGLE_CLIENT_ID,
+          clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+          callbackURL: "/auth/google/callback",
+          scope: ["profile", "email"],
+        },
+        async (accessToken, refreshToken, profile, done) => {
+          try {
+            // O email do Google é o identificador principal
+            const googleEmail = profile.emails?.[0]?.value;
+            if (!googleEmail) {
+              return done(new Error("Email não fornecido pelo Google"), false);
+            }
+            
+            // Verificar se o usuário já existe
+            let user = await storage.getUserByPrimaryIdentity(googleEmail);
+            
+            if (user) {
+              // Usuário existe - atualizar último login
+              await storage.updateUser(user.id, { lastLoginAt: new Date() });
+            } else {
+              // Usuário não existe - criar novo
+              user = await storage.createUser({
+                primaryIdentity: googleEmail,
+                identityType: "email",
+                passwordHash: await hashPassword(randomBytes(16).toString("hex")), // Senha aleatória
+                status: "active",
+              });
+              
+              // Criar perfil com dados do Google
+              const firstName = profile.name?.givenName || "";
+              const lastName = profile.name?.familyName || "";
+              const avatarUrl = profile.photos?.[0]?.value || null;
+              
+              await storage.createUserProfile(user.id, {
+                firstName,
+                lastName,
+                birthDate: null,
+                cpfEncrypted: null,
+                addressStreet: null,
+                addressNumber: null,
+                addressComplement: null,
+                addressNeighborhood: null,
+                addressCity: null,
+                addressState: null,
+                addressZipCode: null,
+                interests: null,
+                activitiesEvents: null,
+                avatarUrl
+              });
+              
+              // Criar preferências padrão
+              await storage.createUserPreferences(user.id, {
+                emailNotifications: true,
+                pushNotifications: true,
+                marketingConsent: false,
+                theme: "dark",
+                language: "pt-BR"
+              });
+              
+              // Criar saldo de moedas e adicionar bônus
+              await storage.createCoinBalance(user.id);
+              await storage.createCoinTransaction(user.id, {
+                userId: user.id,
+                amount: 100,
+                transactionType: "signup_bonus",
+                description: "Bônus de boas-vindas ao QG FURIOSO",
+                relatedEntityType: null,
+                relatedEntityId: null
+              });
+            }
+            
+            // Retornar usuário autenticado
+            return done(null, user);
+          } catch (error) {
+            return done(error, false);
+          }
+        }
+      )
+    );
+  } else {
+    console.warn("Google OAuth não configurado. Variáveis de ambiente GOOGLE_CLIENT_ID e GOOGLE_CLIENT_SECRET não definidas.");
+  }
 
   passport.serializeUser((user, done) => {
     done(null, user.id);
@@ -393,6 +483,20 @@ export function setupAuth(app: Express) {
       });
     });
   });
+
+  // Rotas para autenticação Google
+  app.get("/auth/google", passport.authenticate("google", { scope: ["profile", "email"] }));
+  
+  app.get(
+    "/auth/google/callback",
+    passport.authenticate("google", {
+      failureRedirect: "/auth?error=google-auth-failed",
+    }),
+    (req, res) => {
+      // Sucesso, redirecionar para a página principal
+      res.redirect("/");
+    }
+  );
 
   // Current user endpoint
   app.get("/api/user", (req, res) => {
