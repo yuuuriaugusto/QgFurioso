@@ -309,9 +309,7 @@ export const registerSchema = z.object({
   identityType: z.enum(["email", "phone"]),
   password: z.string().min(8),
   birthDate: z.string().optional(),
-  termsAccepted: z.boolean().refine(val => val === true, {
-    message: "Você precisa aceitar os termos de uso e política de privacidade."
-  })
+  termsAccepted: z.boolean().optional().default(true) // Temporariamente opcional e com valor padrão true
 });
 
 export const loginSchema = z.object({
