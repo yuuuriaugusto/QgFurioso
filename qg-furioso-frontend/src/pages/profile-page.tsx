@@ -60,7 +60,7 @@ export default function ProfilePage() {
   };
 
   // Formatar CPF para exibição
-  const formatCPF = (cpf) => {
+  const formatCPF = (cpf: string | null | undefined): string => {
     if (!cpf) return "Não informado";
     // Formatar CPF (XXX.XXX.XXX-XX)
     return cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
