@@ -1,0 +1,86 @@
+The above error occurred in the <Popover> component:
+
+    at Popover (https://fed9ebab-489f-47d1-9a9b-2186c41c6626-00-17m6yz4g9oakg.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-popover.js?v=ce5be9fc:59:5)
+    at div
+    at div
+    at div
+    at header
+    at Header (https://fed9ebab-489f-47d1-9a9b-2186c41c6626-00-17m6yz4g9oakg.janeway.replit.dev/src/components/layout/header.tsx:44:39)
+    at div
+    at HomePage (https://fed9ebab-489f-47d1-9a9b-2186c41c6626-00-17m6yz4g9oakg.janeway.replit.dev/src/pages/home-page.tsx:31:20)
+    at ProtectedRoute (https://fed9ebab-489f-47d1-9a9b-2186c41c6626-00-17m6yz4g9oakg.janeway.replit.dev/src/lib/protected-route.tsx:21:34)
+    at Switch (https://fed9ebab-489f-47d1-9a9b-2186c41c6626-00-17m6yz4g9oakg.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=6565b2d2:379:17)
+    at Suspense
+    at Router
+    at AppContent (https://fed9ebab-489f-47d1-9a9b-2186c41c6626-00-17m6yz4g9oakg.janeway.replit.dev/src/App.tsx?t=1746221448849&v=FMas3mEjSiDszyfrJwhNl:145:22)
+    at Provider (https://fed9ebab-489f-47d1-9a9b-2186c41c6626-00-17m6yz4g9oakg.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-CLDRVZMN.js?v=6565b2d2:35:15)
+    at TooltipProvider (https://fed9ebab-489f-47d1-9a9b-2186c41c6626-00-17m6yz4g9oakg.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-tooltip.js?v=6565b2d2:56:5)
+    at WebSocketProvider (https://fed9ebab-489f-47d1-9a9b-2186c41c6626-00-17m6yz4g9oakg.janeway.replit.dev/src/App.tsx?t=1746221448849&v=FMas3mEjSiDszyfrJwhNl:47:30)
+    at AuthProvider (https://fed9ebab-489f-47d1-9a9b-2186c41c6626-00-17m6yz4g9oakg.janeway.replit.dev/src/hooks/use-auth.tsx:26:32)
+    at QueryClientProvider (https://fed9ebab-489f-47d1-9a9b-2186c41c6626-00-17m6yz4g9oakg.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=6565b2d2:2805:3)
+    at App
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
+
+at Popover (https://fed9ebab-489f-47d1-9a9b-2186c41c6626-00-17m6yz4g9oakg.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-popover.js?v=ce5be9fc:59:5)
+at div
+at div
+at div
+at header
+at Header (https://fed9ebab-489f-47d1-9a9b-2186c41c6626-00-17m6yz4g9oakg.janeway.replit.dev/src/components/layout/header.tsx:44:39)
+at div
+at HomePage (https://fed9ebab-489f-47d1-9a9b-2186c41c6626-00-17m6yz4g9oakg.janeway.replit.dev/src/pages/home-page.tsx:31:20)
+at ProtectedRoute (https://fed9ebab-489f-47d1-9a9b-2186c41c6626-00-17m6yz4g9oakg.janeway.replit.dev/src/lib/protected-route.tsx:21:34)
+at Switch (https://fed9ebab-489f-47d1-9a9b-2186c41c6626-00-17m6yz4g9oakg.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=6565b2d2:379:17)
+at Suspense
+at Router
+at AppContent (https://fed9ebab-489f-47d1-9a9b-2186c41c6626-00-17m6yz4g9oakg.janeway.replit.dev/src/App.tsx?t=1746221448849&amp;v=FMas3mEjSiDszyfrJwhNl:145:22)
+at Provider (https://fed9ebab-489f-47d1-9a9b-2186c41c6626-00-17m6yz4g9oakg.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-CLDRVZMN.js?v=6565b2d2:35:15)
+at TooltipProvider (https://fed9ebab-489f-47d1-9a9b-2186c41c6626-00-17m6yz4g9oakg.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-tooltip.js?v=6565b2d2:56:5)
+at WebSocketProvider (https://fed9ebab-489f-47d1-9a9b-2186c41c6626-00-17m6yz4g9oakg.janeway.replit.dev/src/App.tsx?t=1746221448849&amp;v=FMas3mEjSiDszyfrJwhNl:47:30)
+at AuthProvider (https://fed9ebab-489f-47d1-9a9b-2186c41c6626-00-17m6yz4g9oakg.janeway.replit.dev/src/hooks/use-auth.tsx:26:32)
+at QueryClientProvider (https://fed9ebab-489f-47d1-9a9b-2186c41c6626-00-17m6yz4g9oakg.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=6565b2d2:2805:3)
+at App
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
+at t.value (https://fed9ebab-489f-47d1-9a9b-2186c41c6626-00-17m6yz4g9oakg.janeway.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:17465)
+at new t (https://fed9ebab-489f-47d1-9a9b-2186c41c6626-00-17m6yz4g9oakg.janeway.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:12630)
+at t.value (https://fed9ebab-489f-47d1-9a9b-2186c41c6626-00-17m6yz4g9oakg.janeway.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:32766)
+at https://fed9ebab-489f-47d1-9a9b-2186c41c6626-00-17m6yz4g9oakg.janeway.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:34400
+The above error occurred in the <DropdownMenu> component:
+
+    at DropdownMenu (https://fed9ebab-489f-47d1-9a9b-2186c41c6626-00-17m6yz4g9oakg.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-dropdown-menu.js?v=ce5be9fc:901:5)
+    at div
+    at div
+    at div
+    at header
+    at Header (https://fed9ebab-489f-47d1-9a9b-2186c41c6626-00-17m6yz4g9oakg.janeway.replit.dev/src/components/layout/header.tsx:44:39)
+    at div
+    at HomePage (https://fed9ebab-489f-47d1-9a9b-2186c41c6626-00-17m6yz4g9oakg.janeway.replit.dev/src/pages/home-page.tsx:31:20)
+    at ProtectedRoute (https://fed9ebab-489f-47d1-9a9b-2186c41c6626-00-17m6yz4g9oakg.janeway.replit.dev/src/lib/protected-route.tsx:21:34)
+    at Switch (https://fed9ebab-489f-47d1-9a9b-2186c41c6626-00-17m6yz4g9oakg.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=6565b2d2:379:17)
+    at Suspense
+    at Router
+    at AppContent (https://fed9ebab-489f-47d1-9a9b-2186c41c6626-00-17m6yz4g9oakg.janeway.replit.dev/src/App.tsx?t=1746221448849&v=FMas3mEjSiDszyfrJwhNl:145:22)
+    at Provider (https://fed9ebab-489f-47d1-9a9b-2186c41c6626-00-17m6yz4g9oakg.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-CLDRVZMN.js?v=6565b2d2:35:15)
+    at TooltipProvider (https://fed9ebab-489f-47d1-9a9b-2186c41c6626-00-17m6yz4g9oakg.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-tooltip.js?v=6565b2d2:56:5)
+    at WebSocketProvider (https://fed9ebab-489f-47d1-9a9b-2186c41c6626-00-17m6yz4g9oakg.janeway.replit.dev/src/App.tsx?t=1746221448849&v=FMas3mEjSiDszyfrJwhNl:47:30)
+    at AuthProvider (https://fed9ebab-489f-47d1-9a9b-2186c41c6626-00-17m6yz4g9oakg.janeway.replit.dev/src/hooks/use-auth.tsx:26:32)
+    at QueryClientProvider (https://fed9ebab-489f-47d1-9a9b-2186c41c6626-00-17m6yz4g9oakg.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=6565b2d2:2805:3)
+    at App
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
+Cannot read properties of null (reading 'useMemo')
+at Object.useMemo (https://fed9ebab-489f-47d1-9a9b-2186c41c6626-00-17m6yz4g9oakg.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-QCHXOAYK.js?v=ce5be9fc:1094:29)
+at useScope (https://fed9ebab-489f-47d1-9a9b-2186c41c6626-00-17m6yz4g9oakg.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-GFOGKHJ2.js?v=ce5be9fc:44:20)
+at Popover (https://fed9ebab-489f-47d1-9a9b-2186c41c6626-00-17m6yz4g9oakg.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-popover.js?v=ce5be9fc:66:23)
+at renderWithHooks (https://fed9ebab-489f-47d1-9a9b-2186c41c6626-00-17m6yz4g9oakg.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-RPCDYKBN.js?v=6565b2d2:11548:26)
+at mountIndeterminateComponent (https://fed9ebab-489f-47d1-9a9b-2186c41c6626-00-17m6yz4g9oakg.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-RPCDYKBN.js?v=6565b2d2:14926:21)
+at beginWork (https://fed9ebab-489f-47d1-9a9b-2186c41c6626-00-17m6yz4g9oakg.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-RPCDYKBN.js?v=6565b2d2:15914:22)
+at beginWork$1 (https://fed9ebab-489f-47d1-9a9b-2186c41c6626-00-17m6yz4g9oakg.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-RPCDYKBN.js?v=6565b2d2:19753:22)
+at performUnitOfWork (https://fed9ebab-489f-47d1-9a9b-2186c41c6626-00-17m6yz4g9oakg.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-RPCDYKBN.js?v=6565b2d2:19198:20)
+at workLoopSync (https://fed9ebab-489f-47d1-9a9b-2186c41c6626-00-17m6yz4g9oakg.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-RPCDYKBN.js?v=6565b2d2:19137:13)
+at renderRootSync (https://fed9ebab-489f-47d1-9a9b-2186c41c6626-00-17m6yz4g9oakg.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-RPCDYKBN.js?v=6565b2d2:19116:15)

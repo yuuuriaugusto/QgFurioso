@@ -167,9 +167,9 @@ export default function Header() {
                 )}
               </Link>
 
-              {/* Notification popover */}
-              <Popover>
-                <PopoverTrigger asChild>
+              {/* Notification button */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
                   <button className="p-2 rounded-full hover:bg-muted relative">
                     <Bell className="h-5 w-5" />
                     {unreadCount > 0 && (
@@ -181,9 +181,9 @@ export default function Header() {
                       </Badge>
                     )}
                   </button>
-                </PopoverTrigger>
-                <PopoverContent className="w-80" align="end">
-                  <div className="flex justify-between items-center mb-2">
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-80" align="end">
+                  <div className="flex justify-between items-center mb-2 px-2 pt-2">
                     <h4 className="font-medium">Notificações</h4>
                     {unreadCount > 0 && (
                       <button 
@@ -195,7 +195,7 @@ export default function Header() {
                     )}
                   </div>
                   
-                  <div className="max-h-[300px] overflow-y-auto">
+                  <div className="max-h-[300px] overflow-y-auto px-2 pb-2">
                     {notifications.length > 0 ? (
                       notifications.map((notification) => (
                         <div 
@@ -231,8 +231,8 @@ export default function Header() {
                       </div>
                     )}
                   </div>
-                </PopoverContent>
-              </Popover>
+                </DropdownMenuContent>
+              </DropdownMenu>
 
               {/* User dropdown */}
               <DropdownMenu>
