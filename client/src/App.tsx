@@ -4,18 +4,19 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/hooks/use-auth";
-import { ReactNode, useEffect } from "react";
+import { ReactNode, useEffect, lazy, Suspense } from "react";
 import { ProtectedRoute } from "@/lib/protected-route";
-import NotFound from "@/pages/not-found";
-import AuthPage from "@/pages/auth-page";
-import HomePage from "@/pages/home-page";
-import ProfilePage from "@/pages/profile-page";
-import ShopPage from "@/pages/shop-page";
-import ContentPage from "@/pages/content-page";
-import SchedulePage from "@/pages/schedule-page";
-import LivePage from "@/pages/live-page";
-import SurveysPage from "@/pages/surveys-page";
-import SettingsPage from "@/pages/settings-page";
+// Carregamento preguiçoso (Lazy loading) para melhorar a performance
+const NotFound = lazy(() => import("@/pages/not-found"));
+const AuthPage = lazy(() => import("@/pages/auth-page"));
+const HomePage = lazy(() => import("@/pages/home-page"));
+const ProfilePage = lazy(() => import("@/pages/profile-page"));
+const ShopPage = lazy(() => import("@/pages/shop-page"));
+const ContentPage = lazy(() => import("@/pages/content-page"));
+const SchedulePage = lazy(() => import("@/pages/schedule-page"));
+const LivePage = lazy(() => import("@/pages/live-page"));
+const SurveysPage = lazy(() => import("@/pages/surveys-page"));
+const SettingsPage = lazy(() => import("@/pages/settings-page"));
 // Remover a importação do WebSocketTestPage até configurar corretamente o WebSocketProvider
 import BottomNav from "@/components/layout/bottom-nav";
 
@@ -24,20 +25,32 @@ const WebSocketProvider = ({ children }: { children: ReactNode }) => {
   return <>{children}</>;
 };
 
+// Componente de carregamento
+const Loading = () => (
+  <div className="flex items-center justify-center min-h-[60vh]">
+    <div className="flex flex-col items-center">
+      <div className="w-16 h-16 border-4 border-t-primary border-r-transparent border-b-primary border-l-transparent rounded-full animate-spin"></div>
+      <p className="mt-4 text-muted-foreground">Carregando conteúdo...</p>
+    </div>
+  </div>
+);
+
 function Router() {
   return (
-    <Switch>
-      <ProtectedRoute path="/" component={HomePage} />
-      <ProtectedRoute path="/meu-qg" component={ProfilePage} />
-      <ProtectedRoute path="/loja" component={ShopPage} />
-      <ProtectedRoute path="/conteudo" component={ContentPage} />
-      <ProtectedRoute path="/agenda" component={SchedulePage} />
-      <ProtectedRoute path="/ao-vivo" component={LivePage} />
-      <ProtectedRoute path="/pesquisas" component={SurveysPage} />
-      <ProtectedRoute path="/configuracoes" component={SettingsPage} />
-      <Route path="/auth" component={AuthPage} />
-      <Route component={NotFound} />
-    </Switch>
+    <Suspense fallback={<Loading />}>
+      <Switch>
+        <ProtectedRoute path="/" component={HomePage} />
+        <ProtectedRoute path="/meu-qg" component={ProfilePage} />
+        <ProtectedRoute path="/furia-coins" component={ShopPage} />
+        <ProtectedRoute path="/conteudo" component={ContentPage} />
+        <ProtectedRoute path="/agenda" component={SchedulePage} />
+        <ProtectedRoute path="/ao-vivo" component={LivePage} />
+        <ProtectedRoute path="/pesquisas" component={SurveysPage} />
+        <ProtectedRoute path="/configuracoes" component={SettingsPage} />
+        <Route path="/auth" component={AuthPage} />
+        <Route component={NotFound} />
+      </Switch>
+    </Suspense>
   );
 }
 

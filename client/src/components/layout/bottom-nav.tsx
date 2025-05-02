@@ -1,5 +1,5 @@
 import { useLocation } from "wouter";
-import { Home, BookOpen, Calendar, Play, ShoppingBag } from "lucide-react";
+import { Home, BookOpen, Calendar, Play, Coins } from "lucide-react";
 import { OptimizedLink } from "@/components/ui/optimized-link";
 
 export default function BottomNav() {
@@ -57,13 +57,13 @@ export default function BottomNav() {
         </OptimizedLink>
         
         <OptimizedLink
-          href="/loja"
+          href="/furia-coins"
           className={`flex flex-col items-center justify-center ${
-            isActive("/loja") ? "text-primary" : "text-muted-foreground"
+            isActive("/furia-coins") ? "text-primary" : "text-muted-foreground"
           }`}
         >
-          <ShoppingBag className="h-5 w-5" />
-          <span className="text-xs mt-1">Loja</span>
+          <Coins className="h-5 w-5" />
+          <span className="text-xs mt-1">Coins</span>
         </OptimizedLink>
       </div>
     </div>
