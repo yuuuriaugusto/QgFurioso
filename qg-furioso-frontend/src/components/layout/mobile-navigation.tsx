@@ -1,5 +1,5 @@
 import { useLocation } from "wouter";
-import { Home, ShoppingBag, Calendar, Play, FileText, User } from "lucide-react";
+import { Home, Calendar, Play, FileText, User, Coins } from "lucide-react";
 
 export default function MobileNavigation() {
   const [location] = useLocation();
@@ -31,13 +31,13 @@ export default function MobileNavigation() {
           <span className="text-xs mt-1">Conteúdo</span>
         </a>
         <a
-          href="/agenda"
+          href="/furia-coins"
           className={`flex flex-col items-center justify-center h-full w-full ${
-            isActive("/agenda") ? "text-primary" : "text-muted-foreground"
+            isActive("/furia-coins") ? "text-primary" : "text-muted-foreground"
           }`}
         >
-          <Calendar className="h-5 w-5" />
-          <span className="text-xs mt-1">Agenda</span>
+          <Coins className="h-5 w-5" />
+          <span className="text-xs mt-1">Coins</span>
         </a>
         <a
           href="/ao-vivo"
