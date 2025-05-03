@@ -577,7 +577,7 @@ export default function AdminSurveysPage() {
                   <SelectValue placeholder="Filtrar por status" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Todas</SelectItem>
+                  <SelectItem value="all">Todas</SelectItem>
                   <SelectItem value="draft">Rascunhos</SelectItem>
                   <SelectItem value="active">Ativas</SelectItem>
                   <SelectItem value="completed">Concluídas</SelectItem>
