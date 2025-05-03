@@ -220,6 +220,7 @@ export default function ProfilePage() {
       firstName: user?.profile?.firstName || "",
       lastName: user?.profile?.lastName || "",
       birthDate: user?.profile?.birthDate ? new Date(user.profile.birthDate) : undefined,
+      phoneNumber: user?.profile?.phoneNumber || "",
       cpf: "",
       addressStreet: user?.profile?.addressStreet || "",
       addressNumber: user?.profile?.addressNumber || "",
@@ -241,6 +242,7 @@ export default function ProfilePage() {
         firstName: userProfile.firstName || "",
         lastName: userProfile.lastName || "",
         birthDate: userProfile.birthDate ? new Date(userProfile.birthDate) : undefined,
+        phoneNumber: userProfile.phoneNumber || "",
         cpf: "", // Não exibimos o CPF armazenado, apenas permitimos nova entrada
         addressStreet: userProfile.addressStreet || "",
         addressNumber: userProfile.addressNumber || "",
@@ -566,6 +568,36 @@ export default function ProfilePage() {
                               
                               <FormField
                                 control={form.control}
+                                name="phoneNumber"
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel>Telefone</FormLabel>
+                                    <FormControl>
+                                      <Input 
+                                        placeholder="(00) 00000-0000" 
+                                        {...field} 
+                                        maxLength={15}
+                                        onChange={(e) => {
+                                          // Formatação do telefone: (00) 00000-0000
+                                          let value = e.target.value.replace(/\D/g, "");
+                                          if (value.length > 0 && value.length <= 2)
+                                            value = value.replace(/^(\d+)/, "($1");
+                                          else if (value.length > 2 && value.length <= 7)
+                                            value = value.replace(/^\((\d{2})(\d+)/, "($1) $2");
+                                          else if (value.length > 7)
+                                            value = value.replace(/^\((\d{2})\) (\d{5})(\d+)/, "($1) $2-$3");
+                                          
+                                          field.onChange(value);
+                                        }}
+                                      />
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                              
+                              <FormField
+                                control={form.control}
                                 name="cpf"
                                 render={({ field }) => (
                                   <FormItem>
@@ -617,6 +649,13 @@ export default function ProfilePage() {
                                   {user?.profile?.birthDate 
                                     ? format(new Date(user.profile.birthDate), "dd/MM/yyyy", { locale: pt })
                                     : "Não informado"}
+                                </p>
+                              </div>
+                              
+                              <div>
+                                <label className="text-xs text-muted-foreground block mb-1">Telefone</label>
+                                <p className="font-medium">
+                                  {user?.profile?.phoneNumber || "Não informado"}
                                 </p>
                               </div>
                               
