@@ -240,11 +240,11 @@ export default function Header() {
                   <Avatar className="h-8 w-8">
                     <AvatarImage src={user.profile?.avatarUrl} />
                     <AvatarFallback>
-                      {user.profile?.firstName?.charAt(0) || user.primaryIdentity.charAt(0).toUpperCase()}
+                      {user.profile?.firstName?.charAt(0) || user.username.charAt(0).toUpperCase()}
                     </AvatarFallback>
                   </Avatar>
                   <span className="text-sm font-medium hidden lg:inline-block">
-                    {user.profile?.firstName || user.primaryIdentity}
+                    {user.profile?.firstName || user.username}
                   </span>
                 </DropdownMenuTrigger>
 
