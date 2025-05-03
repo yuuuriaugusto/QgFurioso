@@ -220,8 +220,7 @@ export class MemStorage implements IStorage {
   private initializeData(): void {
     // Add a test user
     const testUser: InsertUser & { passwordHash: string } = {
-      primaryIdentity: "teste@furia.com",
-      identityType: "email",
+      username: "teste@furia.com",
       passwordHash: "$2b$10$2xZuGKKkPx2z3/8vIkMsGusB08c0xgG2zxuQPbiiKt9LTsJrV.j6W", // senha: furiafan123
       status: "active"
     };
@@ -499,9 +498,9 @@ export class MemStorage implements IStorage {
     return this.users.get(id);
   }
 
-  async getUserByPrimaryIdentity(primaryIdentity: string): Promise<User | undefined> {
+  async getUserByUsername(username: string): Promise<User | undefined> {
     return Array.from(this.users.values()).find(
-      (user) => user.primaryIdentity === primaryIdentity
+      (user) => user.username === username
     );
   }
 
@@ -511,8 +510,7 @@ export class MemStorage implements IStorage {
     const user: User = {
       id,
       publicId: crypto.randomUUID(),
-      primaryIdentity: userData.primaryIdentity,
-      identityType: userData.identityType,
+      username: userData.username,
       passwordHash: userData.passwordHash,
       status: userData.status || "pending_verification",
       lastLoginAt: null,

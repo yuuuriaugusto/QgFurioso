@@ -46,7 +46,7 @@ async function comparePasswords(supplied: string, stored: string) {
 export async function createTestUser() {
   try {
     // Verificar se já existe o usuário de teste
-    const existingUser = await storage.getUserByPrimaryIdentity("teste@furia.com");
+    const existingUser = await storage.getUserByUsername("teste@furia.com");
     if (existingUser) {
       console.log("Usuário de teste já existe.");
       return;
@@ -59,8 +59,7 @@ export async function createTestUser() {
     
     // Criar o usuário
     const user = await storage.createUser({
-      primaryIdentity: "teste@furia.com",
-      identityType: "email",
+      username: "teste@furia.com",
       passwordHash,
       status: "active",
     });
@@ -210,7 +209,7 @@ export function setupAuth(app: Express) {
       },
       async (username, password, done) => {
         try {
-          const user = await storage.getUserByPrimaryIdentity(username);
+          const user = await storage.getUserByUsername(username);
           if (!user || !(await comparePasswords(password, user.passwordHash))) {
             return done(null, false, { message: "Credenciais inválidas" });
           }
@@ -261,16 +260,15 @@ export function setupAuth(app: Express) {
       const validatedData = registerSchema.parse(req.body);
       
       // Check if user exists
-      const existingUser = await storage.getUserByPrimaryIdentity(validatedData.primaryIdentity);
+      const existingUser = await storage.getUserByUsername(validatedData.username);
       if (existingUser) {
-        return res.status(400).json({ message: "Este identificador já está em uso" });
+        return res.status(400).json({ message: "Este nome de usuário já está em uso" });
       }
       
       // Create user
       const passwordHash = await hashPassword(validatedData.password);
       const user = await storage.createUser({
-        primaryIdentity: validatedData.primaryIdentity,
-        identityType: validatedData.identityType,
+        username: validatedData.username,
         passwordHash,
         status: "active", // Auto-activate for now
       });
@@ -321,7 +319,7 @@ export function setupAuth(app: Express) {
         
         return res.status(201).json({
           id: user.id,
-          primaryIdentity: user.primaryIdentity,
+          username: user.username,
           status: user.status,
           profile,
           coinBalance: {
