@@ -28,7 +28,53 @@ adminCoinsRouter.get('/rules', requireAdminAuth, async (req: Request, res: Respo
     // Log de auditoria
     await logAuditAction(req, 'read', 'coin_rule', null, 'Consultou regras de pontuação');
     
-    return res.status(501).json({ message: 'Endpoint em implementação' });
+    // Em vez de retornar 501, vamos retornar dados mockados para desenvolvimento
+    // Retornar 200 com dados mockados para desenvolvimento
+    return res.status(200).json({
+      rules: [
+        {
+          id: 1,
+          title: "Cadastro Completo",
+          description: "Pontos concedidos quando o usuário completa todas as informações do perfil.",
+          pointsAmount: 50,
+          category: "profile",
+          isActive: true,
+          createdAt: "2023-01-10T14:30:00Z",
+          updatedAt: "2023-01-10T14:30:00Z",
+          isRecurring: false,
+          cooldownHours: null,
+          maxOccurrences: 1
+        },
+        {
+          id: 2,
+          title: "Login Diário",
+          description: "Pontos concedidos pelo primeiro login do dia na plataforma.",
+          pointsAmount: 10,
+          category: "engagement",
+          isActive: true,
+          createdAt: "2023-01-11T09:45:00Z",
+          updatedAt: "2023-02-15T11:20:00Z",
+          isRecurring: true,
+          cooldownHours: 24,
+          maxOccurrences: null
+        },
+        {
+          id: 3,
+          title: "Responder Pesquisa",
+          description: "Pontos concedidos quando o usuário responde uma pesquisa completa.",
+          pointsAmount: 25,
+          category: "surveys",
+          isActive: true,
+          createdAt: "2023-01-15T16:20:00Z",
+          updatedAt: "2023-01-15T16:20:00Z",
+          isRecurring: true,
+          cooldownHours: null,
+          maxOccurrences: null
+        }
+      ],
+      totalCount: 3,
+      pageCount: 1
+    });
   } catch (error) {
     console.error('Erro ao buscar regras de pontuação:', error);
     return res.status(500).json({ message: 'Erro ao processar requisição' });
@@ -103,7 +149,128 @@ adminCoinsRouter.get('/transactions', requireAdminAuth, async (req: Request, res
     // Log de auditoria
     await logAuditAction(req, 'read', 'coin_transaction', null, 'Consultou transações de FURIA Coins');
     
-    return res.status(501).json({ message: 'Endpoint em implementação' });
+    // Retornar dados mockados para desenvolvimento
+    const mockTransactions = [
+      {
+        id: 1,
+        transactionId: "TRX-2023-0001",
+        userId: 1,
+        userName: "João Silva",
+        userEmail: "joao.silva@exemplo.com",
+        amount: 50,
+        balance: 50,
+        transactionType: "signup_bonus",
+        description: "Bônus de cadastro",
+        metadata: null,
+        referenceId: null,
+        createdAt: "2023-04-28T14:30:00Z",
+        updatedAt: "2023-04-28T14:30:00Z"
+      },
+      {
+        id: 2,
+        transactionId: "TRX-2023-0002",
+        userId: 2,
+        userName: "Maria Santos",
+        userEmail: "maria.santos@exemplo.com",
+        amount: 10,
+        balance: 60,
+        transactionType: "daily_login",
+        description: "Login diário",
+        metadata: null,
+        referenceId: null,
+        createdAt: "2023-04-27T09:45:00Z",
+        updatedAt: "2023-04-27T09:45:00Z"
+      },
+      {
+        id: 3,
+        transactionId: "TRX-2023-0003",
+        userId: 1,
+        userName: "João Silva",
+        userEmail: "joao.silva@exemplo.com",
+        amount: 25,
+        balance: 75,
+        transactionType: "survey_completion",
+        description: "Resposta à pesquisa #12: Preferências de jogo",
+        metadata: {
+          surveyId: 12,
+          surveyTitle: "Preferências de jogo"
+        },
+        referenceId: "SURVEY-12",
+        createdAt: "2023-04-26T16:20:00Z",
+        updatedAt: "2023-04-26T16:20:00Z"
+      },
+      {
+        id: 4,
+        transactionId: "TRX-2023-0004",
+        userId: 3,
+        userName: "Carlos Oliveira",
+        userEmail: "carlos.oliveira@exemplo.com",
+        amount: -500,
+        balance: 50,
+        transactionType: "redemption",
+        description: "Resgate de produto: Camisa FURIA Oficial",
+        metadata: {
+          productId: 1,
+          productName: "Camisa FURIA Oficial",
+          redemptionId: "ORD-2023-0001"
+        },
+        referenceId: "ORD-2023-0001",
+        createdAt: "2023-04-25T13:15:00Z",
+        updatedAt: "2023-04-25T13:15:00Z"
+      }
+    ];
+    
+    // Filtrar transações conforme parâmetros recebidos
+    let filteredTransactions = [...mockTransactions];
+    
+    // Filtrar por tipo de transação
+    if (type && type !== 'all') {
+      filteredTransactions = filteredTransactions.filter(t => t.transactionType === type);
+    }
+    
+    // Filtrar por valor positivo/negativo
+    if (amountType === 'positive') {
+      filteredTransactions = filteredTransactions.filter(t => t.amount > 0);
+    } else if (amountType === 'negative') {
+      filteredTransactions = filteredTransactions.filter(t => t.amount < 0);
+    }
+    
+    // Filtrar por data
+    if (startDate || endDate) {
+      filteredTransactions = filteredTransactions.filter(t => {
+        const txDate = new Date(t.createdAt);
+        if (startDate && endDate) {
+          return txDate >= startDate && txDate <= endDate;
+        } else if (startDate) {
+          return txDate >= startDate;
+        } else if (endDate) {
+          return txDate <= endDate;
+        }
+        return true;
+      });
+    }
+    
+    // Filtrar por termo de busca
+    if (search) {
+      const searchTerm = search.toLowerCase();
+      filteredTransactions = filteredTransactions.filter(t => 
+        t.userName.toLowerCase().includes(searchTerm) || 
+        t.userEmail.toLowerCase().includes(searchTerm) ||
+        t.transactionId.toLowerCase().includes(searchTerm)
+      );
+    }
+    
+    // Paginação
+    const startIndex = (page - 1) * limit;
+    const endIndex = startIndex + limit;
+    const paginatedTransactions = filteredTransactions.slice(startIndex, endIndex);
+    
+    return res.status(200).json({
+      transactions: paginatedTransactions,
+      totalCount: filteredTransactions.length,
+      totalAmount: filteredTransactions.reduce((sum, t) => sum + t.amount, 0),
+      pageCount: Math.ceil(filteredTransactions.length / limit)
+    });
   } catch (error) {
     console.error('Erro ao buscar transações de FURIA Coins:', error);
     return res.status(500).json({ message: 'Erro ao processar requisição' });
@@ -170,11 +337,14 @@ adminCoinsRouter.get('/metrics', requireAdminAuth, async (req: Request, res: Res
         { date: "2023-04-20", issued: 320, spent: 180 },
         { date: "2023-04-21", issued: 290, spent: 210 },
         { date: "2023-04-22", issued: 350, spent: 240 },
-        // ... mais dados
+        { date: "2023-04-23", issued: 280, spent: 260 },
+        { date: "2023-04-24", issued: 420, spent: 150 },
+        { date: "2023-04-25", issued: 380, spent: 290 },
+        { date: "2023-04-26", issued: 450, spent: 320 }
       ]
     };
     
-    return res.status(501).json({ message: 'Endpoint em implementação' });
+    return res.status(200).json(metrics);
   } catch (error) {
     console.error('Erro ao buscar métricas de FURIA Coins:', error);
     return res.status(500).json({ message: 'Erro ao processar requisição' });
