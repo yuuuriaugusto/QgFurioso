@@ -213,15 +213,26 @@ export class MemStorage implements IStorage {
       checkPeriod: 86400000 // prune expired entries every 24h
     });
     
-    // Add sample data
-    this.initializeData();
+    // Add sample data (async)
+    this.initializeData().catch(err => {
+      console.error("Erro ao inicializar dados:", err);
+    });
   }
   
-  private initializeData(): void {
+  private async initializeData(): Promise<void> {
+    // Import bcrypt here
+    const bcrypt = await import("bcrypt");
+    
+    // Generate new password hashes with bcrypt
+    const testUserPasswordHash = await bcrypt.hash("furiafan123", 10);
+    const testAdminPasswordHash = await bcrypt.hash("admin123", 10);
+    
+    console.log("Iniciando dados com novos hashes de senha.");
+    
     // Add a test user
     const testUser: InsertUser & { passwordHash: string } = {
       username: "teste@furia.com",
-      passwordHash: "$2b$10$2xZuGKKkPx2z3/8vIkMsGusB08c0xgG2zxuQPbiiKt9LTsJrV.j6W", // senha: furiafan123
+      passwordHash: testUserPasswordHash, // Novo hash para "furiafan123"
       status: "active"
     };
     
@@ -229,14 +240,14 @@ export class MemStorage implements IStorage {
     const testAdmin: InsertAdminUser & { passwordHash: string } = {
       name: "Administrador",
       email: "admin@furia.com",
-      passwordHash: "$2b$10$WfJLKGY8SNw2y9UzHYDUC.q1SvR1W.F/jBU08TyHWMCEF8MwQUHoC", // senha: admin123
+      passwordHash: testAdminPasswordHash, // Novo hash para "admin123"
       role: "super_admin",
       isActive: true
     };
     
-    this.createAdmin(testAdmin);
+    await this.createAdmin(testAdmin);
     
-    const user = this.createUser(testUser);
+    const user = await this.createUser(testUser);
     
     // Add user profile
     this.createUserProfile(user.id, {
