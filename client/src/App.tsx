@@ -28,6 +28,11 @@ const AdminUsersPage = lazy(() => import("@/pages/admin-users-page"));
 const AdminShopProductsPage = lazy(() => import("@/pages/admin-shop-products-page"));
 const AdminShopRedemptionsPage = lazy(() => import("@/pages/admin-shop-redemptions-page"));
 const AdminContentNewsPage = lazy(() => import("@/pages/admin-content-news-page"));
+const AdminSurveysPage = lazy(() => import("@/pages/admin-surveys-page"));
+const AdminSupportPage = lazy(() => import("@/pages/admin-support-page"));
+const AdminAuditPage = lazy(() => import("@/pages/admin-audit-page"));
+const AdminFanSentimentPage = lazy(() => import("@/pages/admin-fan-sentiment-page"));
+const AdminSettingsPage = lazy(() => import("@/pages/admin-settings-page"));
 import BottomNav from "@/components/layout/bottom-nav";
 
 // Componente de carregamento
@@ -85,6 +90,31 @@ function Router() {
         <Route path="/admin/content/news">
           <Suspense fallback={<Loading />}>
             <AdminContentNewsPage />
+          </Suspense>
+        </Route>
+        <Route path="/admin/surveys">
+          <Suspense fallback={<Loading />}>
+            <AdminSurveysPage />
+          </Suspense>
+        </Route>
+        <Route path="/admin/support">
+          <Suspense fallback={<Loading />}>
+            <AdminSupportPage />
+          </Suspense>
+        </Route>
+        <Route path="/admin/audit">
+          <Suspense fallback={<Loading />}>
+            <AdminAuditPage />
+          </Suspense>
+        </Route>
+        <Route path="/admin/fan-sentiment">
+          <Suspense fallback={<Loading />}>
+            <AdminFanSentimentPage />
+          </Suspense>
+        </Route>
+        <Route path="/admin/settings">
+          <Suspense fallback={<Loading />}>
+            <AdminSettingsPage />
           </Suspense>
         </Route>
         

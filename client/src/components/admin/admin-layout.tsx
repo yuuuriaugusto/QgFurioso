@@ -5,14 +5,18 @@ import {
   Users, 
   Coins, 
   FileText, 
-  ListChecks, 
+  ListChecks,
+  ClipboardList,
   Settings, 
   Clock, 
   LogOut,
   Menu,
   ShoppingBag,
   HelpCircle,
-  PackageOpen
+  PackageOpen,
+  LineChart,
+  Activity,
+  Heart
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -68,7 +72,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       icon: FileText,
       submenu: [
         { name: "Notícias", href: "/admin/content/news" },
-        { name: "Pesquisas", href: "/admin/content/surveys" },
+        { name: "Pesquisas", href: "/admin/surveys" },
       ],
     },
     {
@@ -77,8 +81,13 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       icon: HelpCircle,
     },
     {
+      name: "Sentimento dos Fãs",
+      href: "/admin/fan-sentiment",
+      icon: Heart,
+    },
+    {
       name: "Logs de Auditoria",
-      href: "/admin/audit-logs",
+      href: "/admin/audit",
       icon: Clock,
     },
     {
