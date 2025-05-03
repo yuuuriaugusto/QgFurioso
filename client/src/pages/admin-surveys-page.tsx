@@ -171,74 +171,64 @@ export default function AdminSurveysPage() {
   const { data: surveys, isLoading, refetch } = useQuery({
     queryKey: ["/api/admin/surveys", selectedStatus],
     queryFn: async () => {
-      // Dados mockados para visualização
-      return [
-        {
-          id: 1,
-          title: "Avaliação dos Novos Uniformes",
-          description: "Ajude-nos a avaliar a qualidade e design dos novos uniformes FURIA 2025.",
-          reward: 20,
-          expirationDate: new Date(2025, 5, 30),
-          status: "active",
-          estimatedTimeMinutes: 5,
-          createdAt: new Date(2025, 4, 1),
-          updatedAt: new Date(2025, 4, 1),
-          questionCount: 5,
-          responseCount: 125,
-        },
-        {
-          id: 2,
-          title: "Pesquisa sobre Conteúdo na Plataforma",
-          description: "Queremos saber sua opinião sobre os conteúdos disponibilizados na plataforma.",
-          reward: 15,
-          expirationDate: new Date(2025, 5, 15),
-          status: "active",
-          estimatedTimeMinutes: 8,
-          createdAt: new Date(2025, 3, 20),
-          updatedAt: new Date(2025, 3, 20),
-          questionCount: 8,
-          responseCount: 78,
-        },
-        {
-          id: 3,
-          title: "Pesquisa sobre Eventos FURIA",
-          description: "Sua opinião sobre os eventos presenciais e online da FURIA.",
-          reward: 25,
-          expirationDate: new Date(2025, 3, 10),
-          status: "completed",
-          estimatedTimeMinutes: 10,
-          createdAt: new Date(2025, 2, 15),
-          updatedAt: new Date(2025, 3, 11),
-          questionCount: 12,
-          responseCount: 210,
-        },
-        {
-          id: 4,
-          title: "Teste de Satisfação com FURIA Coins",
-          description: "Avalie sua experiência com o sistema de FURIA Coins na plataforma.",
-          reward: 10,
-          expirationDate: null,
-          status: "draft",
-          estimatedTimeMinutes: 3,
-          createdAt: new Date(2025, 4, 5),
-          updatedAt: new Date(2025, 4, 5),
-          questionCount: 4,
-          responseCount: 0,
-        },
-        {
-          id: 5,
-          title: "Pesquisa sobre Mecânicas do Game CS2",
-          description: "Compartilhe sua opinião sobre as mecânicas atuais do CS2 e sugestões de melhoria.",
-          reward: 30,
-          expirationDate: new Date(2025, 2, 20),
-          status: "archived",
-          estimatedTimeMinutes: 15,
-          createdAt: new Date(2025, 1, 10),
-          updatedAt: new Date(2025, 2, 25),
-          questionCount: 15,
-          responseCount: 189,
-        },
-      ];
+      try {
+        const response = await fetch(`/api/admin/surveys${selectedStatus ? `?status=${selectedStatus}` : ""}`);
+        
+        if (!response.ok) {
+          throw new Error("Falha ao carregar pesquisas");
+        }
+        
+        return await response.json();
+      } catch (error) {
+        console.error("Erro ao carregar pesquisas:", error);
+        toast({
+          title: "Erro",
+          description: "Não foi possível carregar a lista de pesquisas",
+          variant: "destructive",
+        });
+        
+        // Dados de exemplo para desenvolvimento com datas válidas
+        return [
+          {
+            id: 1,
+            title: "Avaliação dos Novos Uniformes",
+            description: "Ajude-nos a avaliar a qualidade e design dos novos uniformes FURIA.",
+            reward: 20,
+            expirationDate: new Date(2023, 5, 30).toISOString(),
+            status: "active",
+            estimatedTimeMinutes: 5,
+            createdAt: new Date(2023, 4, 1).toISOString(),
+            updatedAt: new Date(2023, 4, 1).toISOString(),
+            questionCount: 5,
+            responseCount: 125,
+          },
+          {
+            id: 2,
+            title: "Pesquisa sobre Conteúdo na Plataforma",
+            description: "Queremos saber sua opinião sobre os conteúdos disponibilizados na plataforma.",
+            reward: 15,
+            expirationDate: new Date(2023, 5, 15).toISOString(),
+            status: "active",
+            estimatedTimeMinutes: 8,
+            createdAt: new Date(2023, 3, 20).toISOString(),
+            updatedAt: new Date(2023, 3, 20).toISOString(),
+            questionCount: 8,
+            responseCount: 78,
+          },
+          {
+            id: 3,
+            title: "Pesquisa sobre Eventos FURIA",
+            description: "Sua opinião sobre os eventos presenciais e online da FURIA.",
+            reward: 25,
+            expirationDate: new Date(2023, 3, 10).toISOString(),
+            status: "completed",
+            estimatedTimeMinutes: 10,
+            createdAt: new Date(2023, 2, 15).toISOString(),
+            updatedAt: new Date(2023, 3, 11).toISOString(),
+            questionCount: 12,
+            responseCount: 210,
+          }
+        ];
     },
   });
 
@@ -248,20 +238,29 @@ export default function AdminSurveysPage() {
     queryFn: async () => {
       if (!selectedSurvey) return null;
       
-      // Dados mockados para visualização
-      return {
-        totalResponses: selectedSurvey.responseCount,
-        completionRate: 0.92,
-        averageTimeMinutes: 4.5,
-        responsesByDay: {
-          "01/05/2025": 15,
-          "02/05/2025": 23,
-          "03/05/2025": 18,
-          "04/05/2025": 22,
-          "05/05/2025": 30,
-          "06/05/2025": 12,
-          "07/05/2025": 5,
-        },
+      try {
+        const response = await fetch(`/api/admin/surveys/${selectedSurvey.id}/stats`);
+        if (!response.ok) {
+          throw new Error("Falha ao carregar estatísticas da pesquisa");
+        }
+        return await response.json();
+      } catch (error) {
+        console.error("Erro ao carregar estatísticas da pesquisa:", error);
+        
+        // Dados de exemplo para desenvolvimento com datas válidas
+        return {
+          totalResponses: selectedSurvey.responseCount,
+          completionRate: 0.92,
+          averageTimeMinutes: 4.5,
+          responsesByDay: {
+            "01/05/2023": 15,
+            "02/05/2023": 23,
+            "03/05/2023": 18,
+            "04/05/2023": 22,
+            "05/05/2023": 30,
+            "06/05/2023": 12,
+            "07/05/2023": 5,
+          },
         questionStats: [
           {
             id: 1,
