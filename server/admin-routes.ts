@@ -4,6 +4,10 @@ import { promisify } from 'util';
 import { storage } from './storage';
 import { adminLoginSchema, AdminLoginData, AdminUser, AdminRole } from '@shared/schema';
 import { hashPassword } from './auth';
+import { adminSurveysRouter } from './admin-surveys-routes';
+import { adminSupportRouter } from './admin-support-routes';
+import { auditRouter } from './audit-routes';
+import { fanSentimentRouter } from './fan-sentiment-routes';
 import session from 'express-session';
 
 // Estender a interface Session para incluir adminId
