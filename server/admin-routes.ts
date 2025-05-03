@@ -48,21 +48,28 @@ export const requireAdminRole = (roles: AdminRole[]) => {
 // Função auxiliar para comparar senhas
 async function comparePasswords(supplied: string, stored: string) {
   try {
-    const [hashed, salt] = stored.split('.');
-    if (!hashed || !salt) {
-      console.error('Formato de senha inválido');
+    // Verificar se está no formato bcrypt (começa com $2b$)
+    if (stored.startsWith('$2b$')) {
+      // Importar bcrypt dinamicamente
+      const bcrypt = require('bcrypt');
+      return await bcrypt.compare(supplied, stored);
+    } 
+    // Verificar se está no formato scrypt (formato hash.salt)
+    else if (stored.includes('.')) {
+      const [hashed, salt] = stored.split('.');
+      if (!hashed || !salt) {
+        console.error('Formato de senha inválido');
+        return false;
+      }
+      
+      const hashedBuf = Buffer.from(hashed, 'hex');
+      const suppliedBuf = (await scryptAsync(supplied, salt, 64)) as Buffer;
+      
+      return timingSafeEqual(hashedBuf, suppliedBuf);
+    } else {
+      console.error('Formato de senha não reconhecido');
       return false;
     }
-    
-    const hashedBuf = Buffer.from(hashed, 'hex');
-    const suppliedBuf = (await scryptAsync(supplied, salt, 64)) as Buffer;
-    
-    if (hashedBuf.length !== suppliedBuf.length) {
-      console.error('Comprimentos de buffer diferentes:', hashedBuf.length, suppliedBuf.length);
-      return false;
-    }
-    
-    return timingSafeEqual(hashedBuf, suppliedBuf);
   } catch (error) {
     console.error('Erro ao comparar senhas:', error);
     return false;
