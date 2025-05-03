@@ -33,6 +33,8 @@ const AdminSupportPage = lazy(() => import("@/pages/admin-support-page"));
 const AdminAuditPage = lazy(() => import("@/pages/admin-audit-page"));
 const AdminFanSentimentPage = lazy(() => import("@/pages/admin-fan-sentiment-page"));
 const AdminSettingsPage = lazy(() => import("@/pages/admin-settings-page"));
+const AdminCoinsRulesPage = lazy(() => import("@/pages/admin-coins-rules-page"));
+const AdminCoinsTransactionsPage = lazy(() => import("@/pages/admin-coins-transactions-page"));
 import BottomNav from "@/components/layout/bottom-nav";
 
 // Componente de carregamento
@@ -115,6 +117,16 @@ function Router() {
         <Route path="/admin/settings">
           <Suspense fallback={<Loading />}>
             <AdminSettingsPage />
+          </Suspense>
+        </Route>
+        <Route path="/admin/coins/rules">
+          <Suspense fallback={<Loading />}>
+            <AdminCoinsRulesPage />
+          </Suspense>
+        </Route>
+        <Route path="/admin/coins/transactions">
+          <Suspense fallback={<Loading />}>
+            <AdminCoinsTransactionsPage />
           </Suspense>
         </Route>
         
