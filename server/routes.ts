@@ -2,7 +2,7 @@ import type { Express, Request, Response, NextFunction } from "express";
 import { createServer, type Server } from "http";
 import { WebSocketServer, WebSocket } from "ws";
 import { storage } from "./storage";
-import { setupAuth } from "./auth";
+import { setupAuth, hashPassword } from "./auth";
 import { z } from "zod";
 import { fromZodError } from "zod-validation-error";
 import { insertUserProfileSchema, insertUserPreferencesSchema, insertSurveyResponseSchema } from "@shared/schema";
@@ -11,6 +11,31 @@ import { adminRouter } from "./admin-routes";
 export async function registerRoutes(app: Express): Promise<Server> {
   // Setup authentication routes and middleware
   const { requireAuth } = setupAuth(app);
+  
+  // Rota para redefinir a senha do usuário de teste (apenas para desenvolvimento)
+  app.post("/api/dev/reset-test-user", async (req, res) => {
+    try {
+      const testUser = await storage.getUserByPrimaryIdentity("teste@furia.com");
+      if (!testUser) {
+        return res.status(404).json({ message: "Usuário de teste não encontrado" });
+      }
+      
+      const newPasswordHash = await hashPassword("furiafan123");
+      
+      await storage.updateUser(testUser.id, {
+        passwordHash: newPasswordHash,
+      });
+      
+      res.json({ 
+        message: "Senha do usuário teste redefinida com sucesso",
+        email: "teste@furia.com",
+        password: "furiafan123"
+      });
+    } catch (error) {
+      console.error("Erro ao redefinir senha:", error);
+      res.status(500).json({ message: "Erro ao redefinir senha" });
+    }
+  });
   
   // API routes
   // All routes are prefixed with /api

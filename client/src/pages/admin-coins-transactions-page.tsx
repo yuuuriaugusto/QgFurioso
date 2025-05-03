@@ -121,14 +121,21 @@ export default function AdminCoinsTransactionsPage() {
       try {
         const res = await apiRequest("GET", `/api/admin/coins/transactions?${params.toString()}`);
         if (!res.ok) {
-          // Fallback para dados mock em desenvolvimento
-          return filterMockData();
+          throw new Error("Falha ao buscar transações");
         }
         return await res.json();
       } catch (error) {
         console.error("Erro ao buscar transações:", error);
-        // Fallback para dados mock em desenvolvimento
-        return filterMockData();
+        // Retornando uma estrutura vazia compatível, mas que indica ausência de dados
+        return {
+          transactions: [],
+          pagination: {
+            total: 0,
+            page: 1,
+            pageSize: 10,
+            totalPages: 0
+          }
+        };
       }
     },
   });
