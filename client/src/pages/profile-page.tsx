@@ -72,6 +72,7 @@ import { insertUserProfileSchema } from "@shared/schema";
 // Criamos um FormSchema estendido do schema de perfil do usuário
 const profileFormSchema = insertUserProfileSchema.extend({
   cpf: z.string().min(11, "CPF deve ter 11 números").max(14, "CPF inválido").optional(),
+  phoneNumber: z.string().optional(),
   
   // Campos adicionais de interesse
   favoriteGames: z
