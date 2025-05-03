@@ -1,9 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
-import { useAdminAuth } from "@/hooks/use-admin-auth";
-import { useLocation } from "wouter";
 import { useEffect } from "react";
-import { Loader2, Users, CoinsIcon, Inbox, BarChart, LogOut } from "lucide-react";
+import { Loader2, Users, CoinsIcon, Inbox, BarChart, LineChart, TrendingUp, Activity } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
+import AdminLayout from "@/components/admin/admin-layout";
 
 import {
   Card,
@@ -13,7 +12,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 type DashboardMetrics = {
   totalUsers: number;
@@ -36,19 +36,6 @@ type DashboardMetrics = {
 };
 
 export default function AdminDashboardPage() {
-  // Temporariamente desabilitado para acesso direto
-  const { admin, isLoading: authLoading, logoutMutation } = useAdminAuth();
-  const [_, setLocation] = useLocation();
-  
-  /*
-  // Redirecionar para login se não estiver autenticado
-  useEffect(() => {
-    if (!authLoading && !admin) {
-      setLocation("/admin/login");
-    }
-  }, [admin, authLoading, setLocation]);
-  */
-
   // Buscar métricas do dashboard
   const { data: metrics, isLoading: metricsLoading } = useQuery<DashboardMetrics>({
     queryKey: ["/api/admin/dashboard/metrics"],
@@ -62,52 +49,24 @@ export default function AdminDashboardPage() {
     enabled: true, // Temporariamente habilitado para desenvolvimento
   });
 
-  // Handler para logout
-  const handleLogout = () => {
-    logoutMutation.mutate(undefined, {
-      onSuccess: () => {
-        setLocation("/admin/login");
-      },
-    });
-  };
-
-  // Temporariamente desabilitado para desenvolvimento
-  /*if (authLoading || !admin) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
-    );
-  }*/
-  
-  // Dados do admin mockados para visualização
-  const mockAdmin = admin || { 
-    name: "Visualização", 
-    email: "admin@furia.com"
-  };
-
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b bg-card">
-        <div className="container flex h-16 items-center justify-between py-4">
-          <h1 className="text-xl font-bold">Painel Administrativo FURIA</h1>
-          <div className="flex items-center gap-4">
-            <div className="text-sm">
-              <span className="text-muted-foreground">Logado como: </span>
-              <span className="font-medium">{mockAdmin.name || mockAdmin.email}</span>
-            </div>
-            <Button variant="outline" size="sm" onClick={handleLogout}>
-              <LogOut className="h-4 w-4 mr-2" />
-              Sair
-            </Button>
+    <AdminLayout>
+      <div className="flex flex-col space-y-6">
+        <div className="flex items-center justify-between">
+          <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
+          <div className="flex items-center gap-2">
+            <Select defaultValue="30d">
+              <SelectTrigger className="w-[150px]">
+                <SelectValue placeholder="Período" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="7d">Últimos 7 dias</SelectItem>
+                <SelectItem value="30d">Últimos 30 dias</SelectItem>
+                <SelectItem value="90d">Últimos 90 dias</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         </div>
-      </header>
-
-      {/* Main Content */}
-      <main className="container py-6">
-        <h2 className="text-3xl font-bold tracking-tight mb-6">Dashboard</h2>
 
         {metricsLoading ? (
           <div className="flex items-center justify-center h-48">
@@ -133,7 +92,7 @@ export default function AdminDashboardPage() {
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Usuários Ativos</CardTitle>
-                <BarChart className="h-4 w-4 text-muted-foreground" />
+                <Activity className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{metrics?.activeUsers.last7d || 0}</div>
@@ -173,71 +132,201 @@ export default function AdminDashboardPage() {
           </div>
         )}
 
-        {/* Seção de Métricas Detalhadas */}
-        {!metricsLoading && metrics && (
-          <div className="mt-8 grid gap-4 md:grid-cols-2">
+        {/* Abas de Dados Detalhados */}
+        <Tabs defaultValue="users" className="mt-6">
+          <TabsList className="grid w-full grid-cols-3 md:w-auto md:inline-grid">
+            <TabsTrigger value="users">Usuários</TabsTrigger>
+            <TabsTrigger value="coins">FURIA Coins</TabsTrigger>
+            <TabsTrigger value="activity">Atividade</TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="users" className="mt-4 space-y-6">
+            {/* Gráficos e detalhamento de usuários */}
             <Card>
               <CardHeader>
-                <CardTitle>Atividade de Usuários</CardTitle>
+                <CardTitle>Crescimento de Usuários</CardTitle>
                 <CardDescription>
-                  Resumo das atividades de usuários por período
+                  Tendência de novos registros ao longo do tempo
                 </CardDescription>
               </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="grid grid-cols-3 gap-4">
-                    <div className="rounded-lg border p-3">
-                      <div className="text-xs font-medium">Últimas 24h</div>
-                      <div className="mt-1 text-xl font-bold">{metrics.activeUsers.last24h}</div>
-                    </div>
-                    <div className="rounded-lg border p-3">
-                      <div className="text-xs font-medium">Últimos 7 dias</div>
-                      <div className="mt-1 text-xl font-bold">{metrics.activeUsers.last7d}</div>
-                    </div>
-                    <div className="rounded-lg border p-3">
-                      <div className="text-xs font-medium">Últimos 30 dias</div>
-                      <div className="mt-1 text-xl font-bold">{metrics.activeUsers.last30d}</div>
-                    </div>
-                  </div>
+              <CardContent className="h-80">
+                <div className="h-full flex items-center justify-center text-muted-foreground">
+                  <LineChart className="h-16 w-16" />
+                  <span className="ml-4">Gráfico de crescimento de usuários</span>
                 </div>
               </CardContent>
-              <CardFooter className="text-sm text-muted-foreground">
-                Usuários que realizaram login nos respectivos períodos
-              </CardFooter>
             </Card>
-
+            
+            <div className="grid gap-4 md:grid-cols-2">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Usuários Ativos</CardTitle>
+                  <CardDescription>
+                    Atividade por período
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-3 gap-4">
+                      <div className="rounded-lg border p-3">
+                        <div className="text-xs font-medium">Últimas 24h</div>
+                        <div className="mt-1 text-xl font-bold">{metrics?.activeUsers.last24h || 0}</div>
+                      </div>
+                      <div className="rounded-lg border p-3">
+                        <div className="text-xs font-medium">Últimos 7 dias</div>
+                        <div className="mt-1 text-xl font-bold">{metrics?.activeUsers.last7d || 0}</div>
+                      </div>
+                      <div className="rounded-lg border p-3">
+                        <div className="text-xs font-medium">Últimos 30 dias</div>
+                        <div className="mt-1 text-xl font-bold">{metrics?.activeUsers.last30d || 0}</div>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+              
+              <Card>
+                <CardHeader>
+                  <CardTitle>Novos Usuários</CardTitle>
+                  <CardDescription>
+                    Registros por período
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-3 gap-4">
+                      <div className="rounded-lg border p-3">
+                        <div className="text-xs font-medium">Últimas 24h</div>
+                        <div className="mt-1 text-xl font-bold">{metrics?.newRegistrations.last24h || 0}</div>
+                      </div>
+                      <div className="rounded-lg border p-3">
+                        <div className="text-xs font-medium">Últimos 7 dias</div>
+                        <div className="mt-1 text-xl font-bold">{metrics?.newRegistrations.last7d || 0}</div>
+                      </div>
+                      <div className="rounded-lg border p-3">
+                        <div className="text-xs font-medium">Últimos 30 dias</div>
+                        <div className="mt-1 text-xl font-bold">{metrics?.newRegistrations.last30d || 0}</div>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+          
+          <TabsContent value="coins" className="mt-4 space-y-6">
+            {/* Gráficos e detalhamento de FURIA Coins */}
             <Card>
               <CardHeader>
-                <CardTitle>Transações de FURIA Coins</CardTitle>
+                <CardTitle>Fluxo de FURIA Coins</CardTitle>
                 <CardDescription>
-                  Resumo das transações de moedas na plataforma
+                  Transações de FURIA Coins ao longo do tempo
                 </CardDescription>
               </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="grid grid-cols-3 gap-4">
-                    <div className="rounded-lg border p-3">
-                      <div className="text-xs font-medium">Em Circulação</div>
-                      <div className="mt-1 text-xl font-bold">{metrics.totalCoins.inCirculation}</div>
-                    </div>
-                    <div className="rounded-lg border p-3">
-                      <div className="text-xs font-medium">Moedas Ganhas</div>
-                      <div className="mt-1 text-xl font-bold">{metrics.totalCoins.earned}</div>
-                    </div>
-                    <div className="rounded-lg border p-3">
-                      <div className="text-xs font-medium">Moedas Gastas</div>
-                      <div className="mt-1 text-xl font-bold">{metrics.totalCoins.spent}</div>
-                    </div>
-                  </div>
+              <CardContent className="h-80">
+                <div className="h-full flex items-center justify-center text-muted-foreground">
+                  <TrendingUp className="h-16 w-16" />
+                  <span className="ml-4">Gráfico de fluxo de FURIA Coins</span>
                 </div>
               </CardContent>
-              <CardFooter className="text-sm text-muted-foreground">
-                Todas as transações de moedas realizadas na plataforma
-              </CardFooter>
             </Card>
-          </div>
-        )}
-      </main>
-    </div>
+            
+            <div className="grid gap-4 md:grid-cols-2">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Transações de FURIA Coins</CardTitle>
+                  <CardDescription>
+                    Resumo das transações de moedas
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-3 gap-4">
+                      <div className="rounded-lg border p-3">
+                        <div className="text-xs font-medium">Em Circulação</div>
+                        <div className="mt-1 text-xl font-bold">{metrics?.totalCoins.inCirculation || 0}</div>
+                      </div>
+                      <div className="rounded-lg border p-3">
+                        <div className="text-xs font-medium">Moedas Ganhas</div>
+                        <div className="mt-1 text-xl font-bold">{metrics?.totalCoins.earned || 0}</div>
+                      </div>
+                      <div className="rounded-lg border p-3">
+                        <div className="text-xs font-medium">Moedas Gastas</div>
+                        <div className="mt-1 text-xl font-bold">{metrics?.totalCoins.spent || 0}</div>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+              
+              <Card>
+                <CardHeader>
+                  <CardTitle>Fontes de Recompensas</CardTitle>
+                  <CardDescription>
+                    Principais maneiras que os usuários ganham moedas
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="h-40 flex items-center justify-center text-muted-foreground">
+                    <BarChart className="h-12 w-12" />
+                    <span className="ml-4">Gráfico de fontes de recompensas</span>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+          
+          <TabsContent value="activity" className="mt-4 space-y-6">
+            {/* Atividade geral da plataforma */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Engajamento da Plataforma</CardTitle>
+                <CardDescription>
+                  Visão geral da atividade dos usuários
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="h-80">
+                <div className="h-full flex items-center justify-center text-muted-foreground">
+                  <Activity className="h-16 w-16" />
+                  <span className="ml-4">Gráfico de engajamento da plataforma</span>
+                </div>
+              </CardContent>
+            </Card>
+            
+            <div className="grid gap-4 md:grid-cols-2">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Pesquisas e Enquetes</CardTitle>
+                  <CardDescription>
+                    Taxa de participação em pesquisas
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="h-40">
+                  <div className="h-full flex items-center justify-center text-muted-foreground">
+                    <ListChecks className="h-12 w-12" />
+                    <span className="ml-4">Dados de participação em pesquisas</span>
+                  </div>
+                </CardContent>
+              </Card>
+              
+              <Card>
+                <CardHeader>
+                  <CardTitle>Conteúdo</CardTitle>
+                  <CardDescription>
+                    Visualizações e interações com notícias
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="h-40">
+                  <div className="h-full flex items-center justify-center text-muted-foreground">
+                    <FileText className="h-12 w-12" />
+                    <span className="ml-4">Dados de conteúdo e visualizações</span>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+        </Tabs>
+      </div>
+    </AdminLayout>
   );
 }

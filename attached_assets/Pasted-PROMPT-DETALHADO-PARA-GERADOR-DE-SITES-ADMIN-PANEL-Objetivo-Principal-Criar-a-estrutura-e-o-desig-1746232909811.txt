@@ -1,0 +1,118 @@
+PROMPT DETALHADO PARA GERADOR DE SITES/ADMIN PANEL:
+
+Objetivo Principal: Criar a estrutura e o design de uma Aplicação Web robusta e funcional que servirá como o Painel Administrativo (Admin Panel) para o projeto "QG FURIOSO". Esta ferramenta será utilizada pela equipe interna da FURIA para gerenciar usuários, o sistema de recompensas (Furia Coins e Loja), conteúdo, visualizar insights e monitorar a plataforma.
+
+Tipo de Aplicação: Aplicação Web (Single Page Application - SPA). Deve ser acessível via navegador em desktops e, idealmente, ter um layout responsivo que funcione bem em tablets (mobile não é o foco principal, mas não deve quebrar).
+
+Público-Alvo: Equipe interna da FURIA (Administradores, Gerentes de Loja, Editores de Conteúdo, Analistas, Suporte).
+
+Tom e Estilo Visual: Profissional, limpo, focado em dados e funcionalidade. Pode seguir a identidade visual da FURIA de forma mais sóbria (cores podem ser usadas em gráficos e elementos de destaque, mas o foco é clareza e usabilidade). Priorizar densidade de informação e eficiência nas operações. Uso de bibliotecas de componentes UI focadas em aplicações de dados (ex: Ant Design, Material UI, Bootstrap Admin Themes) é recomendado.
+
+Estrutura Geral e Seções Principais (Navegação):
+
+Uma navegação lateral persistente (menu) é ideal para acessar as diferentes áreas de gerenciamento:
+
+Dashboard: Visão geral e métricas chave.
+
+Gerenciamento de Usuários: Visualização e ações sobre usuários.
+
+Sistema de Recompensas: Gerenciamento de Furia Coins e da Loja.
+
+Conteúdo: Gerenciamento de Notícias e Pesquisas.
+
+(Opcional) Moderação/Suporte: Ferramentas para suporte.
+
+(Opcional) Configurações da Plataforma: Parâmetros gerais.
+
+Logs de Auditoria: Rastreabilidade de ações administrativas.
+
+Detalhamento Funcional Extensivo por Seção:
+
+A. Tela de Login:
+* Design simples e seguro.
+* Campos para Email/Identificador de Admin e Senha.
+* Botão "Entrar".
+* Link "Esqueci minha senha" (se aplicável a contas de admin).
+* Autenticação: Deve chamar um endpoint de login específico para admins (POST /api/admin/auth/login) que verifica as credenciais e o papel (admin_roles).
+
+B. Dashboard:
+* Layout: Visão geral com múltiplos widgets/cards de dados.
+* Métricas Chave:
+* Total de Usuários Registrados.
+* Usuários Ativos (ex: logados nos últimos 30 dias).
+* Novos Registros (últimas 24h / 7 dias / 30 dias).
+* Total de Furia Coins em Circulação.
+* Total de Coins Ganhos vs. Gastos (período selecionável).
+* Número de Resgates Pendentes.
+* Status da Verificação KYC (Gráfico de Pizza: % Verificado, Pendente, Não Iniciado, Rejeitado).
+* Interações Recentes (se houver chatbot integrado, ex: volume de mensagens).
+* Pesquisas Ativas / Taxa de Resposta.
+* Gráficos: Gráficos de linha/barra para tendências (ex: Novos usuários por dia, Coins gastos por dia).
+* Filtro de Período: Permitir selecionar o período para as métricas (Hoje, 7 dias, 30 dias, Customizado).
+* Chamadas de API: Buscar dados agregados de múltiplos endpoints do backend (GET /api/admin/dashboard/metrics, GET /api/admin/dashboard/charts).
+
+C. Gerenciamento de Usuários:
+* Visualização Principal: Tabela paginada, pesquisável e ordenável com colunas como: User ID, Identificador Principal, Status da Conta, Status KYC, Saldo Coins, Data de Registro, Último Login.
+* Filtros: Filtrar por Status da Conta, Status KYC. Campo de busca por ID ou Identificador.
+* Página de Detalhes do Usuário (Acesso Restrito):
+* Exibição somente leitura das informações do perfil (user_profiles - NUNCA exibir CPF ou senha hash).
+* Exibição do status KYC detalhado (histórico de tentativas de kyc_verifications).
+* Exibição das Contas Sociais vinculadas (social_account_links - apenas plataforma e username).
+* Exibição dos Perfis de E-sports adicionados (esports_profile_links - URL e status).
+* Histórico de Transações de Coins (coin_transactions filtrado por user_id).
+* Histórico de Resgates (redemption_orders filtrado por user_id).
+* Histórico de Respostas a Pesquisas (survey_responses filtrado por user_id).
+* Ações Administrativas:
+* Botão para "Suspender Conta" / "Reativar Conta" (chama PUT /api/admin/users/{userId}/status).
+* Botão para "Resetar Senha" (envia link de recuperação).
+* Botão/Formulário para "Adicionar/Remover Coins Manualmente" (chama POST /api/admin/users/{userId}/coins com amount e reason). Requer log de auditoria forte.
+* (Se Admin tiver permissão) Botão para "Conceder/Revogar Papel de Admin" (chama PUT /api/admin/users/{userId}/role).
+* Chamadas de API: GET /api/admin/users (com filtros/paginação), GET /api/admin/users/{userId}/details, endpoints PUT/POST/DELETE para ações.
+
+D. Sistema de Recompensas:
+* Navegação Interna: Abas "Gerenciar Loja", "Gerenciar Resgates", "Regras de Coins".
+* Gerenciar Loja (Aba):
+* Tabela com Itens da Loja (shop_items): ID, Nome, Custo Coins, Tipo, Estoque, Status (Ativo/Inativo). Pesquisável e filtrável.
+* Botão "Adicionar Novo Item".
+* Ações na Tabela: "Editar", "Desativar/Ativar".
+* Formulário Adicionar/Editar Item: Campos para todos os atributos de shop_items (Nome, Descrição, Custo, Tipo, Estoque, Imagem URL, Datas de Disponibilidade, etc.). Chamadas POST /api/admin/shop/items e PUT /api/admin/shop/items/{itemId}.
+* Gerenciar Resgates (Aba):
+* Tabela com Pedidos de Resgate (redemption_orders): ID Pedido, User ID, Item Resgatado, Data, Status Atual. Pesquisável e filtrável por status.
+* Página de Detalhes do Resgate: Exibir todas as informações do pedido, incluindo endereço de envio (se aplicável).
+* Ações no Detalhe: Botões para mudar o status (ex: "Marcar como Processando", "Marcar como Enviado" - com campo para código de rastreio, "Cancelar Pedido"). Chamadas PUT /api/admin/redemptions/{orderId}/status.
+* Regras de Coins (Aba):
+* Interface para visualizar e editar a quantidade de coins concedida para ações específicas (ex: Completar Perfil, Verificar KYC, Vincular Twitter, Responder Pesquisa X, etc.). Chama endpoint PUT /api/admin/coin-rules.
+
+E. Conteúdo:
+* Navegação Interna: Abas "Notícias/Artigos", "Pesquisas/Enquetes".
+* Notícias/Artigos (Aba):
+* Tabela com conteúdo: Título, Status (Publicado/Rascunho), Autor (Admin), Data Criação/Publicação.
+* Botão "Criar Novo Conteúdo".
+* Ações: "Editar", "Publicar/Despublicar", "Excluir".
+* Editor de Conteúdo: Um editor rico em texto (WYSIWYG como TinyMCE, CKEditor) para criar/editar título, corpo do texto, adicionar imagens, definir categoria/jogo. Chamadas POST /api/admin/content/news e PUT /api/admin/content/news/{contentId}.
+* Pesquisas/Enquetes (Aba):
+* Tabela com Pesquisas (surveys): Título, Status (Rascunho/Ativa/Fechada), Recompensa Coins, Data Início/Fim.
+* Botão "Criar Nova Pesquisa".
+* Ações: "Editar", "Ativar/Fechar", "Ver Respostas", "Excluir".
+* Construtor de Pesquisa: Interface para definir título, descrição, recompensa, datas. Adicionar/editar/reordenar perguntas (survey_questions) com tipos diferentes (múltipla escolha, texto, escala) e opções. Chamadas POST /api/admin/surveys e PUT /api/admin/surveys/{surveyId}.
+* Visualizador de Respostas: Para uma pesquisa selecionada, exibir resultados agregados (gráficos para múltipla escolha/escala) e permitir visualização de respostas individuais anonimizadas. (GET /api/admin/surveys/{surveyId}/results).
+
+F. (Opcional) Moderação/Suporte:
+* Ferramentas para visualizar/responder mensagens de usuários (se houver um canal de suporte).
+* Interface para lidar com conteúdo gerado pelo usuário (se houver, como comentários - não previsto inicialmente).
+
+G. (Opcional) Configurações da Plataforma:
+* Gerenciar parâmetros globais (ex: links para redes sociais oficiais, textos legais, chaves de API de terceiros - com segurança).
+
+H. Logs de Auditoria:
+* Tabela exibindo admin_action_logs: Timestamp, Admin User, Ação Realizada, Entidade Alvo, Detalhes (Resumo). Pesquisável e filtrável por admin ou tipo de ação.
+
+Requisitos Não Funcionais Chave para o Admin Panel:
+
+Segurança: Autenticação forte obrigatória (idealmente 2FA). Autorização granular baseada em papéis (admin_roles) para restringir acesso a seções/ações. Prevenção de ataques (CSRF, XSS, etc.).
+
+Usabilidade: Interface clara, eficiente para tarefas repetitivas, boa performance em visualização de dados (paginação, carregamento lazy). Feedback visual claro para ações realizadas.
+
+Confiabilidade: Tratamento de erros robusto, dados exibidos devem ser consistentes com o banco de dados.
+
+Entregável Esperado do Gerador/Desenvolvimento: Uma aplicação web funcional (SPA) representando o Admin Panel, com todas as seções, tabelas, formulários e fluxos de gerenciamento descritos. Deve consumir a API backend real para buscar e modificar dados, implementando a lógica de autenticação e autorização específicas para administradores.
