@@ -553,6 +553,174 @@ export default function FuriaCoinsPage() {
                 )}
               </div>
             </TabsContent>
+            
+            {/* Point Rules Tab */}
+            <TabsContent value="point-rules" className="space-y-6">
+              <div className="bg-card p-6 rounded-xl shadow-sm border border-border">
+                <h2 className="text-xl font-bold font-rajdhani mb-4">Regras de Pontuação</h2>
+                <p className="text-muted-foreground mb-6">
+                  Ganhe FURIA Coins participando de diversas atividades e interagindo com a comunidade FURIA.
+                  Utilize os pontos para resgatar produtos exclusivos e vantagens especiais.
+                </p>
+                
+                <div className="space-y-6">
+                  {/* Pontuação por Atividade */}
+                  <div>
+                    <h3 className="text-lg font-medium flex items-center mb-3">
+                      <Award className="h-5 w-5 text-primary mr-2" />
+                      Pontuação por Atividade
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="bg-background p-4 rounded-lg border border-border">
+                        <div className="flex items-center mb-2">
+                          <div className="h-8 w-8 rounded-full bg-green-100 flex items-center justify-center text-green-500 mr-3">
+                            <Check className="h-5 w-5" />
+                          </div>
+                          <div>
+                            <div className="font-medium">Cadastro Completo</div>
+                            <div className="text-xs text-muted-foreground">Complete seu perfil com todas as informações</div>
+                          </div>
+                          <div className="ml-auto font-bold text-primary">
+                            50 <Coins className="h-4 w-4 inline" />
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div className="bg-background p-4 rounded-lg border border-border">
+                        <div className="flex items-center mb-2">
+                          <div className="h-8 w-8 rounded-full bg-green-100 flex items-center justify-center text-green-500 mr-3">
+                            <Target className="h-5 w-5" />
+                          </div>
+                          <div>
+                            <div className="font-medium">Responder Pesquisas</div>
+                            <div className="text-xs text-muted-foreground">Sua opinião vale moedas</div>
+                          </div>
+                          <div className="ml-auto font-bold text-primary">
+                            25-100 <Coins className="h-4 w-4 inline" />
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div className="bg-background p-4 rounded-lg border border-border">
+                        <div className="flex items-center mb-2">
+                          <div className="h-8 w-8 rounded-full bg-green-100 flex items-center justify-center text-green-500 mr-3">
+                            <Sparkles className="h-5 w-5" />
+                          </div>
+                          <div>
+                            <div className="font-medium">Assistir Transmissões</div>
+                            <div className="text-xs text-muted-foreground">A cada 30 minutos assistindo às nossas transmissões</div>
+                          </div>
+                          <div className="ml-auto font-bold text-primary">
+                            5 <Coins className="h-4 w-4 inline" />
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div className="bg-background p-4 rounded-lg border border-border">
+                        <div className="flex items-center mb-2">
+                          <div className="h-8 w-8 rounded-full bg-green-100 flex items-center justify-center text-green-500 mr-3">
+                            <Calendar className="h-5 w-5" />
+                          </div>
+                          <div>
+                            <div className="font-medium">Login Diário</div>
+                            <div className="text-xs text-muted-foreground">Acesse o aplicativo diariamente</div>
+                          </div>
+                          <div className="ml-auto font-bold text-primary">
+                            10 <Coins className="h-4 w-4 inline" />
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div className="bg-background p-4 rounded-lg border border-border">
+                        <div className="flex items-center mb-2">
+                          <div className="h-8 w-8 rounded-full bg-green-100 flex items-center justify-center text-green-500 mr-3">
+                            <Coins className="h-5 w-5" />
+                          </div>
+                          <div>
+                            <div className="font-medium">Indicar Amigos</div>
+                            <div className="text-xs text-muted-foreground">Quando um amigo se cadastrar com seu código</div>
+                          </div>
+                          <div className="ml-auto font-bold text-primary">
+                            100 <Coins className="h-4 w-4 inline" />
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div className="bg-background p-4 rounded-lg border border-border">
+                        <div className="flex items-center mb-2">
+                          <div className="h-8 w-8 rounded-full bg-green-100 flex items-center justify-center text-green-500 mr-3">
+                            <History className="h-5 w-5" />
+                          </div>
+                          <div>
+                            <div className="font-medium">Streak de Login</div>
+                            <div className="text-xs text-muted-foreground">Bônus a cada 7 dias consecutivos</div>
+                          </div>
+                          <div className="ml-auto font-bold text-primary">
+                            25 <Coins className="h-4 w-4 inline" />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Regras e Termos */}
+                  <div>
+                    <h3 className="text-lg font-medium flex items-center mb-3">
+                      <BookOpen className="h-5 w-5 text-primary mr-2" />
+                      Regras e Termos
+                    </h3>
+                    <div className="bg-background p-4 rounded-lg border border-border space-y-3">
+                      <div className="flex gap-2">
+                        <Info className="h-5 w-5 text-muted-foreground flex-shrink-0" />
+                        <p className="text-sm">FURIA Coins não possuem valor monetário e não podem ser trocados por dinheiro.</p>
+                      </div>
+                      <div className="flex gap-2">
+                        <Info className="h-5 w-5 text-muted-foreground flex-shrink-0" />
+                        <p className="text-sm">A disponibilidade dos produtos para resgate está sujeita ao estoque.</p>
+                      </div>
+                      <div className="flex gap-2">
+                        <Info className="h-5 w-5 text-muted-foreground flex-shrink-0" />
+                        <p className="text-sm">A FURIA se reserva o direito de alterar as regras de pontuação a qualquer momento.</p>
+                      </div>
+                      <div className="flex gap-2">
+                        <Info className="h-5 w-5 text-muted-foreground flex-shrink-0" />
+                        <p className="text-sm">Comportamentos abusivos ou fraudulentos resultarão na suspensão da conta e perda dos pontos.</p>
+                      </div>
+                      <div className="flex gap-2">
+                        <Info className="h-5 w-5 text-muted-foreground flex-shrink-0" />
+                        <p className="text-sm">Para resgates de produtos físicos, é necessário ter o endereço completo cadastrado no perfil.</p>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* FAQ */}
+                  <div>
+                    <h3 className="text-lg font-medium flex items-center mb-3">
+                      <BookOpen className="h-5 w-5 text-primary mr-2" />
+                      Perguntas Frequentes
+                    </h3>
+                    <div className="space-y-3">
+                      <div className="bg-background p-4 rounded-lg border border-border">
+                        <h4 className="font-medium mb-1">Como posso ganhar mais FURIA Coins?</h4>
+                        <p className="text-sm text-muted-foreground">Participe ativamente da comunidade, responda pesquisas, assista às transmissões e complete desafios especiais que são lançados periodicamente.</p>
+                      </div>
+                      <div className="bg-background p-4 rounded-lg border border-border">
+                        <h4 className="font-medium mb-1">Os FURIA Coins expiram?</h4>
+                        <p className="text-sm text-muted-foreground">Não, seus FURIA Coins não expiram e ficarão disponíveis em sua conta enquanto ela estiver ativa.</p>
+                      </div>
+                      <div className="bg-background p-4 rounded-lg border border-border">
+                        <h4 className="font-medium mb-1">Como faço para resgatar produtos?</h4>
+                        <p className="text-sm text-muted-foreground">Basta acessar a aba "Resgates", escolher o produto desejado e confirmar a troca. Para produtos físicos, confirme seu endereço de entrega.</p>
+                      </div>
+                      <div className="bg-background p-4 rounded-lg border border-border">
+                        <h4 className="font-medium mb-1">Quanto tempo leva para receber um produto físico?</h4>
+                        <p className="text-sm text-muted-foreground">O prazo de entrega varia de acordo com a sua localização, mas geralmente é de 5 a 15 dias úteis após a confirmação do resgate.</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </TabsContent>
           </Tabs>
         </div>
       </div>
