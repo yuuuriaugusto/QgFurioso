@@ -607,7 +607,7 @@ export default function ProfilePage() {
                               
                               <div>
                                 <label className="text-xs text-muted-foreground block mb-1">Identificador</label>
-                                <p className="font-medium">{user?.primaryIdentity}</p>
+                                <p className="font-medium">{user?.username}</p>
                               </div>
                               
                               <div>

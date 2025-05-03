@@ -23,13 +23,13 @@ export default function Sidebar() {
                   <img src={user.profile.avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
                 ) : (
                   <span className="text-lg font-semibold">
-                    {user.profile?.firstName?.charAt(0) || user.primaryIdentity.charAt(0).toUpperCase()}
+                    {user.profile?.firstName?.charAt(0) || user.username.charAt(0).toUpperCase()}
                   </span>
                 )}
               </div>
               <div>
                 <div className="font-semibold">{user.profile?.firstName || "Membro"}</div>
-                <div className="text-xs text-muted-foreground truncate max-w-[120px]">{user.primaryIdentity}</div>
+                <div className="text-xs text-muted-foreground truncate max-w-[120px]">{user.username}</div>
               </div>
             </div>
             {user.coinBalance && (

@@ -374,16 +374,16 @@ export default function Header() {
                           <img src={user.profile.avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
                         ) : (
                           <span className="text-lg font-semibold">
-                            {user.profile?.firstName?.charAt(0) || user.primaryIdentity.charAt(0).toUpperCase()}
+                            {user.profile?.firstName?.charAt(0) || user.username.charAt(0).toUpperCase()}
                           </span>
                         )}
                       </div>
                     </div>
                     <div className="ml-3">
                       <div className="text-base font-medium">
-                        {user.profile?.firstName ? `${user.profile.firstName} ${user.profile.lastName || ''}` : user.primaryIdentity}
+                        {user.profile?.firstName ? `${user.profile.firstName} ${user.profile.lastName || ''}` : user.username}
                       </div>
-                      <div className="text-sm text-muted-foreground">{user.primaryIdentity}</div>
+                      <div className="text-sm text-muted-foreground">{user.username}</div>
                     </div>
                     {user.coinBalance && (
                       <div className="ml-auto flex items-center space-x-1 bg-muted rounded-full py-1 px-3">
