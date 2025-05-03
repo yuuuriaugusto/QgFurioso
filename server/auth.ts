@@ -35,25 +35,31 @@ export async function hashPassword(password: string) {
   return `${buf.toString("hex")}.${salt}`;
 }
 
+import bcrypt from "bcrypt";
+
 async function comparePasswords(supplied: string, stored: string) {
   try {
-    // Verifica se a string armazenada tem o formato esperado (hash.salt)
-    if (!stored || !stored.includes(".")) {
-      console.error("Formato de senha inválido:", stored);
+    // Verifica qual o formato da senha armazenada
+    if (stored.startsWith("$2b$") || stored.startsWith("$2a$")) {
+      // Formato bcrypt (usado para os usuários de teste)
+      return await bcrypt.compare(supplied, stored);
+    } else if (stored.includes(".")) {
+      // Formato scrypt (hash.salt)
+      const [hashed, salt] = stored.split(".");
+      const hashedBuf = Buffer.from(hashed, "hex");
+      const suppliedBuf = (await scryptAsync(supplied, salt, 64)) as Buffer;
+      
+      // Certifica-se de que os buffers têm o mesmo tamanho
+      if (hashedBuf.length !== suppliedBuf.length) {
+        console.error(`Tamanhos de buffer diferentes: armazenado=${hashedBuf.length}, fornecido=${suppliedBuf.length}`);
+        return false;
+      }
+      
+      return timingSafeEqual(hashedBuf, suppliedBuf);
+    } else {
+      console.error("Formato de senha desconhecido:", stored);
       return false;
     }
-    
-    const [hashed, salt] = stored.split(".");
-    const hashedBuf = Buffer.from(hashed, "hex");
-    const suppliedBuf = (await scryptAsync(supplied, salt, 64)) as Buffer;
-    
-    // Certifica-se de que os buffers têm o mesmo tamanho
-    if (hashedBuf.length !== suppliedBuf.length) {
-      console.error(`Tamanhos de buffer diferentes: armazenado=${hashedBuf.length}, fornecido=${suppliedBuf.length}`);
-      return false;
-    }
-    
-    return timingSafeEqual(hashedBuf, suppliedBuf);
   } catch (error) {
     console.error("Erro ao comparar senhas:", error);
     return false;
