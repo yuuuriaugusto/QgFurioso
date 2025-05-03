@@ -410,8 +410,7 @@ export const insertFanSentimentSchema = createInsertSchema(fanSentiments).omit({
 
 // Auth schemas
 export const registerSchema = z.object({
-  primaryIdentity: z.string().min(3),
-  identityType: z.enum(["email", "phone"]),
+  username: z.string().min(3),
   password: z.string().min(8),
   birthDate: z.string().optional(),
   termsAccepted: z.boolean().refine(val => val === true, {

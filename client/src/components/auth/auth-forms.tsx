@@ -48,8 +48,7 @@ export function AuthForms() {
   const registerForm = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
-      primaryIdentity: "",
-      identityType: "email",
+      username: "",
       password: "",
       confirmPassword: "",
       status: "active",
@@ -163,7 +162,7 @@ export function AuthForms() {
           <form onSubmit={registerForm.handleSubmit(onRegisterSubmit)} className="space-y-4">
             <FormField
               control={registerForm.control}
-              name="primaryIdentity"
+              name="username"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Email</FormLabel>

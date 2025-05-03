@@ -14,7 +14,7 @@ const MemoryStore = createMemoryStore(session);
 export interface IStorage {
   // User management
   getUser(id: number): Promise<User | undefined>;
-  getUserByPrimaryIdentity(primaryIdentity: string): Promise<User | undefined>;
+  getUserByUsername(username: string): Promise<User | undefined>;
   createUser(user: InsertUser & { passwordHash: string }): Promise<User>;
   updateUser(id: number, data: Partial<User>): Promise<User | undefined>;
   

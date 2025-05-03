@@ -15,8 +15,7 @@ declare global {
     interface User {
       id: number;
       publicId: string;
-      primaryIdentity: string;
-      identityType: string;
+      username: string;
       passwordHash: string;
       status: string;
       lastLoginAt: Date | null;
