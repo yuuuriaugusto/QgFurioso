@@ -36,15 +36,18 @@ type DashboardMetrics = {
 };
 
 export default function AdminDashboardPage() {
+  // Temporariamente desabilitado para acesso direto
   const { admin, isLoading: authLoading, logoutMutation } = useAdminAuth();
   const [_, setLocation] = useLocation();
-
+  
+  /*
   // Redirecionar para login se não estiver autenticado
   useEffect(() => {
     if (!authLoading && !admin) {
       setLocation("/admin/login");
     }
   }, [admin, authLoading, setLocation]);
+  */
 
   // Buscar métricas do dashboard
   const { data: metrics, isLoading: metricsLoading } = useQuery<DashboardMetrics>({
@@ -56,7 +59,7 @@ export default function AdminDashboardPage() {
       }
       return await res.json();
     },
-    enabled: !!admin, // Só buscar métricas se estiver autenticado
+    enabled: true, // Temporariamente habilitado para desenvolvimento
   });
 
   // Handler para logout
@@ -68,13 +71,20 @@ export default function AdminDashboardPage() {
     });
   };
 
-  if (authLoading || !admin) {
+  // Temporariamente desabilitado para desenvolvimento
+  /*if (authLoading || !admin) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
-  }
+  }*/
+  
+  // Dados do admin mockados para visualização
+  const mockAdmin = admin || { 
+    name: "Visualização", 
+    email: "admin@furia.com"
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -85,7 +95,7 @@ export default function AdminDashboardPage() {
           <div className="flex items-center gap-4">
             <div className="text-sm">
               <span className="text-muted-foreground">Logado como: </span>
-              <span className="font-medium">{admin.name || admin.email}</span>
+              <span className="font-medium">{mockAdmin.name || mockAdmin.email}</span>
             </div>
             <Button variant="outline" size="sm" onClick={handleLogout}>
               <LogOut className="h-4 w-4 mr-2" />
