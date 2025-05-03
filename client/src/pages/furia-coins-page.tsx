@@ -15,7 +15,13 @@ import {
   ArrowDownCircle,
   Calendar,
   Clock,
-  Package
+  Package,
+  BookOpen,
+  Award,
+  Sparkles,
+  Target,
+  Check,
+  Info
 } from "lucide-react";
 import { format } from "date-fns";
 import { pt } from "date-fns/locale";
@@ -148,7 +154,7 @@ export default function FuriaCoinsPage() {
           
           {/* Tabs */}
           <Tabs defaultValue="overview" value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid grid-cols-3 mb-6">
+            <TabsList className="grid grid-cols-4 mb-6">
               <TabsTrigger value="overview" className="flex items-center gap-2">
                 <Coins className="h-4 w-4" />
                 <span className="hidden sm:inline">Visão Geral</span>
@@ -160,6 +166,10 @@ export default function FuriaCoinsPage() {
               <TabsTrigger value="redemptions" className="flex items-center gap-2">
                 <Gift className="h-4 w-4" />
                 <span className="hidden sm:inline">Resgates</span>
+              </TabsTrigger>
+              <TabsTrigger value="point-rules" className="flex items-center gap-2">
+                <BookOpen className="h-4 w-4" />
+                <span className="hidden sm:inline">Regras de Pontos</span>
               </TabsTrigger>
             </TabsList>
             
