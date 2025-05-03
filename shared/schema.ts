@@ -420,7 +420,7 @@ export const registerSchema = z.object({
 });
 
 export const loginSchema = z.object({
-  primaryIdentity: z.string(),
+  username: z.string(),
   password: z.string(),
   rememberMe: z.boolean().optional()
 });

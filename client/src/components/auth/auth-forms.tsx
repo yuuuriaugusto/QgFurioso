@@ -12,7 +12,7 @@ import { Loader2 } from "lucide-react";
 
 // Login form schema
 const loginSchema = z.object({
-  primaryIdentity: z.string().min(1, "Email é obrigatório"),
+  username: z.string().min(1, "Email é obrigatório"),
   password: z.string().min(1, "Senha é obrigatória"),
 });
 
@@ -39,7 +39,7 @@ export function AuthForms() {
   const loginForm = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      primaryIdentity: "",
+      username: "",
       password: "",
     },
   });
@@ -88,7 +88,7 @@ export function AuthForms() {
           <form onSubmit={loginForm.handleSubmit(onLoginSubmit)} className="space-y-4">
             <FormField
               control={loginForm.control}
-              name="primaryIdentity"
+              name="username"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Email</FormLabel>
