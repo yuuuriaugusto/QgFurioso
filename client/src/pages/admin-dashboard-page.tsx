@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
-import { Loader2, Users, CoinsIcon, Inbox, BarChart, LineChart, TrendingUp, Activity } from "lucide-react";
+import { Loader2, Users, CoinsIcon, Inbox, BarChart, LineChart, TrendingUp, Activity, ListChecks, FileText } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import AdminLayout from "@/components/admin/admin-layout";
 

@@ -24,6 +24,10 @@ const SettingsPage = lazy(() => import("@/pages/settings-page"));
 // Páginas administrativas
 const AdminLoginPage = lazy(() => import("@/pages/admin-login-page"));
 const AdminDashboardPage = lazy(() => import("@/pages/admin-dashboard-page"));
+const AdminUsersPage = lazy(() => import("@/pages/admin-users-page"));
+const AdminShopProductsPage = lazy(() => import("@/pages/admin-shop-products-page"));
+const AdminShopRedemptionsPage = lazy(() => import("@/pages/admin-shop-redemptions-page"));
+const AdminContentNewsPage = lazy(() => import("@/pages/admin-content-news-page"));
 import BottomNav from "@/components/layout/bottom-nav";
 
 // Componente de carregamento
@@ -59,6 +63,10 @@ function Router() {
           </Suspense>
         </Route>
         <AdminProtectedRoute path="/admin/dashboard" component={() => <AdminDashboardPage />} />
+        <AdminProtectedRoute path="/admin/users" component={() => <AdminUsersPage />} />
+        <AdminProtectedRoute path="/admin/shop/products" component={() => <AdminShopProductsPage />} />
+        <AdminProtectedRoute path="/admin/shop/redemptions" component={() => <AdminShopRedemptionsPage />} />
+        <AdminProtectedRoute path="/admin/content/news" component={() => <AdminContentNewsPage />} />
         
         {/* Rota 404 */}
         <Route component={NotFound} />
