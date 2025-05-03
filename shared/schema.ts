@@ -1,4 +1,4 @@
-import { pgTable, text, serial, integer, boolean, date, timestamp, jsonb, uuid } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, boolean, date, timestamp, jsonb, uuid, doublePrecision } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
@@ -238,6 +238,62 @@ export const surveyResponses = pgTable("survey_responses", {
   rewardIssued: boolean("reward_issued").default(false),
 });
 
+// Support tickets table
+export const supportTickets = pgTable("support_tickets", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  subject: text("subject").notNull(),
+  description: text("description").notNull(),
+  category: text("category").notNull(),
+  priority: text("priority").notNull().default("medium"),
+  status: text("status").notNull().default("open"),
+  assignedToAdminId: integer("assigned_to_admin_id").references(() => adminUsers.id),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  resolvedAt: timestamp("resolved_at"),
+});
+
+// Support messages table
+export const supportMessages = pgTable("support_messages", {
+  id: serial("id").primaryKey(),
+  ticketId: integer("ticket_id").references(() => supportTickets.id).notNull(),
+  senderId: integer("sender_id").notNull(),
+  senderType: text("sender_type").notNull(), // "user" ou "admin"
+  message: text("message").notNull(),
+  attachmentUrl: text("attachment_url"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  isRead: boolean("is_read").default(false),
+});
+
+// Audit logs table
+export const auditLogs = pgTable("audit_logs", {
+  id: serial("id").primaryKey(),
+  adminId: integer("admin_id").references(() => adminUsers.id),
+  action: text("action").notNull(),
+  entityType: text("entity_type").notNull(),
+  entityId: integer("entity_id"),
+  details: jsonb("details"),
+  ipAddress: text("ip_address"),
+  userAgent: text("user_agent"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+// Fan sentiment data
+export const fanSentiments = pgTable("fan_sentiments", {
+  id: serial("id").primaryKey(),
+  source: text("source").notNull(), // "survey", "social_media", etc.
+  sourceId: text("source_id"),
+  content: text("content").notNull(),
+  sentiment: text("sentiment").notNull(), // "positive", "negative", "neutral"
+  sentimentScore: doublePrecision("sentiment_score"), // Um valor entre -1 e 1
+  topics: jsonb("topics"), // Array de tópicos detectados
+  date: timestamp("date").notNull(),
+  platform: text("platform"), // "twitter", "instagram", etc. (para social media)
+  relatedEntityType: text("related_entity_type"), // "team", "player", "game", etc.
+  relatedEntityId: text("related_entity_id"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
 // Create schemas for insertion
 export const insertUserSchema = createInsertSchema(users).omit({
   id: true,
@@ -329,6 +385,29 @@ export const insertAdminUserSchema = createInsertSchema(adminUsers).omit({
   updatedAt: true,
 });
 
+export const insertSupportTicketSchema = createInsertSchema(supportTickets).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+  resolvedAt: true,
+});
+
+export const insertSupportMessageSchema = createInsertSchema(supportMessages).omit({
+  id: true,
+  createdAt: true,
+  isRead: true,
+});
+
+export const insertAuditLogSchema = createInsertSchema(auditLogs).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertFanSentimentSchema = createInsertSchema(fanSentiments).omit({
+  id: true,
+  createdAt: true,
+});
+
 // Auth schemas
 export const registerSchema = z.object({
   primaryIdentity: z.string().min(3),
@@ -389,6 +468,14 @@ export type LoginData = z.infer<typeof loginSchema>;
 export type AdminLoginData = z.infer<typeof adminLoginSchema>;
 export type AdminUser = typeof adminUsers.$inferSelect;
 export type InsertAdminUser = z.infer<typeof insertAdminUserSchema>;
+export type SupportTicket = typeof supportTickets.$inferSelect;
+export type InsertSupportTicket = z.infer<typeof insertSupportTicketSchema>;
+export type SupportMessage = typeof supportMessages.$inferSelect;
+export type InsertSupportMessage = z.infer<typeof insertSupportMessageSchema>;
+export type AuditLog = typeof auditLogs.$inferSelect;
+export type InsertAuditLog = z.infer<typeof insertAuditLogSchema>;
+export type FanSentiment = typeof fanSentiments.$inferSelect;
+export type InsertFanSentiment = z.infer<typeof insertFanSentimentSchema>;
 
 // Definição das relações
 export const usersRelations = relations(users, ({ one, many }) => ({
@@ -402,6 +489,7 @@ export const usersRelations = relations(users, ({ one, many }) => ({
   redemptionOrders: many(redemptionOrders),
   authoredContent: many(newsContent, { relationName: "author" }),
   surveyResponses: many(surveyResponses),
+  supportTickets: many(supportTickets),
 }));
 
 export const userProfilesRelations = relations(userProfiles, ({ one }) => ({
@@ -496,4 +584,35 @@ export const shopItemsRelations = relations(shopItems, ({ many }) => ({
 export const surveysRelations = relations(surveys, ({ many }) => ({
   questions: many(surveyQuestions),
   responses: many(surveyResponses)
+}));
+
+export const supportTicketsRelations = relations(supportTickets, ({ one, many }) => ({
+  user: one(users, {
+    fields: [supportTickets.userId],
+    references: [users.id]
+  }),
+  assignedAdmin: one(adminUsers, {
+    fields: [supportTickets.assignedToAdminId],
+    references: [adminUsers.id]
+  }),
+  messages: many(supportMessages)
+}));
+
+export const supportMessagesRelations = relations(supportMessages, ({ one }) => ({
+  ticket: one(supportTickets, {
+    fields: [supportMessages.ticketId],
+    references: [supportTickets.id]
+  })
+}));
+
+export const adminUsersRelations = relations(adminUsers, ({ many }) => ({
+  assignedTickets: many(supportTickets, { relationName: 'assignedAdmin' }),
+  auditLogs: many(auditLogs)
+}));
+
+export const auditLogsRelations = relations(auditLogs, ({ one }) => ({
+  admin: one(adminUsers, {
+    fields: [auditLogs.adminId],
+    references: [adminUsers.id]
+  })
 }));
