@@ -1,0 +1,65 @@
+Cannot read properties of null (reading 'useState')
+at useState (https://fed9ebab-489f-47d1-9a9b-2186c41c6626-00-17m6yz4g9oakg.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-QCHXOAYK.js?v=2497de00:1066:29)
+at AdminContentNewsPage (https://fed9ebab-489f-47d1-9a9b-2186c41c6626-00-17m6yz4g9oakg.janeway.replit.dev/src/pages/admin-content-news-page.tsx:68:31)
+at renderWithHooks (https://fed9ebab-489f-47d1-9a9b-2186c41c6626-00-17m6yz4g9oakg.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-RPCDYKBN.js?v=6a2b03e1:11548:26)
+at updateFunctionComponent (https://fed9ebab-489f-47d1-9a9b-2186c41c6626-00-17m6yz4g9oakg.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-RPCDYKBN.js?v=6a2b03e1:14582:28)
+at mountLazyComponent (https://fed9ebab-489f-47d1-9a9b-2186c41c6626-00-17m6yz4g9oakg.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-RPCDYKBN.js?v=6a2b03e1:14833:23)
+at beginWork (https://fed9ebab-489f-47d1-9a9b-2186c41c6626-00-17m6yz4g9oakg.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-RPCDYKBN.js?v=6a2b03e1:15918:22)
+at HTMLUnknownElement.callCallback2 (https://fed9ebab-489f-47d1-9a9b-2186c41c6626-00-17m6yz4g9oakg.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-RPCDYKBN.js?v=6a2b03e1:3674:22)
+at Object.invokeGuardedCallbackDev (https://fed9ebab-489f-47d1-9a9b-2186c41c6626-00-17m6yz4g9oakg.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-RPCDYKBN.js?v=6a2b03e1:3699:24)
+at invokeGuardedCallback (https://fed9ebab-489f-47d1-9a9b-2186c41c6626-00-17m6yz4g9oakg.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-RPCDYKBN.js?v=6a2b03e1:3733:39)
+at beginWork$1 (https://fed9ebab-489f-47d1-9a9b-2186c41c6626-00-17m6yz4g9oakg.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-RPCDYKBN.js?v=6a2b03e1:19765:15)
+The above error occurred in the <AdminContentNewsPage> component:
+
+    at AdminContentNewsPage (https://fed9ebab-489f-47d1-9a9b-2186c41c6626-00-17m6yz4g9oakg.janeway.replit.dev/src/pages/admin-content-news-page.tsx:68:31)
+    at Suspense
+    at Route (https://fed9ebab-489f-47d1-9a9b-2186c41c6626-00-17m6yz4g9oakg.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=6a2b03e1:323:16)
+    at Switch (https://fed9ebab-489f-47d1-9a9b-2186c41c6626-00-17m6yz4g9oakg.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=6a2b03e1:379:17)
+    at Suspense
+    at Router
+    at AppContent (https://fed9ebab-489f-47d1-9a9b-2186c41c6626-00-17m6yz4g9oakg.janeway.replit.dev/src/App.tsx?t=1746265285785&v=zIeBS12aPDnMe37Q6IXuV:260:22)
+    at Provider (https://fed9ebab-489f-47d1-9a9b-2186c41c6626-00-17m6yz4g9oakg.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IKZDNW7I.js?v=6a2b03e1:43:15)
+    at TooltipProvider (https://fed9ebab-489f-47d1-9a9b-2186c41c6626-00-17m6yz4g9oakg.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-tooltip.js?v=6a2b03e1:62:5)
+    at WebSocketProvider (https://fed9ebab-489f-47d1-9a9b-2186c41c6626-00-17m6yz4g9oakg.janeway.replit.dev/src/hooks/use-websocket.tsx:20:37)
+    at AdminAuthProvider (https://fed9ebab-489f-47d1-9a9b-2186c41c6626-00-17m6yz4g9oakg.janeway.replit.dev/src/hooks/use-admin-auth.tsx:26:37)
+    at AuthProvider (https://fed9ebab-489f-47d1-9a9b-2186c41c6626-00-17m6yz4g9oakg.janeway.replit.dev/src/hooks/use-auth.tsx:26:32)
+    at QueryClientProvider (https://fed9ebab-489f-47d1-9a9b-2186c41c6626-00-17m6yz4g9oakg.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=6a2b03e1:2805:3)
+    at App
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
+
+at AdminContentNewsPage (https://fed9ebab-489f-47d1-9a9b-2186c41c6626-00-17m6yz4g9oakg.janeway.replit.dev/src/pages/admin-content-news-page.tsx:68:31)
+at Suspense
+at Route (https://fed9ebab-489f-47d1-9a9b-2186c41c6626-00-17m6yz4g9oakg.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=6a2b03e1:323:16)
+at Switch (https://fed9ebab-489f-47d1-9a9b-2186c41c6626-00-17m6yz4g9oakg.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=6a2b03e1:379:17)
+at Suspense
+at Router
+at AppContent (https://fed9ebab-489f-47d1-9a9b-2186c41c6626-00-17m6yz4g9oakg.janeway.replit.dev/src/App.tsx?t=1746265285785&amp;v=zIeBS12aPDnMe37Q6IXuV:260:22)
+at Provider (https://fed9ebab-489f-47d1-9a9b-2186c41c6626-00-17m6yz4g9oakg.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IKZDNW7I.js?v=6a2b03e1:43:15)
+at TooltipProvider (https://fed9ebab-489f-47d1-9a9b-2186c41c6626-00-17m6yz4g9oakg.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-tooltip.js?v=6a2b03e1:62:5)
+at WebSocketProvider (https://fed9ebab-489f-47d1-9a9b-2186c41c6626-00-17m6yz4g9oakg.janeway.replit.dev/src/hooks/use-websocket.tsx:20:37)
+at AdminAuthProvider (https://fed9ebab-489f-47d1-9a9b-2186c41c6626-00-17m6yz4g9oakg.janeway.replit.dev/src/hooks/use-admin-auth.tsx:26:37)
+at AuthProvider (https://fed9ebab-489f-47d1-9a9b-2186c41c6626-00-17m6yz4g9oakg.janeway.replit.dev/src/hooks/use-auth.tsx:26:32)
+at QueryClientProvider (https://fed9ebab-489f-47d1-9a9b-2186c41c6626-00-17m6yz4g9oakg.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=6a2b03e1:2805:3)
+at App
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
+at t.value (https://fed9ebab-489f-47d1-9a9b-2186c41c6626-00-17m6yz4g9oakg.janeway.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:17465)
+at new t (https://fed9ebab-489f-47d1-9a9b-2186c41c6626-00-17m6yz4g9oakg.janeway.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:12630)
+at t.value (https://fed9ebab-489f-47d1-9a9b-2186c41c6626-00-17m6yz4g9oakg.janeway.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:32766)
+at https://fed9ebab-489f-47d1-9a9b-2186c41c6626-00-17m6yz4g9oakg.janeway.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:34400
+Cannot read properties of null (reading 'useState')
+at useState (https://fed9ebab-489f-47d1-9a9b-2186c41c6626-00-17m6yz4g9oakg.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-QCHXOAYK.js?v=2497de00:1066:29)
+at AdminContentNewsPage (https://fed9ebab-489f-47d1-9a9b-2186c41c6626-00-17m6yz4g9oakg.janeway.replit.dev/src/pages/admin-content-news-page.tsx:68:31)
+at renderWithHooks (https://fed9ebab-489f-47d1-9a9b-2186c41c6626-00-17m6yz4g9oakg.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-RPCDYKBN.js?v=6a2b03e1:11548:26)
+at updateFunctionComponent (https://fed9ebab-489f-47d1-9a9b-2186c41c6626-00-17m6yz4g9oakg.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-RPCDYKBN.js?v=6a2b03e1:14582:28)
+at mountLazyComponent (https://fed9ebab-489f-47d1-9a9b-2186c41c6626-00-17m6yz4g9oakg.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-RPCDYKBN.js?v=6a2b03e1:14833:23)
+at beginWork (https://fed9ebab-489f-47d1-9a9b-2186c41c6626-00-17m6yz4g9oakg.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-RPCDYKBN.js?v=6a2b03e1:15918:22)
+at beginWork$1 (https://fed9ebab-489f-47d1-9a9b-2186c41c6626-00-17m6yz4g9oakg.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-RPCDYKBN.js?v=6a2b03e1:19753:22)
+at performUnitOfWork (https://fed9ebab-489f-47d1-9a9b-2186c41c6626-00-17m6yz4g9oakg.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-RPCDYKBN.js?v=6a2b03e1:19198:20)
+at workLoopSync (https://fed9ebab-489f-47d1-9a9b-2186c41c6626-00-17m6yz4g9oakg.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-RPCDYKBN.js?v=6a2b03e1:19137:13)
+at renderRootSync (https://fed9ebab-489f-47d1-9a9b-2186c41c6626-00-17m6yz4g9oakg.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-RPCDYKBN.js?v=6a2b03e1:19116:15)
+WebSocket connection closed 
+CloseEvent {isTrusted: true}
