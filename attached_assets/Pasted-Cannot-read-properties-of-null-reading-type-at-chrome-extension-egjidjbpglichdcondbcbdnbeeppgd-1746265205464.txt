@@ -1,0 +1,49 @@
+Cannot read properties of null (reading 'type')
+at chrome-extension://egjidjbpglichdcondbcbdnbeeppgdph/inpage.js:2:24363119
+at step (chrome-extension://egjidjbpglichdcondbcbdnbeeppgdph/inpage.js:2:24361354)
+at Object.next (chrome-extension://egjidjbpglichdcondbcbdnbeeppgdph/inpage.js:2:24360582)
+at binanceInjectedProvider_asyncGeneratorStep (chrome-extension://egjidjbpglichdcondbcbdnbeeppgdph/inpage.js:2:24355416)
+at _next (chrome-extension://egjidjbpglichdcondbcbdnbeeppgdph/inpage.js:2:24355680)
+[vite] connecting...
+DOMException {}
+
+at t.value (https://fed9ebab-489f-47d1-9a9b-2186c41c6626-00-17m6yz4g9oakg.janeway.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:17465)
+at new t (https://fed9ebab-489f-47d1-9a9b-2186c41c6626-00-17m6yz4g9oakg.janeway.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:12630)
+at t.value (https://fed9ebab-489f-47d1-9a9b-2186c41c6626-00-17m6yz4g9oakg.janeway.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:32766)
+at https://fed9ebab-489f-47d1-9a9b-2186c41c6626-00-17m6yz4g9oakg.janeway.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:34400
+WebSocket connection established
+WebSocket message received: 
+Object {type: "connection_established", payload: {…}, timestamp: 1746265146868}
+Warning: validateDOMNesting(...): <a> cannot appear as a descendant of &lt;a&gt;.
+    at a
+    at a
+    at https://fed9ebab-489f-47d1-9a9b-2186c41c6626-00-17m6yz4g9oakg.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=6a2b03e1:337:18
+    at div
+    at div
+    at div
+    at div
+    at https://fed9ebab-489f-47d1-9a9b-2186c41c6626-00-17m6yz4g9oakg.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-AXMZZQ2X.js?v=6a2b03e1:42:13
+    at https://fed9ebab-489f-47d1-9a9b-2186c41c6626-00-17m6yz4g9oakg.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-scroll-area.js?v=6a2b03e1:114:13
+    at div
+    at https://fed9ebab-489f-47d1-9a9b-2186c41c6626-00-17m6yz4g9oakg.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-AXMZZQ2X.js?v=6a2b03e1:42:13
+    at Provider (https://fed9ebab-489f-47d1-9a9b-2186c41c6626-00-17m6yz4g9oakg.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IKZDNW7I.js?v=6a2b03e1:43:15)
+    at https://fed9ebab-489f-47d1-9a9b-2186c41c6626-00-17m6yz4g9oakg.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-scroll-area.js?v=6a2b03e1:52:7
+    at _c (https://fed9ebab-489f-47d1-9a9b-2186c41c6626-00-17m6yz4g9oakg.janeway.replit.dev/src/components/ui/scroll-area.tsx:21:11)
+    at div
+    at div
+    at div
+    at AdminLayout (https://fed9ebab-489f-47d1-9a9b-2186c41c6626-00-17m6yz4g9oakg.janeway.replit.dev/src/components/admin/admin-layout.tsx:36:39)
+    at AdminDashboardPage (https://fed9ebab-489f-47d1-9a9b-2186c41c6626-00-17m6yz4g9oakg.janeway.replit.dev/src/pages/admin-dashboard-page.tsx:33:56)
+    at Suspense
+    at Route (https://fed9ebab-489f-47d1-9a9b-2186c41c6626-00-17m6yz4g9oakg.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=6a2b03e1:323:16)
+    at Switch (https://fed9ebab-489f-47d1-9a9b-2186c41c6626-00-17m6yz4g9oakg.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=6a2b03e1:379:17)
+    at Suspense
+    at Router
+    at AppContent (https://fed9ebab-489f-47d1-9a9b-2186c41c6626-00-17m6yz4g9oakg.janeway.replit.dev/src/App.tsx?v=IUOm08uWAH-BkDVkq35DR:260:22)
+    at Provider (https://fed9ebab-489f-47d1-9a9b-2186c41c6626-00-17m6yz4g9oakg.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IKZDNW7I.js?v=6a2b03e1:43:15)
+    at TooltipProvider (https://fed9ebab-489f-47d1-9a9b-2186c41c6626-00-17m6yz4g9oakg.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-tooltip.js?v=6a2b03e1:62:5)
+    at WebSocketProvider (https://fed9ebab-489f-47d1-9a9b-2186c41c6626-00-17m6yz4g9oakg.janeway.replit.dev/src/hooks/use-websocket.tsx:20:37)
+    at AdminAuthProvider (https://fed9ebab-489f-47d1-9a9b-2186c41c6626-00-17m6yz4g9oakg.janeway.replit.dev/src/hooks/use-admin-auth.tsx:26:37)
+    at AuthProvider (https://fed9ebab-489f-47d1-9a9b-2186c41c6626-00-17m6yz4g9oakg.janeway.replit.dev/src/hooks/use-auth.tsx:26:32)
+    at QueryClientProvider (https://fed9ebab-489f-47d1-9a9b-2186c41c6626-00-17m6yz4g9oakg.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=6a2b03e1:2805:3)
+    at App

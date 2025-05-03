@@ -125,30 +125,30 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                           <Link
                             key={subitem.name}
                             href={subitem.href}
-                          >
-                            <a className={cn(
+                            className={cn(
                               "block px-3 py-2 rounded-md text-sm font-medium",
                               isActive(subitem.href)
                                 ? "bg-primary/10 text-primary"
                                 : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
-                            )}>
-                              {subitem.name}
-                            </a>
+                            )}
+                          >
+                            {subitem.name}
                           </Link>
                         ))}
                       </div>
                     </div>
                   ) : (
-                    <Link href={item.href}>
-                      <a className={cn(
+                    <Link 
+                      href={item.href}
+                      className={cn(
                         "flex items-center px-3 py-2 rounded-md text-sm font-medium",
                         isActive(item.href)
                           ? "bg-primary/10 text-primary"
                           : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
-                      )}>
-                        <item.icon className="mr-3 h-5 w-5" />
-                        {item.name}
-                      </a>
+                      )}
+                    >
+                      <item.icon className="mr-3 h-5 w-5" />
+                      {item.name}
                     </Link>
                   )}
                 </div>
@@ -197,30 +197,30 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                             <Link
                               key={subitem.name}
                               href={subitem.href}
-                            >
-                              <a className={cn(
+                              className={cn(
                                 "block px-3 py-2 rounded-md text-sm font-medium",
                                 isActive(subitem.href)
                                   ? "bg-primary/10 text-primary"
                                   : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
-                              )}>
-                                {subitem.name}
-                              </a>
+                              )}
+                            >
+                              {subitem.name}
                             </Link>
                           ))}
                         </div>
                       </div>
                     ) : (
-                      <Link href={item.href}>
-                        <a className={cn(
+                      <Link 
+                        href={item.href}
+                        className={cn(
                           "flex items-center px-3 py-2 rounded-md text-sm font-medium",
                           isActive(item.href)
                             ? "bg-primary/10 text-primary"
                             : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
-                        )}>
-                          <item.icon className="mr-3 h-5 w-5" />
-                          {item.name}
-                        </a>
+                        )}
+                      >
+                        <item.icon className="mr-3 h-5 w-5" />
+                        {item.name}
                       </Link>
                     )}
                   </div>
