@@ -51,7 +51,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Pencil, Save, Lock, Mail, Users, Key, ShieldCheck, AlertCircle } from "lucide-react";
+import { Plus, Pencil, Save, Lock, Mail, Users, Key, ShieldCheck, AlertCircle, Settings } from "lucide-react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";

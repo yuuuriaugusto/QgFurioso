@@ -200,3 +200,16 @@ adminRouter.get('/dashboard/metrics', async (req: Request, res: Response) => {
     res.status(500).json({ message: 'Erro ao obter métricas' });
   }
 });
+
+// Integrar os novos roteadores ao roteador de administração
+// Surveys
+adminRouter.use('/surveys', requireAdminAuth, adminSurveysRouter);
+
+// Support tickets
+adminRouter.use('/support', requireAdminAuth, adminSupportRouter);
+
+// Audit logs
+adminRouter.use('/audit', requireAdminAuth, auditRouter);
+
+// Fan sentiment analysis
+adminRouter.use('/fan-sentiment', requireAdminAuth, fanSentimentRouter);
