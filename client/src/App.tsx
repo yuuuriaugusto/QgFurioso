@@ -4,9 +4,11 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/hooks/use-auth";
+import { AdminAuthProvider } from "@/hooks/use-admin-auth";
 import { WebSocketProvider } from "@/hooks/use-websocket";
 import { useEffect, lazy, Suspense } from "react";
 import { ProtectedRoute } from "@/lib/protected-route";
+import { AdminProtectedRoute } from "@/lib/admin-protected-route";
 // Carregamento preguiçoso (Lazy loading) para melhorar a performance
 const NotFound = lazy(() => import("@/pages/not-found"));
 const AuthPage = lazy(() => import("@/pages/auth-page"));
@@ -19,6 +21,9 @@ const SchedulePage = lazy(() => import("@/pages/schedule-page"));
 const LivePage = lazy(() => import("@/pages/live-page"));
 const SurveysPage = lazy(() => import("@/pages/surveys-page"));
 const SettingsPage = lazy(() => import("@/pages/settings-page"));
+// Páginas administrativas
+const AdminLoginPage = lazy(() => import("@/pages/admin-login-page"));
+const AdminDashboardPage = lazy(() => import("@/pages/admin-dashboard-page"));
 import BottomNav from "@/components/layout/bottom-nav";
 
 // Componente de carregamento
@@ -35,6 +40,7 @@ function Router() {
   return (
     <Suspense fallback={<Loading />}>
       <Switch>
+        {/* Rotas do usuário */}
         <ProtectedRoute path="/" component={HomePage} />
         <ProtectedRoute path="/meu-qg" component={ProfilePage} />
         <ProtectedRoute path="/furia-coins" component={FuriaCoinsPage} />
@@ -45,6 +51,12 @@ function Router() {
         <ProtectedRoute path="/pesquisas" component={SurveysPage} />
         <ProtectedRoute path="/configuracoes" component={SettingsPage} />
         <Route path="/auth" component={AuthPage} />
+        
+        {/* Rotas administrativas */}
+        <Route path="/admin/login" component={AdminLoginPage} />
+        <AdminProtectedRoute path="/admin/dashboard" component={AdminDashboardPage} />
+        
+        {/* Rota 404 */}
         <Route component={NotFound} />
       </Switch>
     </Suspense>

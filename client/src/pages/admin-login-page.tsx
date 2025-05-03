@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "wouter";
+import { useLocation } from "wouter";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -23,7 +23,7 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 
 export default function AdminLoginPage() {
   const { toast } = useToast();
-  const navigate = useNavigate();
+  const [_, setLocation] = useLocation();
 
   // Configuração do formulário de login
   const form = useForm<LoginFormValues>({
@@ -51,7 +51,7 @@ export default function AdminLoginPage() {
         description: `Bem-vindo, ${data.name || data.email}!`,
       });
       // Redirecionar para o dashboard admin
-      navigate("/admin/dashboard");
+      setLocation("/admin/dashboard");
     },
     onError: (error: Error) => {
       toast({
