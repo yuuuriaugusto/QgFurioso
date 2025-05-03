@@ -36,10 +36,28 @@ export async function hashPassword(password: string) {
 }
 
 async function comparePasswords(supplied: string, stored: string) {
-  const [hashed, salt] = stored.split(".");
-  const hashedBuf = Buffer.from(hashed, "hex");
-  const suppliedBuf = (await scryptAsync(supplied, salt, 64)) as Buffer;
-  return timingSafeEqual(hashedBuf, suppliedBuf);
+  try {
+    // Verifica se a string armazenada tem o formato esperado (hash.salt)
+    if (!stored || !stored.includes(".")) {
+      console.error("Formato de senha inválido:", stored);
+      return false;
+    }
+    
+    const [hashed, salt] = stored.split(".");
+    const hashedBuf = Buffer.from(hashed, "hex");
+    const suppliedBuf = (await scryptAsync(supplied, salt, 64)) as Buffer;
+    
+    // Certifica-se de que os buffers têm o mesmo tamanho
+    if (hashedBuf.length !== suppliedBuf.length) {
+      console.error(`Tamanhos de buffer diferentes: armazenado=${hashedBuf.length}, fornecido=${suppliedBuf.length}`);
+      return false;
+    }
+    
+    return timingSafeEqual(hashedBuf, suppliedBuf);
+  } catch (error) {
+    console.error("Erro ao comparar senhas:", error);
+    return false;
+  }
 }
 
 // Função para criar um usuário de teste

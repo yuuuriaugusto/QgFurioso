@@ -251,7 +251,7 @@ export default function Header() {
                 <DropdownMenuContent align="end" className="w-56">
                   <div className="px-2 py-1.5 text-sm">
                     <div className="font-medium">{user.profile?.firstName} {user.profile?.lastName}</div>
-                    <div className="text-muted-foreground text-xs truncate">{user.primaryIdentity}</div>
+                    <div className="text-muted-foreground text-xs truncate">{user.username}</div>
                   </div>
 
                   <DropdownMenuSeparator />
