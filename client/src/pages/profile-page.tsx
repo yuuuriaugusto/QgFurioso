@@ -971,7 +971,7 @@ export default function ProfilePage() {
                         <div className="border rounded-lg p-4">
                           <div className="flex justify-between items-center">
                             <div className="flex items-center gap-2">
-                              <Instagram className="h-5 w-5 text-pink-500" />
+                              <Instagram className="h-5 w-5 text-red-500" />
                               <span className="font-medium">Instagram</span>
                             </div>
                             {socialLinks?.some(link => link.platform === 'instagram') ? (
