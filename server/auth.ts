@@ -39,10 +39,16 @@ import bcrypt from "bcrypt";
 
 async function comparePasswords(supplied: string, stored: string) {
   try {
+    console.log("Comparando senhas. Formato armazenado:", 
+                stored.startsWith("$2b$") || stored.startsWith("$2a$") ? "bcrypt" : 
+                stored.includes(".") ? "scrypt" : "desconhecido");
+    
     // Verifica qual o formato da senha armazenada
     if (stored.startsWith("$2b$") || stored.startsWith("$2a$")) {
       // Formato bcrypt (usado para os usuários de teste)
-      return await bcrypt.compare(supplied, stored);
+      const result = await bcrypt.compare(supplied, stored);
+      console.log("Resultado bcrypt.compare:", result);
+      return result;
     } else if (stored.includes(".")) {
       // Formato scrypt (hash.salt)
       const [hashed, salt] = stored.split(".");
@@ -55,7 +61,9 @@ async function comparePasswords(supplied: string, stored: string) {
         return false;
       }
       
-      return timingSafeEqual(hashedBuf, suppliedBuf);
+      const result = timingSafeEqual(hashedBuf, suppliedBuf);
+      console.log("Resultado scrypt compare:", result);
+      return result;
     } else {
       console.error("Formato de senha desconhecido:", stored);
       return false;
