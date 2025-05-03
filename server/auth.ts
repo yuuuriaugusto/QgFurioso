@@ -206,12 +206,12 @@ export function setupAuth(app: Express) {
   passport.use(
     new LocalStrategy(
       {
-        usernameField: "primaryIdentity",
+        usernameField: "username",
         passwordField: "password",
       },
-      async (primaryIdentity, password, done) => {
+      async (username, password, done) => {
         try {
-          const user = await storage.getUserByPrimaryIdentity(primaryIdentity);
+          const user = await storage.getUserByPrimaryIdentity(username);
           if (!user || !(await comparePasswords(password, user.passwordHash))) {
             return done(null, false, { message: "Credenciais inválidas" });
           }
