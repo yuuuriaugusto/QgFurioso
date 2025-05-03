@@ -7,7 +7,7 @@ export function AdminProtectedRoute({
   component: Component,
 }: {
   path: string;
-  component: () => React.JSX.Element;
+  component: React.ComponentType<any>;
 }) {
   // Modo temporário de desenvolvimento - acesso direto
   // Em produção, descomentar o código de verificação abaixo

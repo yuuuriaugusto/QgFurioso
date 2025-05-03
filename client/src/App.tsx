@@ -62,11 +62,31 @@ function Router() {
             <AdminLoginPage />
           </Suspense>
         </Route>
-        <AdminProtectedRoute path="/admin/dashboard" component={() => <AdminDashboardPage />} />
-        <AdminProtectedRoute path="/admin/users" component={() => <AdminUsersPage />} />
-        <AdminProtectedRoute path="/admin/shop/products" component={() => <AdminShopProductsPage />} />
-        <AdminProtectedRoute path="/admin/shop/redemptions" component={() => <AdminShopRedemptionsPage />} />
-        <AdminProtectedRoute path="/admin/content/news" component={() => <AdminContentNewsPage />} />
+        <Route path="/admin/dashboard">
+          <Suspense fallback={<Loading />}>
+            <AdminDashboardPage />
+          </Suspense>
+        </Route>
+        <Route path="/admin/users">
+          <Suspense fallback={<Loading />}>
+            <AdminUsersPage />
+          </Suspense>
+        </Route>
+        <Route path="/admin/shop/products">
+          <Suspense fallback={<Loading />}>
+            <AdminShopProductsPage />
+          </Suspense>
+        </Route>
+        <Route path="/admin/shop/redemptions">
+          <Suspense fallback={<Loading />}>
+            <AdminShopRedemptionsPage />
+          </Suspense>
+        </Route>
+        <Route path="/admin/content/news">
+          <Suspense fallback={<Loading />}>
+            <AdminContentNewsPage />
+          </Suspense>
+        </Route>
         
         {/* Rota 404 */}
         <Route component={NotFound} />
