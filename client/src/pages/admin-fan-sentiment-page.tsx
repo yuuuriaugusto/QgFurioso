@@ -557,7 +557,7 @@ export default function AdminFanSentimentPage() {
                       <SelectValue placeholder="Todas as categorias" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">Todas as categorias</SelectItem>
+                      <SelectItem value="all">Todas as categorias</SelectItem>
                       {sentimentData?.categories.map(category => (
                         <SelectItem key={category.id} value={category.id}>
                           {category.label}
@@ -574,7 +574,7 @@ export default function AdminFanSentimentPage() {
                       <SelectValue placeholder="Todos os sentimentos" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">Todos os sentimentos</SelectItem>
+                      <SelectItem value="all">Todos os sentimentos</SelectItem>
                       <SelectItem value="positive">Positivo</SelectItem>
                       <SelectItem value="neutral">Neutro</SelectItem>
                       <SelectItem value="negative">Negativo</SelectItem>

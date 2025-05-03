@@ -432,7 +432,7 @@ export default function AdminSupportPage() {
                       <SelectValue placeholder="Prioridade" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">Todas</SelectItem>
+                      <SelectItem value="all">Todas</SelectItem>
                       <SelectItem value="high">Alta</SelectItem>
                       <SelectItem value="medium">Média</SelectItem>
                       <SelectItem value="low">Baixa</SelectItem>
@@ -446,7 +446,7 @@ export default function AdminSupportPage() {
                       <SelectValue placeholder="Categoria" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">Todas</SelectItem>
+                      <SelectItem value="all">Todas</SelectItem>
                       <SelectItem value="account">Conta</SelectItem>
                       <SelectItem value="coins">FURIA Coins</SelectItem>
                       <SelectItem value="redemption">Resgates</SelectItem>
