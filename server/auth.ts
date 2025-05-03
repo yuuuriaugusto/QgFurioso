@@ -233,16 +233,30 @@ export function setupAuth(app: Express) {
       },
       async (username, password, done) => {
         try {
+          console.log("Tentando login com:", username);
           const user = await storage.getUserByUsername(username);
-          if (!user || !(await comparePasswords(password, user.passwordHash))) {
+          
+          if (!user) {
+            console.log("Usuário não encontrado:", username);
             return done(null, false, { message: "Credenciais inválidas" });
           }
+          
+          console.log("Usuário encontrado, verificando senha");
+          const passwordValid = await comparePasswords(password, user.passwordHash);
+          
+          if (!passwordValid) {
+            console.log("Senha inválida para:", username);
+            return done(null, false, { message: "Credenciais inválidas" });
+          }
+          
+          console.log("Login bem-sucedido para:", username);
           
           // Update last login
           await storage.updateUser(user.id, { lastLoginAt: new Date() });
           
           return done(null, user);
         } catch (error) {
+          console.error("Erro durante autenticação:", error);
           return done(error);
         }
       }
