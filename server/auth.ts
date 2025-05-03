@@ -360,7 +360,7 @@ export function setupAuth(app: Express) {
           
           return res.status(200).json({
             id: user.id,
-            primaryIdentity: user.primaryIdentity,
+            username: user.username,
             status: user.status,
             profile,
             coinBalance
@@ -400,7 +400,7 @@ export function setupAuth(app: Express) {
     const user = req.user;
     res.json({
       id: user.id,
-      primaryIdentity: user.primaryIdentity,
+      username: user.username,
       status: user.status,
       profile: user.profile,
       coinBalance: user.coinBalance

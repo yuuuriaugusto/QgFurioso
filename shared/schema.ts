@@ -10,8 +10,7 @@ export type AdminRole = "super_admin" | "admin" | "editor" | "viewer";
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
   publicId: uuid("public_id").notNull().defaultRandom(),
-  primaryIdentity: text("primary_identity").notNull().unique(),
-  identityType: text("identity_type").notNull(),
+  username: text("username").notNull().unique(),
   passwordHash: text("password_hash").notNull(),
   status: text("status").notNull().default("pending_verification"),
   lastLoginAt: timestamp("last_login_at"),
