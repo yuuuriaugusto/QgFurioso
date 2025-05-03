@@ -63,7 +63,7 @@ export default function AdminDashboardPage() {
   const handleLogout = () => {
     logoutMutation.mutate(undefined, {
       onSuccess: () => {
-        navigate("/admin/login");
+        setLocation("/admin/login");
       },
     });
   };

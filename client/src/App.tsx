@@ -53,8 +53,12 @@ function Router() {
         <Route path="/auth" component={AuthPage} />
         
         {/* Rotas administrativas */}
-        <Route path="/admin/login" component={AdminLoginPage} />
-        <AdminProtectedRoute path="/admin/dashboard" component={AdminDashboardPage} />
+        <Route path="/admin/login">
+          <Suspense fallback={<Loading />}>
+            <AdminLoginPage />
+          </Suspense>
+        </Route>
+        <AdminProtectedRoute path="/admin/dashboard" component={() => <AdminDashboardPage />} />
         
         {/* Rota 404 */}
         <Route component={NotFound} />
@@ -102,8 +106,8 @@ function AppContent() {
     loadRouteData();
   }, [location]);
   
-  // Não mostrar o BottomNav na tela de login
-  const showBottomNav = location !== "/auth";
+  // Não mostrar o BottomNav na tela de login ou em telas administrativas
+  const showBottomNav = location !== "/auth" && !location.startsWith("/admin");
   
   return (
     <>
@@ -117,12 +121,14 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <WebSocketProvider>
-          <TooltipProvider>
-            <Toaster />
-            <AppContent />
-          </TooltipProvider>
-        </WebSocketProvider>
+        <AdminAuthProvider>
+          <WebSocketProvider>
+            <TooltipProvider>
+              <Toaster />
+              <AppContent />
+            </TooltipProvider>
+          </WebSocketProvider>
+        </AdminAuthProvider>
       </AuthProvider>
     </QueryClientProvider>
   );
