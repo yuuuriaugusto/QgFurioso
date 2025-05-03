@@ -317,7 +317,7 @@ export default function AdminAuditPage() {
                   <SelectValue placeholder="Ação" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Todas as ações</SelectItem>
+                  <SelectItem value="all">Todas as ações</SelectItem>
                   {logTypes?.actions.map((action) => (
                     <SelectItem key={action} value={action}>
                       {action === "create" && "Criação"}
@@ -340,7 +340,7 @@ export default function AdminAuditPage() {
                   <SelectValue placeholder="Tipo de Entidade" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Todos os tipos</SelectItem>
+                  <SelectItem value="all">Todos os tipos</SelectItem>
                   {logTypes?.entityTypes.map((type) => (
                     <SelectItem key={type} value={type}>
                       {getEntityTypeDisplay(type)}
