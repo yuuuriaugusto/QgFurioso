@@ -8,7 +8,7 @@ import { adminSurveysRouter } from './admin-surveys-routes';
 import { adminSupportRouter } from './admin-support-routes';
 import { auditRouter } from './audit-routes';
 import { fanSentimentRouter } from './fan-sentiment-routes';
-import { adminCoinsRouter } from './admin-coins-routes';
+// import { adminCoinsRouter } from './admin-coins-routes'; - Removido para evitar dependência circular
 import session from 'express-session';
 
 // Estender a interface Session para incluir adminId
@@ -216,4 +216,6 @@ adminRouter.use('/audit', requireAdminAuth, auditRouter);
 adminRouter.use('/fan-sentiment', requireAdminAuth, fanSentimentRouter);
 
 // FURIA Coins management
+// Importamos e registramos no final do arquivo para evitar dependência circular
+import { adminCoinsRouter } from './admin-coins-routes';
 adminRouter.use('/coins', requireAdminAuth, adminCoinsRouter);

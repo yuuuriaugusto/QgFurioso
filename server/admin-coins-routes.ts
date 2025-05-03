@@ -1,9 +1,43 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import { storage } from './storage';
 import { logAuditAction } from './audit-routes';
-import { requireAdminAuth, requireAdminRole } from './admin-routes';
+import session from 'express-session';
 
+// Estender a interface Session para incluir adminId
+declare module 'express-session' {
+  interface SessionData {
+    adminId?: number;
+  }
+}
 export const adminCoinsRouter = Router();
+
+// Criando middleware localmente para evitar dependência circular
+const requireAdminAuth = (req: Request, res: Response, next: NextFunction) => {
+  if (!req.session.adminId) {
+    return res.status(401).json({ message: 'Acesso não autorizado' });
+  }
+  next();
+};
+
+// Middleware para verificar se o administrador tem uma determinada função
+const requireAdminRole = (roles: string[]) => {
+  return async (req: Request, res: Response, next: NextFunction) => {
+    if (!req.session.adminId) {
+      return res.status(401).json({ message: 'Acesso não autorizado' });
+    }
+
+    const adminUser = await storage.getAdmin(req.session.adminId);
+    if (!adminUser) {
+      return res.status(401).json({ message: 'Acesso não autorizado' });
+    }
+
+    if (!roles.includes(adminUser.role)) {
+      return res.status(403).json({ message: 'Você não tem permissão para acessar este recurso' });
+    }
+
+    next();
+  };
+};
 
 // Middleware para verificar permissões relacionadas a FURIA Coins
 const requireCoinsPermission = [requireAdminAuth, requireAdminRole(['admin', 'finance'])];

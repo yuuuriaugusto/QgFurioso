@@ -39,13 +39,12 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Calendar } from "@/components/ui/calendar";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
+import { DateRangePicker } from "@/components/ui/date-range-picker";
 import {
   BarChart,
-  Calendar as CalendarIcon,
   Filter,
   Search,
   Smile,
@@ -583,53 +582,10 @@ export default function AdminFanSentimentPage() {
                 </div>
                 
                 <div className="flex items-center gap-4 mt-4">
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        className={cn(
-                          "justify-start text-left font-normal",
-                          !dateRange.from && !dateRange.to && "text-muted-foreground"
-                        )}
-                      >
-                        <CalendarIcon className="mr-2 h-4 w-4" />
-                        {dateRange.from ? (
-                          dateRange.to ? (
-                            <>
-                              {format(dateRange.from, "dd/MM/yyyy", { locale: ptBR })} -{" "}
-                              {format(dateRange.to, "dd/MM/yyyy", { locale: ptBR })}
-                            </>
-                          ) : (
-                            format(dateRange.from, "dd/MM/yyyy", { locale: ptBR })
-                          )
-                        ) : (
-                          <span>Filtrar por data</span>
-                        )}
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar
-                        initialFocus
-                        mode="range"
-                        defaultMonth={dateRange.from}
-                        selected={dateRange}
-                        onSelect={setDateRange}
-                        numberOfMonths={2}
-                        locale={ptBR}
-                      />
-                      {(dateRange.from || dateRange.to) && (
-                        <div className="flex justify-end p-3 border-t">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => setDateRange({ from: undefined, to: undefined })}
-                          >
-                            Limpar
-                          </Button>
-                        </div>
-                      )}
-                    </PopoverContent>
-                  </Popover>
+                  <DateRangePicker 
+                    dateRange={dateRange} 
+                    setDateRange={(range) => setDateRange(range || { from: undefined, to: undefined })} 
+                  />
                 </div>
               </CardHeader>
               <CardContent>
