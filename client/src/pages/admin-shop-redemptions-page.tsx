@@ -112,22 +112,32 @@ export default function AdminShopRedemptionsPage() {
       if (typeFilter !== "all") params.append("itemType", typeFilter);
       if (search) params.append("search", search);
       
-      // NOTA: Esta chamada API ainda não está implementada no backend
-      // Está aqui para demonstrar como seria a interface de usuário
-      const res = await apiRequest("GET", `/api/admin/shop/redemptions?${params.toString()}`);
-      if (!res.ok) {
+      try {
+        // NOTA: Esta chamada API ainda não está implementada no backend
+        // Está aqui para demonstrar como seria a interface de usuário
+        const res = await apiRequest("GET", `/api/admin/shop/redemptions?${params.toString()}`);
+        if (!res.ok) {
+          // Retorna dados mockados em caso de erro
+          return {
+            orders: mockRedemptionOrders,
+            totalCount: mockRedemptionOrders.length,
+            pageCount: 1
+          };
+        }
+        return await res.json();
+      } catch (error) {
+        console.error("Erro ao buscar resgates:", error);
+        // Retorna dados mockados em caso de exceção
         return {
-          orders: [],
-          totalCount: 0,
-          pageCount: 0
+          orders: mockRedemptionOrders,
+          totalCount: mockRedemptionOrders.length,
+          pageCount: 1
         };
       }
-      return await res.json();
     },
     enabled: true, // temporário para desenvolvimento
   });
-  
-  // Mock data para visualização da interface
+
   const mockRedemptionOrders: RedemptionOrder[] = [
     {
       id: 1,
