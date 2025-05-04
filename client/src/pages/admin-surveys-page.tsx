@@ -628,7 +628,7 @@ export default function AdminSurveysPage() {
                           )}
                         </TableCell>
                         <TableCell>
-                          {format(new Date(survey.createdAt), "dd/MM/yyyy", { locale: ptBR })}
+                          {survey.createdAt ? format(new Date(survey.createdAt), "dd/MM/yyyy", { locale: ptBR }) : ""}
                         </TableCell>
                         <TableCell className="text-right">
                           <div className="flex justify-end gap-2">
