@@ -262,60 +262,61 @@ export default function AdminSurveysPage() {
             "06/05/2023": 12,
             "07/05/2023": 5,
           },
-        questionStats: [
-          {
-            id: 1,
-            questionText: "Qual sua opinião sobre o design do novo uniforme?",
-            type: "text",
-            responsesCount: selectedSurvey.responseCount,
-            sampleResponses: [
-              "Adorei o design, principalmente o detalhe do logo nas mangas.",
-              "Muito bonito, mas preferia as cores anteriores.",
-              "Excelente design, representa bem a identidade da FURIA."
-            ]
-          },
-          {
-            id: 2,
-            questionText: "Como você avalia a qualidade do material?",
-            type: "rating",
-            avgRating: 4.2,
-            ratings: {
-              "1": 5,
-              "2": 8,
-              "3": 15,
-              "4": 45,
-              "5": 52
+          questionStats: [
+            {
+              id: 1,
+              questionText: "Qual sua opinião sobre o design do novo uniforme?",
+              type: "text",
+              responsesCount: selectedSurvey.responseCount,
+              sampleResponses: [
+                "Adorei o design, principalmente o detalhe do logo nas mangas.",
+                "Muito bonito, mas preferia as cores anteriores.",
+                "Excelente design, representa bem a identidade da FURIA."
+              ]
+            },
+            {
+              id: 2,
+              questionText: "Como você avalia a qualidade do material?",
+              type: "rating",
+              avgRating: 4.2,
+              ratings: {
+                "1": 5,
+                "2": 8,
+                "3": 15,
+                "4": 45,
+                "5": 52
+              }
+            },
+            {
+              id: 3,
+              questionText: "Que outros itens você gostaria de ver com este design?",
+              type: "multiple",
+              options: {
+                "Boné": 89,
+                "Moletom": 105,
+                "Calça": 68,
+                "Meia": 45,
+                "Tênis": 74
+              }
             }
-          },
-          {
-            id: 3,
-            questionText: "Que outros itens você gostaria de ver com este design?",
-            type: "multiple",
-            options: {
-              "Boné": 89,
-              "Moletom": 105,
-              "Calça": 68,
-              "Meia": 45,
-              "Tênis": 74
+          ],
+          demographicData: {
+            ageGroups: {
+              "18-24": 68,
+              "25-34": 42,
+              "35-44": 10,
+              "45+": 5
+            },
+            gender: {
+              "Masculino": 85,
+              "Feminino": 35,
+              "Outro/Prefiro não informar": 5
             }
           }
-        ],
-        demographicData: {
-          ageGroups: {
-            "18-24": 68,
-            "25-34": 42,
-            "35-44": 10,
-            "45+": 5
-          },
-          gender: {
-            "Masculino": 85,
-            "Feminino": 35,
-            "Outro/Prefiro não informar": 5
-          }
-        }
-      };
+        };
+      }
     },
-    enabled: !!selectedSurvey,
+    enabled: !!selectedSurvey
   });
 
   // Filtrar pesquisas com base no status selecionado
