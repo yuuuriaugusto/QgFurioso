@@ -3,6 +3,8 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import AdminLayout from "@/components/admin/admin-layout";
 import { Loader2, Search, PlusCircle, Edit, Trash, MoreHorizontal, Award, EyeIcon, Sparkles, Activity } from "lucide-react";
+import { format } from "date-fns";
+import { ptBR } from "date-fns/locale";
 
 import {
   Card,
@@ -292,11 +294,7 @@ export default function AdminCoinsRulesPage() {
   // Formata data para exibição
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return new Intl.DateTimeFormat('pt-BR', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric'
-    }).format(date);
+    return format(date, "dd/MM/yyyy", { locale: ptBR });
   };
   
   // Status da regra em formato badge
