@@ -279,7 +279,14 @@ export default function ProfilePage() {
         }
       };
       
+      console.log("Enviando dados para API:", profileData);
+      
       const response = await apiRequest('PUT', '/api/users/me/profile', profileData);
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error("Erro na resposta da API:", errorData);
+        throw new Error(errorData.message || "Erro ao atualizar perfil");
+      }
       return await response.json();
     },
     onSuccess: () => {
@@ -531,36 +538,64 @@ export default function ProfilePage() {
                                 render={({ field }) => (
                                   <FormItem className="flex flex-col">
                                     <FormLabel>Data de nascimento</FormLabel>
-                                    <Popover>
-                                      <PopoverTrigger asChild>
-                                        <FormControl>
+                                    <div className="flex gap-2 items-center">
+                                      <FormControl>
+                                        <Input 
+                                          placeholder="DD/MM/AAAA" 
+                                          value={field.value ? format(field.value, "dd/MM/yyyy", { locale: pt }) : ""}
+                                          onChange={(e) => {
+                                            const value = e.target.value;
+                                            // Aplicar máscara de data
+                                            let maskedValue = value.replace(/\D/g, "");
+                                            if (maskedValue.length > 0) {
+                                              maskedValue = maskedValue.replace(/^(\d{2})(\d)/, "$1/$2");
+                                              maskedValue = maskedValue.replace(/^(\d{2})\/(\d{2})(\d)/, "$1/$2/$3");
+                                              maskedValue = maskedValue.substring(0, 10);
+                                            }
+                                            e.target.value = maskedValue;
+                                            
+                                            // Tenta converter a data para um objeto Date válido
+                                            if (maskedValue.length === 10) {
+                                              const [day, month, year] = maskedValue.split('/');
+                                              const date = new Date(`${year}-${month}-${day}`);
+                                              
+                                              // Verifica se a data é válida
+                                              if (!isNaN(date.getTime()) && 
+                                                  date < new Date() && 
+                                                  date > new Date("1900-01-01")) {
+                                                field.onChange(date);
+                                              }
+                                            }
+                                          }}
+                                        />
+                                      </FormControl>
+                                      <Popover>
+                                        <PopoverTrigger asChild>
                                           <Button
                                             variant={"outline"}
-                                            className={`w-full pl-3 text-left font-normal ${
-                                              !field.value ? "text-muted-foreground" : ""
-                                            }`}
+                                            type="button"
+                                            className="px-2"
+                                            title="Abrir calendário"
                                           >
-                                            {field.value ? (
-                                              format(field.value, "dd/MM/yyyy", { locale: pt })
-                                            ) : (
-                                              <span>Selecione a data</span>
-                                            )}
-                                            <CalendarCheck className="ml-auto h-4 w-4 opacity-50" />
+                                            <CalendarCheck className="h-4 w-4" />
                                           </Button>
-                                        </FormControl>
-                                      </PopoverTrigger>
-                                      <PopoverContent className="w-auto p-0" align="start">
-                                        <Calendar
-                                          mode="single"
-                                          selected={field.value}
-                                          onSelect={field.onChange}
-                                          disabled={(date) =>
-                                            date > new Date() || date < new Date("1900-01-01")
-                                          }
-                                          initialFocus
-                                        />
-                                      </PopoverContent>
-                                    </Popover>
+                                        </PopoverTrigger>
+                                        <PopoverContent className="w-auto p-0" align="end">
+                                          <Calendar
+                                            mode="single"
+                                            selected={field.value}
+                                            onSelect={field.onChange}
+                                            disabled={(date) =>
+                                              date > new Date() || date < new Date("1900-01-01")
+                                            }
+                                            initialFocus
+                                          />
+                                        </PopoverContent>
+                                      </Popover>
+                                    </div>
+                                    <FormDescription>
+                                      Digite a data no formato DD/MM/AAAA ou use o calendário.
+                                    </FormDescription>
                                     <FormMessage />
                                   </FormItem>
                                 )}
