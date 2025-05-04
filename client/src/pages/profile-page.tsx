@@ -285,28 +285,45 @@ export default function ProfilePage() {
   // Mutação para atualizar o perfil do usuário
   const updateProfileMutation = useMutation({
     mutationFn: async (data: ProfileFormValues) => {
-      // Transformando os dados para o formato esperado pela API
-      const profileData = {
-        ...data,
-        // Formatando data de nascimento
-        birthDate: data.birthDate ? format(new Date(data.birthDate), 'yyyy-MM-dd') : undefined,
-        // Criando objeto de interesses
-        interests: {
-          favoriteGames: data.favoriteGames,
-          fanSince: data.fanSince,
-          eventsAttended: data.eventsAttended
+      try {
+        // Transformando os dados para o formato esperado pela API
+        const profileData = {
+          ...data,
+          // Removendo campos que causam problemas de serialização
+          birthDate: data.birthDate ? format(new Date(data.birthDate), 'yyyy-MM-dd') : undefined,
+          // Criando objeto de interesses
+          interests: {
+            favoriteGames: Array.isArray(data.favoriteGames) ? data.favoriteGames : [],
+            fanSince: data.fanSince || "",
+            eventsAttended: Array.isArray(data.eventsAttended) ? data.eventsAttended : []
+          }
+        };
+        
+        // Removendo propriedades indefinidas ou nulas para evitar erros
+        Object.keys(profileData).forEach(key => {
+          if (profileData[key] === undefined || profileData[key] === null) {
+            delete profileData[key];
+          }
+        });
+        
+        console.log("Enviando dados para API:", JSON.stringify(profileData, null, 2));
+        
+        const response = await apiRequest('PUT', '/api/users/me/profile', profileData);
+        if (!response.ok) {
+          let errorData;
+          try {
+            errorData = await response.json();
+          } catch (e) {
+            throw new Error(`Erro ao atualizar perfil (${response.status}): ${response.statusText}`);
+          }
+          console.error("Erro na resposta da API:", errorData);
+          throw new Error(errorData?.message || `Erro ao atualizar perfil (${response.status})`);
         }
-      };
-      
-      console.log("Enviando dados para API:", profileData);
-      
-      const response = await apiRequest('PUT', '/api/users/me/profile', profileData);
-      if (!response.ok) {
-        const errorData = await response.json();
-        console.error("Erro na resposta da API:", errorData);
-        throw new Error(errorData.message || "Erro ao atualizar perfil");
+        return await response.json();
+      } catch (error) {
+        console.error("Erro ao processar atualização:", error);
+        throw error;
       }
-      return await response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/users/me/profile'] });
@@ -322,7 +339,7 @@ export default function ProfilePage() {
       console.error("Erro ao atualizar perfil:", error);
       toast({
         title: "Erro ao atualizar perfil",
-        description: "Ocorreu um erro ao tentar atualizar suas informações. Tente novamente.",
+        description: error.message || "Ocorreu um erro ao tentar atualizar suas informações. Tente novamente.",
         variant: "destructive",
       });
     }
@@ -561,21 +578,42 @@ export default function ProfilePage() {
                                       <FormControl>
                                         <Input 
                                           placeholder="DD/MM/AAAA" 
-                                          value={field.value ? format(field.value, "dd/MM/yyyy", { locale: pt }) : ""}
+                                          value={field.value ? format(new Date(field.value), "dd/MM/yyyy", { locale: pt }) : ""}
                                           onChange={(e) => {
-                                            const value = e.target.value;
-                                            // Aplicar máscara de data
-                                            let maskedValue = value.replace(/\D/g, "");
-                                            if (maskedValue.length > 0) {
-                                              maskedValue = maskedValue.replace(/^(\d{2})(\d)/, "$1/$2");
-                                              maskedValue = maskedValue.replace(/^(\d{2})\/(\d{2})(\d)/, "$1/$2/$3");
-                                              maskedValue = maskedValue.substring(0, 10);
-                                            }
-                                            e.target.value = maskedValue;
+                                            let value = e.target.value;
                                             
-                                            // Tenta converter a data para um objeto Date válido
-                                            if (maskedValue.length === 10) {
-                                              const [day, month, year] = maskedValue.split('/');
+                                            // Remove caracteres não numéricos exceto barra
+                                            value = value.replace(/[^\d/]/g, "");
+                                            
+                                            // Adiciona barras automaticamente
+                                            if (value.length > 0) {
+                                              // Garante apenas números nos lugares certos
+                                              if (value.length <= 2) {
+                                                // Só permite dígitos para o dia
+                                                value = value.replace(/\D/g, "");
+                                              } else if (value.length <= 5) {
+                                                // Adiciona barra após o dia se não existir
+                                                value = value.replace(/^(\d{2})([^/])/, "$1/$2");
+                                                // Remove qualquer caractere não numérico após a barra
+                                                value = value.replace(/^(\d{2}\/)([\D])/, "$1");
+                                              } else {
+                                                // Adiciona barras após dia e mês se não existirem
+                                                value = value.replace(/^(\d{2})([^/])/, "$1/$2");
+                                                value = value.replace(/^(\d{2}\/\d{2})([^/])/, "$1/$2");
+                                                // Remove qualquer caractere não numérico após a segunda barra
+                                                value = value.replace(/^(\d{2}\/\d{2}\/)([\D])/, "$1");
+                                              }
+                                              
+                                              // Limita o tamanho total
+                                              value = value.substring(0, 10);
+                                            }
+                                            
+                                            // Atualiza o campo de entrada
+                                            e.target.value = value;
+                                            
+                                            // Só tenta converter para Date se o formato estiver completo
+                                            if (value.match(/^\d{2}\/\d{2}\/\d{4}$/)) {
+                                              const [day, month, year] = value.split('/');
                                               const date = new Date(`${year}-${month}-${day}`);
                                               
                                               // Verifica se a data é válida
@@ -583,6 +621,9 @@ export default function ProfilePage() {
                                                   date < new Date() && 
                                                   date > new Date("1900-01-01")) {
                                                 field.onChange(date);
+                                                console.log("Data válida:", date);
+                                              } else {
+                                                console.log("Data inválida:", value);
                                               }
                                             }
                                           }}
@@ -602,7 +643,7 @@ export default function ProfilePage() {
                                         <PopoverContent className="w-auto p-0" align="end">
                                           <Calendar
                                             mode="single"
-                                            selected={field.value}
+                                            selected={field.value ? new Date(field.value) : undefined}
                                             onSelect={field.onChange}
                                             disabled={(date) =>
                                               date > new Date() || date < new Date("1900-01-01")
