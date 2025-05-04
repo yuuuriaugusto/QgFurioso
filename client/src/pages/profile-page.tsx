@@ -217,18 +217,18 @@ export default function ProfilePage() {
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileFormSchema),
     defaultValues: {
-      firstName: user?.profile?.firstName || "",
-      lastName: user?.profile?.lastName || "",
-      birthDate: user?.profile?.birthDate ? new Date(user.profile.birthDate) : undefined,
-      phoneNumber: user?.profile?.phoneNumber || "",
+      firstName: "",
+      lastName: "",
+      birthDate: undefined,
+      phoneNumber: "",
       cpf: "",
-      addressStreet: user?.profile?.addressStreet || "",
-      addressNumber: user?.profile?.addressNumber || "",
-      addressComplement: user?.profile?.addressComplement || "",
-      addressNeighborhood: user?.profile?.addressNeighborhood || "",
-      addressCity: user?.profile?.addressCity || "",
-      addressState: user?.profile?.addressState || "",
-      addressZipCode: user?.profile?.addressZipCode || "",
+      addressStreet: "",
+      addressNumber: "",
+      addressComplement: "",
+      addressNeighborhood: "",
+      addressCity: "",
+      addressState: "",
+      addressZipCode: "",
       favoriteGames: [],
       fanSince: "",
       eventsAttended: [],
@@ -237,28 +237,46 @@ export default function ProfilePage() {
 
   // Atualiza o formulário quando os dados do perfil são carregados
   useEffect(() => {
+    console.log("userProfile atualizado:", userProfile);
     if (userProfile) {
-      form.reset({
-        firstName: userProfile.firstName || "",
-        lastName: userProfile.lastName || "",
-        birthDate: userProfile.birthDate ? new Date(userProfile.birthDate) : undefined,
-        phoneNumber: userProfile.phoneNumber || "",
-        cpf: "", // Não exibimos o CPF armazenado, apenas permitimos nova entrada
-        addressStreet: userProfile.addressStreet || "",
-        addressNumber: userProfile.addressNumber || "",
-        addressComplement: userProfile.addressComplement || "",
-        addressNeighborhood: userProfile.addressNeighborhood || "",
-        addressCity: userProfile.addressCity || "",
-        addressState: userProfile.addressState || "",
-        addressZipCode: userProfile.addressZipCode || "",
-        favoriteGames: userProfile.interests?.favoriteGames || [],
-        fanSince: userProfile.interests?.fanSince || "",
-        eventsAttended: userProfile.interests?.eventsAttended || [],
-      });
+      try {
+        console.log("Atualizando formulário com dados do perfil");
+        
+        // Garantir que todos os campos obrigatórios tenham valores padrão
+        const formValues = {
+          firstName: userProfile.firstName || "",
+          lastName: userProfile.lastName || "",
+          birthDate: userProfile.birthDate ? new Date(userProfile.birthDate) : undefined,
+          phoneNumber: userProfile.phoneNumber || "",
+          cpf: "", // Não exibimos o CPF armazenado, apenas permitimos nova entrada
+          addressStreet: userProfile.addressStreet || "",
+          addressNumber: userProfile.addressNumber || "",
+          addressComplement: userProfile.addressComplement || "",
+          addressNeighborhood: userProfile.addressNeighborhood || "",
+          addressCity: userProfile.addressCity || "",
+          addressState: userProfile.addressState || "",
+          addressZipCode: userProfile.addressZipCode || "",
+          favoriteGames: Array.isArray(userProfile.interests?.favoriteGames) ? userProfile.interests.favoriteGames : [],
+          fanSince: userProfile.interests?.fanSince || "",
+          eventsAttended: Array.isArray(userProfile.interests?.eventsAttended) ? userProfile.interests.eventsAttended : [],
+        };
+        
+        console.log("Valores do formulário:", formValues);
+        form.reset(formValues);
 
-      // Atualiza os jogos selecionados
-      if (userProfile.interests?.favoriteGames) {
-        setSelectedGames(userProfile.interests.favoriteGames);
+        // Atualiza os jogos selecionados
+        if (Array.isArray(userProfile.interests?.favoriteGames)) {
+          setSelectedGames(userProfile.interests.favoriteGames);
+        } else {
+          setSelectedGames([]);
+        }
+      } catch (error) {
+        console.error("Erro ao atualizar formulário:", error);
+        toast({
+          title: "Erro ao carregar dados",
+          description: "Ocorreu um erro ao carregar seus dados. Tente novamente.",
+          variant: "destructive",
+        });
       }
     }
   }, [userProfile, form]);
