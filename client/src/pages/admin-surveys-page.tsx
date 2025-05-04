@@ -1126,7 +1126,7 @@ export default function AdminSurveysPage() {
           <DialogHeader>
             <DialogTitle>Estatísticas da Pesquisa</DialogTitle>
             <DialogDescription>
-              {selectedSurvey?.title} - {format(new Date(selectedSurvey?.createdAt), "dd/MM/yyyy", { locale: ptBR })}
+              {selectedSurvey?.title} - {selectedSurvey?.createdAt ? format(new Date(selectedSurvey?.createdAt), "dd/MM/yyyy", { locale: ptBR }) : ''}
             </DialogDescription>
           </DialogHeader>
           
