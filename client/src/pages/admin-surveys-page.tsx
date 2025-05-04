@@ -229,6 +229,7 @@ export default function AdminSurveysPage() {
             responseCount: 210,
           }
         ];
+      }
     },
   });
 
