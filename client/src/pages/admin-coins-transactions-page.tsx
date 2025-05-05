@@ -56,7 +56,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { DateRangePicker } from "@/components/ui/date-range-picker";
+import { DatePickerWithRange } from "@/components/ui/date-range-picker";
 import { addDays } from "date-fns";
 
 // Tipos
@@ -503,9 +503,9 @@ export default function AdminCoinsTransactionsPage() {
                       </Button>
                     </PopoverTrigger>
                     <PopoverContent className="w-auto p-0" align="end">
-                      <DateRangePicker
-                        dateRange={dateRange}
-                        setDateRange={setDateRange}
+                      <DatePickerWithRange
+                        selectedRange={dateRange}
+                        onSelect={setDateRange}
                       />
                     </PopoverContent>
                   </Popover>
