@@ -2,6 +2,9 @@
 
 Este manual fornece instruções detalhadas para administradores e moderadores da plataforma QG FURIOSO. Ele abrange todas as funcionalidades do painel administrativo, procedimentos operacionais e boas práticas.
 
+**Data da última atualização:** 04 de Maio de 2025  
+**Versão da plataforma:** 2.5.0
+
 ## Índice
 
 1. [Introdução](#introdução)

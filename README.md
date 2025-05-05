@@ -1,104 +1,78 @@
 # QG FURIOSO - Plataforma de Engajamento de Fãs
 
-Este projeto contém uma plataforma de engajamento de fãs para FURIA Esports, dividida em três partes: backend, frontend e painel administrativo.
+Este projeto contém uma plataforma completa de engajamento de fãs para FURIA Esports, projetada para conectar fãs ao redor do mundo através de experiências digitais imersivas e interativas.
+
+## Visão Geral
+
+O QG FURIOSO é uma plataforma abrangente que oferece diversas funcionalidades:
+
+- 🏆 **Acompanhamento de Partidas e Eventos**: informações sobre competições e calendário de eventos
+- 💰 **Sistema de FURIA Coins**: economia virtual para recompensas e aquisição de itens exclusivos 
+- 👤 **Perfis Personalizados**: gerenciamento completo de perfis de usuário com verificação KYC
+- 📊 **Pesquisas e Feedback**: sistema para coleta de opinião dos fãs com recompensas
+- 📰 **Central de Conteúdo**: notícias e atualizações filtradas por jogo/categoria
+- 🔴 **Transmissões Ao Vivo**: integração com streams e conteúdo em tempo real
 
 ## Estrutura do Projeto
 
-O projeto está organizado em três repositórios separados:
+O projeto é dividido em três componentes principais integrados:
 
-- **qg-furioso-backend** - API REST em Express/TypeScript com banco de dados PostgreSQL
-- **qg-furioso-frontend** - Interface de usuário em React/TypeScript com Tailwind CSS
-- **qg-furioso-admin** - Painel administrativo em React/TypeScript com Ant Design
+- **Backend**: API REST em Express/TypeScript com banco de dados PostgreSQL
+- **Frontend**: Interface de usuário em React/TypeScript com Tailwind CSS e Shadcn/UI
+- **Painel Administrativo**: Dashboard para gerenciamento de conteúdo, usuários e relatórios
 
-## Inicialização
-
-Você pode iniciar cada parte individualmente ou todas ao mesmo tempo:
-
-### Iniciar apenas o backend
-```bash
-./run-backend.sh
-```
-
-### Iniciar apenas o frontend
-```bash
-./run-frontend.sh
-```
-
-### Iniciar apenas o painel administrativo
-```bash
-./run-admin.sh
-```
-
-### Iniciar todos os serviços
-```bash
-./start-both.sh
-```
-Nota: O script `start-both.sh` utiliza `tmux` para executar todos os serviços ao mesmo tempo.
-
-## Desenvolvimento
+## Tecnologias Utilizadas
 
 ### Backend
+- Node.js + Express
+- TypeScript
+- PostgreSQL com Drizzle ORM
+- Passport.js para autenticação 
+- WebSockets para funcionalidades em tempo real
 
-O backend está configurado com:
-- Express para API REST
-- Drizzle ORM para acesso ao banco de dados PostgreSQL
-- Passport para autenticação
-- Express Session para gerenciar sessões
-
-Para mais detalhes, consulte o [README do backend](./qg-furioso-backend/README.md).
-
-### Frontend
-
-O frontend está configurado com:
-- React para construção da interface
+### Frontend & Admin
+- React 
+- TypeScript
+- Tailwind CSS com Shadcn/UI (Frontend)
 - Vite como ferramenta de build
-- TanStack Query para gerenciamento de estado e cache
-- Tailwind CSS para estilização
-- Shadcn/UI para componentes
-- Wouter para roteamento
+- TanStack Query para gerenciamento de estado
+- Sistema de formulários com React Hook Form e Zod
 
-Para mais detalhes, consulte o [README do frontend](./qg-furioso-frontend/README.md).
+## Inicialização Rápida
 
-### Painel Administrativo
+Para executar o projeto:
 
-O painel administrativo está configurado com:
-- React para construção da interface
-- Vite como ferramenta de build
-- TanStack Query para gerenciamento de estado e cache
-- Ant Design para componentes UI
-- Recharts para visualização de dados
-- React Router para roteamento
+```bash
+# Inicia a aplicação completa
+npm run dev
+```
 
-Para mais detalhes, consulte o [README do painel administrativo](./qg-furioso-admin/README.md).
+## Credenciais de Acesso
 
-## Configuração de Ambientes
-
-Cada repositório contém arquivos `.env.example` que devem ser copiados para `.env` e configurados corretamente:
-
-### Backend (.env)
-- `DATABASE_URL` - URL de conexão com o PostgreSQL
-- `SESSION_SECRET` - Chave secreta para criptografia de sessões
-- `PORT` - Porta onde o servidor será executado (padrão: 5000)
-- `CORS_ORIGIN` - Origem permitida para requisições CORS (em desenvolvimento: http://localhost:5173)
-
-### Frontend (.env)
-- `VITE_API_URL` - URL da API do backend (em desenvolvimento: http://localhost:5000)
-
-### Admin Panel (.env)
-- `VITE_API_URL` - URL da API do backend (em desenvolvimento: http://localhost:5000)
-
-## Acessos e Portas
-
-- **Frontend**: http://localhost:5173
-- **Backend API**: http://localhost:5000
-- **Painel Administrativo**: http://localhost:5174
-
-## Credenciais de Teste
-
-O sistema cria automaticamente um usuário de teste com as seguintes credenciais:
-
+### Usuário Regular
 - **Email**: teste@furia.com
 - **Senha**: furiafan123
+
+### Administrador
+- **Email**: admin@furia.com
+- **Senha**: admin123
+
+## Documentação
+
+Para informações mais detalhadas, consulte os seguintes documentos:
+
+- [Documentação Técnica](./DOCUMENTACAO.md) - Visão geral técnica da arquitetura e implementação
+- [Esquema de Banco de Dados](./ESQUEMA_DB.md) - Detalhes sobre o modelo de dados e relações
+- [Guia para Administradores](./GUIA_ADMINISTRADORES.md) - Instruções para uso do painel administrativo
+- [Guia para Usuários](./GUIA_USUARIO.md) - Instruções para navegação e uso da plataforma
+- [Guia para Desenvolvedores](./GUIA_DESENVOLVIMENTO.md) - Instruções para desenvolvimento e extensão
+- [WebSockets](./WEBSOCKETS.md) - Documentação sobre os recursos em tempo real
+
+## Requisitos de Ambiente
+
+- Node.js 18+
+- PostgreSQL 14+
+- Navegador moderno com suporte a ES6
 
 ## Licença
 

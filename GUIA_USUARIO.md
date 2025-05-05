@@ -2,6 +2,9 @@
 
 Bem-vindo ao QG FURIOSO, a plataforma de engajamento de fãs da FURIA Esports! Este guia foi criado para facilitar sua experiência com a plataforma, explicando cada recurso e funcionalidade disponível.
 
+**Data da última atualização:** 04 de Maio de 2025  
+**Versão da plataforma:** 2.5.0
+
 ## Índice
 
 1. [Introdução](#introdução)
