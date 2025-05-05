@@ -1,5 +1,8 @@
 # WebSockets e Notificações em Tempo Real - QG FURIOSO
 
+**Data da última atualização:** 04 de Maio de 2025  
+**Versão da plataforma:** 2.5.0
+
 ## Visão Geral
 
 O QG FURIOSO implementa um sistema de WebSockets para comunicação bidirecional em tempo real entre cliente e servidor. Este sistema fornece:

@@ -1,5 +1,8 @@
 # QG FURIOSO - Plataforma de Engajamento de Fãs
 
+**Data da última atualização:** 04 de Maio de 2025  
+**Versão da plataforma:** 2.5.0
+
 Este projeto contém uma plataforma completa de engajamento de fãs para FURIA Esports, projetada para conectar fãs ao redor do mundo através de experiências digitais imersivas e interativas.
 
 ## Visão Geral

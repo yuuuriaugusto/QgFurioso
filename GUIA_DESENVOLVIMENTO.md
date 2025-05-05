@@ -2,6 +2,9 @@
 
 Este guia fornece instruções detalhadas para desenvolvedores que trabalham na plataforma QG FURIOSO. Ele abrange o ambiente de desenvolvimento, práticas recomendadas, convenções de código e fluxos de trabalho para cada componente do sistema.
 
+**Data da última atualização:** 04 de Maio de 2025  
+**Versão da plataforma:** 2.5.0
+
 ## Índice
 
 1. [Configuração do Ambiente](#configuração-do-ambiente)

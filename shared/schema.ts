@@ -1,3 +1,14 @@
+/**
+ * QG FURIOSO - Schema de Banco de Dados
+ * 
+ * Este arquivo define o esquema completo do banco de dados para a plataforma QG FURIOSO,
+ * incluindo todas as tabelas, relações e tipos utilizados no sistema.
+ * 
+ * @version 2.5.0
+ * @author Equipe QG FURIOSO
+ * @copyright FURIA Esports 2025
+ */
+
 import { pgTable, text, serial, integer, boolean, date, timestamp, jsonb, uuid, doublePrecision } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 import { createInsertSchema } from "drizzle-zod";

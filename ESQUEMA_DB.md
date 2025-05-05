@@ -1,5 +1,8 @@
 # Documentação do Esquema de Banco de Dados - QG FURIOSO
 
+**Data da última atualização:** 04 de Maio de 2025  
+**Versão da plataforma:** 2.5.0
+
 ## Introdução
 
 Este documento apresenta o esquema de banco de dados do projeto QG FURIOSO, uma plataforma de engajamento de fãs desenvolvida para a FURIA Esports. Esta documentação é destinada a desenvolvedores, arquitetos de banco de dados e administradores de sistema que trabalham no projeto.

@@ -1,3 +1,14 @@
+/**
+ * QG FURIOSO - Schema de Auditoria
+ * 
+ * Este arquivo define o schema específico para auditoria e monitoramento das ações realizadas
+ * na plataforma administrativa, responsável por registrar todas as operações importantes.
+ * 
+ * @version 2.5.0
+ * @author Equipe QG FURIOSO
+ * @copyright FURIA Esports 2025
+ */
+
 import { pgTable, text, serial, integer, timestamp, jsonb } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";

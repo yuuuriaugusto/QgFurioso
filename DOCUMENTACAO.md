@@ -1,5 +1,8 @@
 # QG FURIOSO - Documentação Técnica
 
+**Data da última atualização:** 04 de Maio de 2025  
+**Versão da plataforma:** 2.5.0
+
 ## Visão Geral do Sistema
 
 O QG FURIOSO é uma plataforma abrangente de engajamento de fãs dividida em três componentes principais:
