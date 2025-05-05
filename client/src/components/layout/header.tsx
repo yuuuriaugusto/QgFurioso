@@ -34,7 +34,6 @@ interface Notification {
 }
 
 export default function Header() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [location] = useLocation();
   const { user, logoutMutation } = useAuth();
   const { toast } = useToast();
@@ -93,8 +92,7 @@ export default function Header() {
   // Contagem de notificações não lidas
   const unreadCount = notifications.filter(n => !n.read).length;
 
-  const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
-  const closeMenu = () => setIsMenuOpen(false);
+
 
   const handleLogout = () => {
     logoutMutation.mutate();
@@ -238,7 +236,7 @@ export default function Header() {
               <DropdownMenu>
                 <DropdownMenuTrigger className="flex items-center space-x-2">
                   <Avatar className="h-8 w-8">
-                    <AvatarImage src={user.profile?.avatarUrl} />
+                    <AvatarImage src={user.profile?.avatarUrl || undefined} />
                     <AvatarFallback>
                       {user.profile?.firstName?.charAt(0) || user.username.charAt(0).toUpperCase()}
                     </AvatarFallback>
@@ -314,137 +312,78 @@ export default function Header() {
             </div>
           )}
 
-          {/* Mobile menu button */}
-          <div className="md:hidden">
-            <button
-              onClick={toggleMenu}
-              className="text-foreground p-2 rounded-md hover:bg-muted"
-            >
-              {isMenuOpen ? (
-                <X className="h-6 w-6" />
-              ) : (
-                <Menu className="h-6 w-6" />
-              )}
-            </button>
+          {/* Mobile notification button */}
+          <div className="md:hidden flex items-center">
+            <Popover>
+              <PopoverTrigger asChild>
+                <button className="p-2 rounded-full hover:bg-muted relative">
+                  <Bell className="h-5 w-5" />
+                  {unreadCount > 0 && (
+                    <Badge 
+                      variant="destructive" 
+                      className="h-4 w-4 p-0 flex items-center justify-center absolute -top-0.5 -right-0.5"
+                    >
+                      {unreadCount}
+                    </Badge>
+                  )}
+                </button>
+              </PopoverTrigger>
+              <PopoverContent className="w-80 p-0" align="end">
+                <div className="flex justify-between items-center mb-2 px-3 pt-3">
+                  <h4 className="font-medium">Notificações</h4>
+                  {unreadCount > 0 && (
+                    <button 
+                      onClick={markAllAsRead}
+                      className="text-xs text-muted-foreground hover:text-primary"
+                    >
+                      Marcar todas como lidas
+                    </button>
+                  )}
+                </div>
+                
+                <div className="max-h-[300px] overflow-y-auto px-3 pb-3">
+                  {notifications.length > 0 ? (
+                    notifications.map((notification) => (
+                      <div 
+                        key={notification.id}
+                        className={`mb-2 p-2 rounded-md border ${notification.read ? 'bg-card' : 'bg-muted border-border'}`}
+                      >
+                        <div className="flex justify-between">
+                          <span className="font-medium text-sm flex items-center gap-1">
+                            {notification.type === 'info' && <Bell className="h-3 w-3" />}
+                            {notification.type === 'survey' && <Bell className="h-3 w-3 text-primary" />}
+                            {notification.type === 'coin' && <Coins className="h-3 w-3 text-primary" />}
+                            {notification.type === 'warning' && <AlertTriangle className="h-3 w-3 text-destructive" />}
+                            {notification.title}
+                          </span>
+                          <span className="text-xs text-muted-foreground">
+                            {new Date(notification.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                          </span>
+                        </div>
+                        <p className="text-xs mt-1">{notification.message}</p>
+                        {!notification.read && (
+                          <button 
+                            onClick={() => markNotificationAsRead(notification.id)}
+                            className="text-xs text-primary mt-1"
+                          >
+                            Marcar como lida
+                          </button>
+                        )}
+                      </div>
+                    ))
+                  ) : (
+                    <div className="text-center py-4 text-muted-foreground">
+                      <p>Sem notificações no momento</p>
+                    </div>
+                  )}
+                </div>
+              </PopoverContent>
+            </Popover>
           </div>
         </div>
       </div>
 
-      {/* Mobile menu */}
-      {isMenuOpen && (
-        <div className="md:hidden bg-card border-b border-border">
-          <div className="container mx-auto px-4 py-2">
-            <div className="text-center mb-3">
-              <h3 className="font-bold text-primary">Menu Rápido</h3>
-              <p className="text-xs text-muted-foreground mt-1 mb-3">
-                Navegação principal disponível na barra inferior
-              </p>
-            </div>
-            
-            <div className="flex flex-wrap justify-center gap-2 mb-2">
-              <Link 
-                href="/pesquisas"
-                className="px-4 py-2 rounded-md text-sm font-medium bg-secondary hover:bg-secondary/80 flex items-center gap-1"
-                onClick={closeMenu}
-              >
-                <Bell className="h-4 w-4" />
-                Pesquisas
-              </Link>
-              
-              <Link 
-                href="/configuracoes"
-                className="px-4 py-2 rounded-md text-sm font-medium bg-secondary hover:bg-secondary/80 flex items-center gap-1"
-                onClick={closeMenu}
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path>
-                  <circle cx="12" cy="12" r="3"></circle>
-                </svg>
-                Ajustes
-              </Link>
-            </div>
 
-            {user ? (
-              <>
-                <div className="pt-4 pb-3 border-t border-border">
-                  <div className="flex items-center px-3">
-                    <div className="flex-shrink-0">
-                      <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center overflow-hidden">
-                        {user.profile?.avatarUrl ? (
-                          <img src={user.profile.avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
-                        ) : (
-                          <span className="text-lg font-semibold">
-                            {user.profile?.firstName?.charAt(0) || user.username.charAt(0).toUpperCase()}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                    <div className="ml-3">
-                      <div className="text-base font-medium">
-                        {user.profile?.firstName ? `${user.profile.firstName} ${user.profile.lastName || ''}` : user.username}
-                      </div>
-                      <div className="text-sm text-muted-foreground">{user.username}</div>
-                    </div>
-                    {user.coinBalance && (
-                      <div className="ml-auto flex items-center space-x-1 bg-muted rounded-full py-1 px-3">
-                        <span className="font-medium text-sm">{user.coinBalance.balance}</span>
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <circle cx="12" cy="12" r="10" />
-                          <path d="M12 6v12" />
-                          <path d="M8 12h8" />
-                        </svg>
-                      </div>
-                    )}
-                  </div>
-                  <div className="mt-3 space-y-1 px-2">
-                    <Link 
-                      href="/meu-qg"
-                      className="block px-3 py-2 rounded-md text-base font-medium hover:bg-muted"
-                      onClick={closeMenu}
-                    >
-                      Meu perfil
-                    </Link>
-                    <Link 
-                      href="/pesquisas"
-                      className="block px-3 py-2 rounded-md text-base font-medium hover:bg-muted"
-                      onClick={closeMenu}
-                    >
-                      Pesquisas
-                    </Link>
-                    <Link 
-                      href="/configuracoes"
-                      className="block px-3 py-2 rounded-md text-base font-medium hover:bg-muted"
-                      onClick={closeMenu}
-                    >
-                      Configurações
-                    </Link>
-                    <button
-                      className="w-full text-left block px-3 py-2 rounded-md text-base font-medium text-red-500 hover:bg-muted"
-                      onClick={() => {
-                        closeMenu();
-                        handleLogout();
-                      }}
-                      disabled={logoutMutation.isPending}
-                    >
-                      {logoutMutation.isPending ? 'Saindo...' : 'Sair'}
-                    </button>
-                  </div>
-                </div>
-              </>
-            ) : (
-              <div className="pt-4 pb-3 border-t border-border">
-                <Link 
-                  href="/auth"
-                  className="block w-full text-center bg-primary text-white px-4 py-2 rounded-md text-base font-medium hover:bg-primary/90"
-                  onClick={closeMenu}
-                >
-                  Entrar
-                </Link>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
     </header>
   );
 }

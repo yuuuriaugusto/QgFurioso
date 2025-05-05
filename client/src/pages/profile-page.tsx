@@ -24,7 +24,12 @@ import {
   Gamepad2,
   CalendarCheck,
   Clock,
-  MapPin
+  MapPin,
+  BadgeCheck,
+  FileCheck,
+  Fingerprint,
+  CircleSlash,
+  Clock3
 } from "lucide-react";
 import Header from "@/components/layout/header";
 import Sidebar from "@/components/layout/sidebar";
@@ -145,7 +150,9 @@ export default function ProfilePage() {
   const [selectedGames, setSelectedGames] = useState<string[]>([]);
   const [openSocialDialog, setOpenSocialDialog] = useState(false);
   const [activeSocialPlatform, setActiveSocialPlatform] = useState<string | null>(null);
-
+  const [kycDocumentFile, setKycDocumentFile] = useState<File | null>(null);
+  const [kycSelfieFile, setKycSelfieFile] = useState<File | null>(null);
+  
   // Query para buscar o perfil do usuário
   const { data: userProfile, isLoading: isLoadingProfile } = useQuery({
     queryKey: ['/api/users/me/profile'],
@@ -209,6 +216,27 @@ export default function ProfilePage() {
       } catch (error) {
         console.error('Erro ao carregar resgates:', error);
         return [];
+      }
+    },
+    enabled: !!user
+  });
+  
+  // Query para buscar o status de verificação KYC
+  const { data: kycStatus, isLoading: isLoadingKyc } = useQuery({
+    queryKey: ['/api/users/me/kyc-verification'],
+    queryFn: async () => {
+      if (!user) return null;
+      try {
+        const response = await fetch('/api/users/me/kyc-verification');
+        // Se não houver verificação ainda, retornamos um objeto com status padrão
+        if (response.status === 404) {
+          return { status: "not_started", verificationData: null };
+        }
+        if (!response.ok) throw new Error('Erro ao buscar verificação KYC');
+        return await response.json();
+      } catch (error) {
+        console.error('Erro ao carregar verificação KYC:', error);
+        return { status: "error", verificationData: null };
       }
     },
     enabled: !!user
@@ -369,6 +397,46 @@ export default function ProfilePage() {
       });
     }
   });
+  
+  // Mutação para iniciar ou atualizar a verificação KYC
+  const updateKycMutation = useMutation({
+    mutationFn: async () => {
+      // Criamos um FormData para enviar os arquivos
+      const formData = new FormData();
+      if (kycDocumentFile) formData.append('documentFile', kycDocumentFile);
+      if (kycSelfieFile) formData.append('selfieFile', kycSelfieFile);
+      
+      const response = await fetch('/api/users/me/kyc-verification', {
+        method: 'POST',
+        body: formData
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => null);
+        throw new Error(errorData?.message || `Erro ao iniciar verificação (${response.status})`);
+      }
+      
+      return await response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/users/me/kyc-verification'] });
+      toast({
+        title: "Verificação enviada",
+        description: "Seus documentos foram enviados para verificação. Você será notificado quando o processo for concluído.",
+        variant: "default",
+      });
+      setKycDocumentFile(null);
+      setKycSelfieFile(null);
+    },
+    onError: (error) => {
+      console.error("Erro ao enviar verificação KYC:", error);
+      toast({
+        title: "Erro na verificação",
+        description: error.message || "Ocorreu um erro ao enviar seus documentos. Tente novamente.",
+        variant: "destructive",
+      });
+    }
+  });
 
   // Handler para adicionar ou remover um jogo da lista de interesses
   const toggleGameSelection = (gameId: string) => {
@@ -483,10 +551,11 @@ export default function ProfilePage() {
           </div>
           
           <Tabs defaultValue="personal" value={activeTab} onValueChange={setActiveTab} className="mb-6">
-            <TabsList className="grid grid-cols-4 mb-6">
+            <TabsList className="grid grid-cols-5 mb-6">
               <TabsTrigger value="personal">Pessoal</TabsTrigger>
               <TabsTrigger value="address">Endereço</TabsTrigger>
               <TabsTrigger value="interests">Interesses</TabsTrigger>
+              <TabsTrigger value="verification">Verificação KYC</TabsTrigger>
               <TabsTrigger value="social">Social</TabsTrigger>
             </TabsList>
             
@@ -1086,6 +1155,202 @@ export default function ProfilePage() {
                           </div>
                         </div>
                       </div>
+                    )}
+                  </CardContent>
+                </Card>
+              </TabsContent>
+              
+              <TabsContent value="verification" className="mt-0">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-xl">Verificação de Identidade KYC</CardTitle>
+                    <CardDescription>
+                      Verifique sua identidade para aumentar a segurança da sua conta e ter acesso a recursos exclusivos.
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    {isLoadingKyc ? (
+                      <div className="flex items-center justify-center py-8">
+                        <div className="animate-spin h-6 w-6 border-2 border-primary border-t-transparent rounded-full"></div>
+                      </div>
+                    ) : (
+                      <>
+                        <div className="mb-6">
+                          <div className="flex items-center gap-2 mb-2">
+                            <BadgeCheck className="h-5 w-5 text-primary" />
+                            <h3 className="font-semibold">Status da Verificação</h3>
+                          </div>
+                          
+                          <div className="p-4 bg-muted rounded-md">
+                            {!kycStatus || kycStatus.status === "not_started" ? (
+                              <div className="flex items-center gap-2">
+                                <div className="p-2 rounded-full bg-background">
+                                  <CircleSlash className="h-5 w-5 text-muted-foreground" />
+                                </div>
+                                <div>
+                                  <p className="font-medium">Não verificado</p>
+                                  <p className="text-sm text-muted-foreground">
+                                    Você ainda não iniciou o processo de verificação KYC.
+                                  </p>
+                                </div>
+                              </div>
+                            ) : kycStatus.status === "pending" ? (
+                              <div className="flex items-center gap-2">
+                                <div className="p-2 rounded-full bg-background">
+                                  <Clock3 className="h-5 w-5 text-amber-500" />
+                                </div>
+                                <div>
+                                  <p className="font-medium">Em análise</p>
+                                  <p className="text-sm text-muted-foreground">
+                                    Seus documentos estão sendo analisados. Isso pode levar até 48 horas.
+                                  </p>
+                                </div>
+                              </div>
+                            ) : kycStatus.status === "verified" ? (
+                              <div className="flex items-center gap-2">
+                                <div className="p-2 rounded-full bg-background">
+                                  <BadgeCheck className="h-5 w-5 text-emerald-500" />
+                                </div>
+                                <div>
+                                  <p className="font-medium">Verificado</p>
+                                  <p className="text-sm text-muted-foreground">
+                                    Sua identidade foi verificada com sucesso.
+                                  </p>
+                                </div>
+                              </div>
+                            ) : kycStatus.status === "rejected" ? (
+                              <div className="flex items-center gap-2">
+                                <div className="p-2 rounded-full bg-background">
+                                  <AlertTriangle className="h-5 w-5 text-destructive" />
+                                </div>
+                                <div>
+                                  <p className="font-medium">Verificação rejeitada</p>
+                                  <p className="text-sm text-muted-foreground">
+                                    Sua verificação foi rejeitada. Motivo: {kycStatus.verificationData?.rejectReason || "Documento ilegível ou inválido"}
+                                  </p>
+                                </div>
+                              </div>
+                            ) : (
+                              <div className="flex items-center gap-2">
+                                <div className="p-2 rounded-full bg-background">
+                                  <AlertTriangle className="h-5 w-5 text-destructive" />
+                                </div>
+                                <div>
+                                  <p className="font-medium">Erro</p>
+                                  <p className="text-sm text-muted-foreground">
+                                    Ocorreu um erro ao verificar seu status. Tente novamente mais tarde.
+                                  </p>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                        
+                        {(!kycStatus || kycStatus.status === "not_started" || kycStatus.status === "rejected") && (
+                          <div className="space-y-4">
+                            <div className="flex items-center gap-2 mb-2">
+                              <FileCheck className="h-5 w-5 text-primary" />
+                              <h3 className="font-semibold">Enviar Documentos para Verificação</h3>
+                            </div>
+                            
+                            <div className="grid gap-4">
+                              <div className="p-4 border border-dashed rounded-md text-center">
+                                <Fingerprint className="h-10 w-10 mx-auto mb-2 text-muted-foreground" />
+                                <p className="font-medium mb-1">Documento de Identidade</p>
+                                <p className="text-sm text-muted-foreground mb-4">
+                                  Envie uma foto legível do seu RG ou CNH (frente e verso)
+                                </p>
+                                <label htmlFor="kyc-document-upload">
+                                  <Button 
+                                    variant="outline" 
+                                    className="w-full" 
+                                    type="button"
+                                    onClick={() => document.getElementById('kyc-document-upload')?.click()}
+                                  >
+                                    {kycDocumentFile ? 'Arquivo selecionado' : 'Selecionar Documento'}
+                                  </Button>
+                                  <input 
+                                    type="file" 
+                                    id="kyc-document-upload" 
+                                    className="hidden" 
+                                    accept="image/*,.pdf"
+                                    onChange={(e) => {
+                                      if (e.target.files?.[0]) {
+                                        setKycDocumentFile(e.target.files[0]);
+                                      }
+                                    }}
+                                  />
+                                </label>
+                                {kycDocumentFile && (
+                                  <p className="text-xs text-muted-foreground mt-2">
+                                    {kycDocumentFile.name} ({Math.round(kycDocumentFile.size / 1024)} KB)
+                                  </p>
+                                )}
+                              </div>
+                              
+                              <div className="p-4 border border-dashed rounded-md text-center">
+                                <User className="h-10 w-10 mx-auto mb-2 text-muted-foreground" />
+                                <p className="font-medium mb-1">Selfie com Documento</p>
+                                <p className="text-sm text-muted-foreground mb-4">
+                                  Envie uma selfie segurando seu documento de identidade
+                                </p>
+                                <label htmlFor="kyc-selfie-upload">
+                                  <Button 
+                                    variant="outline" 
+                                    className="w-full" 
+                                    type="button"
+                                    onClick={() => document.getElementById('kyc-selfie-upload')?.click()}
+                                  >
+                                    {kycSelfieFile ? 'Arquivo selecionado' : 'Selecionar Selfie'}
+                                  </Button>
+                                  <input 
+                                    type="file" 
+                                    id="kyc-selfie-upload" 
+                                    className="hidden" 
+                                    accept="image/*"
+                                    onChange={(e) => {
+                                      if (e.target.files?.[0]) {
+                                        setKycSelfieFile(e.target.files[0]);
+                                      }
+                                    }}
+                                  />
+                                </label>
+                                {kycSelfieFile && (
+                                  <p className="text-xs text-muted-foreground mt-2">
+                                    {kycSelfieFile.name} ({Math.round(kycSelfieFile.size / 1024)} KB)
+                                  </p>
+                                )}
+                              </div>
+                              
+                              <Button 
+                                className="w-full" 
+                                disabled={!kycDocumentFile || !kycSelfieFile || updateKycMutation.isPending}
+                                onClick={() => updateKycMutation.mutate()}
+                              >
+                                {updateKycMutation.isPending ? (
+                                  <><Clock className="h-4 w-4 mr-2 animate-spin" /> Enviando...</>
+                                ) : (
+                                  <><Fingerprint className="h-4 w-4 mr-2" /> Enviar para Verificação</>
+                                )}
+                              </Button>
+                            </div>
+                          </div>
+                        )}
+                        
+                        {kycStatus?.status === "verified" && (
+                          <div className="pt-4">
+                            <div className="p-4 bg-emerald-50 text-emerald-900 dark:bg-emerald-950 dark:text-emerald-200 rounded-md">
+                              <div className="flex items-center gap-2 mb-2">
+                                <BadgeCheck className="h-5 w-5" />
+                                <p className="font-medium">Parabéns! Você é um usuário verificado</p>
+                              </div>
+                              <p className="text-sm">
+                                Sua identidade foi verificada com sucesso. Agora você tem acesso a recursos exclusivos da plataforma.
+                              </p>
+                            </div>
+                          </div>
+                        )}
+                      </>
                     )}
                   </CardContent>
                 </Card>

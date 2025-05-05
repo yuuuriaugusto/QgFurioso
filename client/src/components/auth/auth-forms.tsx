@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -9,6 +9,10 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
+import { Separator } from "@/components/ui/separator";
+import { FcGoogle } from "react-icons/fc";
+import { loginWithGoogle, getAuthErrorFromUrl, getAuthErrorMessage } from "@/lib/auth-service";
+import { useToast } from "@/hooks/use-toast";
 
 // Login form schema
 const loginSchema = z.object({
@@ -34,6 +38,19 @@ type RegisterFormValues = z.infer<typeof registerSchema>;
 export function AuthForms() {
   const [activeTab, setActiveTab] = useState<string>("login");
   const { loginMutation, registerMutation } = useAuth();
+  const { toast } = useToast();
+  
+  // Verificar erros de autenticação na URL
+  useEffect(() => {
+    const errorCode = getAuthErrorFromUrl();
+    if (errorCode) {
+      toast({
+        title: "Erro de autenticação",
+        description: getAuthErrorMessage(errorCode),
+        variant: "destructive",
+      });
+    }
+  }, [toast]);
 
   // Login form
   const loginForm = useForm<LoginFormValues>({
@@ -139,6 +156,31 @@ export function AuthForms() {
           </form>
         </Form>
         
+        <div className="mt-4">
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-background px-2 text-muted-foreground">
+                Ou continue com
+              </span>
+            </div>
+          </div>
+          
+          <div className="mt-4 grid">
+            <Button 
+              variant="outline" 
+              type="button" 
+              onClick={() => loginWithGoogle()}
+              className="flex items-center justify-center gap-2"
+            >
+              <FcGoogle className="h-5 w-5" /> 
+              <span>Entrar com Google</span>
+            </Button>
+          </div>
+        </div>
+        
         <div className="mt-4 text-center">
           <button 
             onClick={() => setActiveTab("register")} 
@@ -232,6 +274,31 @@ export function AuthForms() {
             </Button>
           </form>
         </Form>
+        
+        <div className="mt-4">
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-background px-2 text-muted-foreground">
+                Ou continue com
+              </span>
+            </div>
+          </div>
+          
+          <div className="mt-4 grid">
+            <Button 
+              variant="outline" 
+              type="button" 
+              onClick={() => loginWithGoogle()}
+              className="flex items-center justify-center gap-2"
+            >
+              <FcGoogle className="h-5 w-5" /> 
+              <span>Registrar com Google</span>
+            </Button>
+          </div>
+        </div>
         
         <div className="mt-4 text-center">
           <button 

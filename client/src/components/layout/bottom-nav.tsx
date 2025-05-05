@@ -1,5 +1,5 @@
 import { useLocation } from "wouter";
-import { Home, BookOpen, Calendar, Play, Coins } from "lucide-react";
+import { Home, Coins, Play, FileText, User, Settings } from "lucide-react";
 import OptimizedLink from "@/components/ui/optimized-link";
 
 export default function BottomNav() {
@@ -12,7 +12,8 @@ export default function BottomNav() {
 
   return (
     <div className="fixed bottom-0 inset-x-0 bg-card border-t border-border md:hidden z-40">
-      <div className="grid grid-cols-5 h-16">
+      <div className="grid grid-cols-6 h-16">
+        {/* Início */}
         <OptimizedLink
           href="/"
           className={`flex flex-col items-center justify-center ${
@@ -23,26 +24,40 @@ export default function BottomNav() {
           <span className="text-xs mt-1">Início</span>
         </OptimizedLink>
         
+        {/* Perfil */}
+        <OptimizedLink
+          href="/meu-qg"
+          className={`flex flex-col items-center justify-center ${
+            isActive("/meu-qg") ? "text-primary" : "text-muted-foreground"
+          }`}
+        >
+          <User className="h-5 w-5" />
+          <span className="text-xs mt-1">Perfil</span>
+        </OptimizedLink>
+        
+        {/* Coins */}
+        <OptimizedLink
+          href="/furia-coins"
+          className={`flex flex-col items-center justify-center ${
+            isActive("/furia-coins") ? "text-primary" : "text-muted-foreground"
+          }`}
+        >
+          <Coins className="h-5 w-5" />
+          <span className="text-xs mt-1">Coins</span>
+        </OptimizedLink>
+        
+        {/* Conteúdos */}
         <OptimizedLink
           href="/conteudo"
           className={`flex flex-col items-center justify-center ${
             isActive("/conteudo") ? "text-primary" : "text-muted-foreground"
           }`}
         >
-          <BookOpen className="h-5 w-5" />
-          <span className="text-xs mt-1">Conteúdo</span>
+          <FileText className="h-5 w-5" />
+          <span className="text-xs mt-1">Conteúdos</span>
         </OptimizedLink>
         
-        <OptimizedLink
-          href="/agenda"
-          className={`flex flex-col items-center justify-center ${
-            isActive("/agenda") ? "text-primary" : "text-muted-foreground"
-          }`}
-        >
-          <Calendar className="h-5 w-5" />
-          <span className="text-xs mt-1">Agenda</span>
-        </OptimizedLink>
-        
+        {/* Ao Vivo */}
         <OptimizedLink
           href="/ao-vivo"
           className={`flex flex-col items-center justify-center ${
@@ -56,14 +71,15 @@ export default function BottomNav() {
           <span className="text-xs mt-1">Ao Vivo</span>
         </OptimizedLink>
         
+        {/* Config */}
         <OptimizedLink
-          href="/furia-coins"
+          href="/configuracoes"
           className={`flex flex-col items-center justify-center ${
-            isActive("/furia-coins") ? "text-primary" : "text-muted-foreground"
+            isActive("/configuracoes") ? "text-primary" : "text-muted-foreground"
           }`}
         >
-          <Coins className="h-5 w-5" />
-          <span className="text-xs mt-1">Coins</span>
+          <Settings className="h-5 w-5" />
+          <span className="text-xs mt-1">Config</span>
         </OptimizedLink>
       </div>
     </div>

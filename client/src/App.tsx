@@ -12,6 +12,7 @@ import { AdminProtectedRoute } from "@/lib/admin-protected-route";
 // Carregamento preguiçoso (Lazy loading) para melhorar a performance
 const NotFound = lazy(() => import("@/pages/not-found"));
 const AuthPage = lazy(() => import("@/pages/auth-page"));
+const AuthCallbackPage = lazy(() => import("@/pages/auth-callback"));
 const HomePage = lazy(() => import("@/pages/home-page"));
 const ProfilePage = lazy(() => import("@/pages/profile-page"));
 const ShopPage = lazy(() => import("@/pages/shop-page"));
@@ -62,6 +63,7 @@ function Router() {
         <ProtectedRoute path="/pesquisas" component={SurveysPage} />
         <ProtectedRoute path="/configuracoes" component={SettingsPage} />
         <Route path="/auth" component={AuthPage} />
+        <Route path="/auth/callback/:provider" component={AuthCallbackPage} />
         
         {/* Rotas administrativas */}
         <Route path="/admin/login">
@@ -176,8 +178,8 @@ function AppContent() {
     loadRouteData();
   }, [location]);
   
-  // Não mostrar o BottomNav na tela de login ou em telas administrativas
-  const showBottomNav = location !== "/auth" && !location.startsWith("/admin");
+  // Não mostrar o BottomNav na tela de login, callback ou em telas administrativas
+  const showBottomNav = location !== "/auth" && !location.startsWith("/auth/") && !location.startsWith("/admin");
   
   return (
     <>

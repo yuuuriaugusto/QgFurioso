@@ -1,20 +1,50 @@
-# QG FURIOSO - Plataforma de Engajamento de Fãs
+# QG FURIOSO - A Nova Era da Experiência do Fã
 
 **Data da última atualização:** 04 de Maio de 2025  
 **Versão da plataforma:** 2.5.0
 
-Este projeto contém uma plataforma completa de engajamento de fãs para FURIA Esports, projetada para conectar fãs ao redor do mundo através de experiências digitais imersivas e interativas.
+<p align="center">
+  <img src="generated-icon.png" alt="QG FURIOSO Logo" width="200" height="200"/>
+  <br>
+  <em>Onde a paixão se encontra com a inovação</em>
+</p>
 
-## Visão Geral
+## Mais Perto da Paixão
 
-O QG FURIOSO é uma plataforma abrangente que oferece diversas funcionalidades:
+Imagine um lugar onde cada torcedor da FURIA se sente verdadeiramente **conectado, informado e valorizado**. Onde encontrar a hora do próximo jogo, saber as últimas notícias ou compartilhar a emoção de uma partida ao vivo é tão fácil quanto mandar uma mensagem. Onde sua paixão e lealdade são reconhecidas e recompensadas.
 
-- 🏆 **Acompanhamento de Partidas e Eventos**: informações sobre competições e calendário de eventos
-- 💰 **Sistema de FURIA Coins**: economia virtual para recompensas e aquisição de itens exclusivos 
-- 👤 **Perfis Personalizados**: gerenciamento completo de perfis de usuário com verificação KYC
-- 📊 **Pesquisas e Feedback**: sistema para coleta de opinião dos fãs com recompensas
-- 📰 **Central de Conteúdo**: notícias e atualizações filtradas por jogo/categoria
-- 🔴 **Transmissões Ao Vivo**: integração com streams e conteúdo em tempo real
+Essa é a visão do **QG FURIOSO**: uma plataforma digital inovadora criada para aproximar a FURIA de seus fãs como nunca antes.
+
+## Por Que o QG FURIOSO?
+
+Hoje, ser um fã engajado exige esforço. Informações espalhadas, múltiplas plataformas para acompanhar, dificuldade em se sentir realmente parte da comunidade. O QG FURIOSO resolve esses desafios oferecendo:
+
+- 🏆 **Tudo em Um Só Lugar**: chega de procurar! Notícias, agenda, resultados, loja e lives – tudo facilmente acessível
+- 💰 **FURIA Coins**: sistema exclusivo de recompensas onde sua paixão vale prêmios reais
+- 👤 **Experiência Personalizada**: conteúdo adaptado aos seus interesses e times favoritos
+- 📊 **Voz da Torcida**: pesquisas rápidas onde sua opinião realmente ajuda a moldar o futuro da FURIA
+- 📱 **Acesso Simplificado**: disponível tanto via portal web/mobile quanto via assistente de chat
+- 🔴 **Acompanhamento Ao Vivo**: interaja durante os jogos com outros fãs e receba atualizações em tempo real
+
+## Nossa Solução Completa
+
+O QG FURIOSO se apoia em dois pilares principais que trabalham juntos para oferecer uma experiência unificada:
+
+**1. Portal do Fã Exclusivo (Web/Mobile):**  
+Seu espaço dedicado no universo FURIA com interface visual completa para acessar todas as funcionalidades, gerenciar seu perfil, visualizar estatísticas detalhadas e muito mais.
+
+**2. Assistente Inteligente (Via Chat):**  
+Seu guia pessoal da FURIA, disponível 24/7. Pergunte em linguagem natural sobre jogos, jogadores, promoções e receba respostas imediatas e personalizadas.
+
+## Compromisso com Segurança
+
+Construído com foco total na privacidade e segurança dos dados. O usuário tem controle sobre suas informações, com coleta de dados transparente e sempre com consentimento. A verificação de identidade (KYC) é opcional e realizada através de parceiros seguros e especializados.
+
+## Construindo o Futuro da Torcida FURIA
+
+O QG FURIOSO não é apenas uma plataforma digital. É um ecossistema completo pensado para celebrar e fortalecer a comunidade FURIA. É uma ferramenta para informar, engajar, recompensar e, acima de tudo, **conectar**.
+
+Estamos construindo essa nova era da experiência do fã, lado a lado com a torcida mais FURIOSA do Brasil!
 
 ## Estrutura do Projeto
 
