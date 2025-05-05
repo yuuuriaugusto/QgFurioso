@@ -57,6 +57,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { DateRangePicker } from "@/components/ui/date-range-picker";
+import { DatePickerWithRange } from "@/components/ui/date-picker-with-range";
 import { addDays } from "date-fns";
 
 // Tipos
@@ -99,7 +100,7 @@ export default function AdminCoinsTransactionsPage() {
   const [showTransactionDialog, setShowTransactionDialog] = useState(false);
   const [selectedTransaction, setSelectedTransaction] = useState<CoinTransaction | null>(null);
   const [selectedTab, setSelectedTab] = useState<"all" | "earnings" | "expenses">("all");
-  
+
   // Buscar transações
   const { data, isLoading } = useQuery<CoinTransactionsResponse>({
     queryKey: ["/api/admin/coins/transactions", page, typeFilter, dateRange, search, selectedTab],
@@ -111,13 +112,13 @@ export default function AdminCoinsTransactionsPage() {
       if (dateRange.from) params.append("startDate", dateRange.from.toISOString());
       if (dateRange.to) params.append("endDate", dateRange.to.toISOString());
       if (search) params.append("search", search);
-      
+
       if (selectedTab === "earnings") {
         params.append("amountType", "positive");
       } else if (selectedTab === "expenses") {
         params.append("amountType", "negative");
       }
-      
+
       try {
         const res = await apiRequest("GET", `/api/admin/coins/transactions?${params.toString()}`);
         if (!res.ok) {
@@ -139,7 +140,7 @@ export default function AdminCoinsTransactionsPage() {
       }
     },
   });
-  
+
   // Mock data para visualização da interface
   const mockTransactions: CoinTransaction[] = [
     {
@@ -317,11 +318,11 @@ export default function AdminCoinsTransactionsPage() {
       updatedAt: "2023-04-19T11:50:00Z"
     }
   ];
-  
+
   // Função para filtrar dados mock baseado nos filtros selecionados
   const filterMockData = () => {
     let filtered = [...mockTransactions];
-    
+
     // Filtrar por busca
     if (search) {
       const searchLower = search.toLowerCase();
@@ -331,19 +332,19 @@ export default function AdminCoinsTransactionsPage() {
         tx.transactionId.toLowerCase().includes(searchLower)
       );
     }
-    
+
     // Filtrar por tipo
     if (typeFilter !== "all") {
       filtered = filtered.filter(tx => tx.transactionType === typeFilter);
     }
-    
+
     // Filtrar por aba (positivo/negativo)
     if (selectedTab === "earnings") {
       filtered = filtered.filter(tx => tx.amount > 0);
     } else if (selectedTab === "expenses") {
       filtered = filtered.filter(tx => tx.amount < 0);
     }
-    
+
     // Filtrar por data
     if (dateRange.from || dateRange.to) {
       filtered = filtered.filter(tx => {
@@ -358,10 +359,10 @@ export default function AdminCoinsTransactionsPage() {
         return true;
       });
     }
-    
+
     // Calcular totais
     const totalAmount = filtered.reduce((sum, tx) => sum + tx.amount, 0);
-    
+
     return {
       transactions: filtered.slice((page - 1) * 10, page * 10),
       totalCount: filtered.length,
@@ -369,20 +370,20 @@ export default function AdminCoinsTransactionsPage() {
       pageCount: Math.ceil(filtered.length / 10)
     };
   };
-  
+
   const displayTransactions = data?.transactions || [];
-  
+
   const handleViewTransaction = (transaction: CoinTransaction) => {
     setSelectedTransaction(transaction);
     setShowTransactionDialog(true);
   };
-  
+
   // Formata data para exibição
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return format(date, "dd/MM/yyyy HH:mm", { locale: ptBR });
   };
-  
+
   // Tipo da transação em formato legível
   const getTransactionTypeDisplay = (type: string) => {
     switch (type) {
@@ -408,11 +409,11 @@ export default function AdminCoinsTransactionsPage() {
         return type;
     }
   };
-  
+
   // Obter badge para tipo de transação
   const getTransactionTypeBadge = (type: string) => {
     let className = "";
-    
+
     switch (type) {
       case "signup_bonus":
         className = "bg-green-50 text-green-700";
@@ -445,7 +446,7 @@ export default function AdminCoinsTransactionsPage() {
         className = "bg-gray-50 text-gray-700";
         break;
     }
-    
+
     return (
       <Badge variant="outline" className={`font-normal ${className}`}>
         {getTransactionTypeDisplay(type)}
@@ -463,7 +464,7 @@ export default function AdminCoinsTransactionsPage() {
             Exportar CSV
           </Button>
         </div>
-        
+
         <Card>
           <CardHeader>
             <CardTitle>Histórico de Transações</CardTitle>
@@ -479,7 +480,7 @@ export default function AdminCoinsTransactionsPage() {
                   <TabsTrigger value="earnings" className="text-xs md:text-sm">Recebimentos</TabsTrigger>
                   <TabsTrigger value="expenses" className="text-xs md:text-sm">Gastos</TabsTrigger>
                 </TabsList>
-                
+
                 <div className="flex flex-col md:flex-row gap-2">
                   <Popover>
                     <PopoverTrigger asChild>
@@ -511,7 +512,7 @@ export default function AdminCoinsTransactionsPage() {
                   </Popover>
                 </div>
               </div>
-              
+
               {/* Filtros e pesquisa */}
               <div className="flex flex-col md:flex-row justify-between gap-4 mb-6">
                 <div className="flex items-center flex-1">
@@ -526,7 +527,7 @@ export default function AdminCoinsTransactionsPage() {
                     />
                   </div>
                 </div>
-                
+
                 <div className="flex items-center gap-2">
                   <div className="w-full md:w-56">
                     <select
@@ -548,15 +549,15 @@ export default function AdminCoinsTransactionsPage() {
                   </div>
                 </div>
               </div>
-              
+
               <TabsContent value="all" className="space-y-4">
                 {renderTransactionsTable()}
               </TabsContent>
-              
+
               <TabsContent value="earnings" className="space-y-4">
                 {renderTransactionsTable("earnings")}
               </TabsContent>
-              
+
               <TabsContent value="expenses" className="space-y-4">
                 {renderTransactionsTable("expenses")}
               </TabsContent>
@@ -564,7 +565,7 @@ export default function AdminCoinsTransactionsPage() {
           </CardContent>
         </Card>
       </div>
-      
+
       {/* Dialog de detalhes da transação */}
       <Dialog open={showTransactionDialog} onOpenChange={setShowTransactionDialog}>
         <DialogContent className="max-w-2xl">
@@ -576,7 +577,7 @@ export default function AdminCoinsTransactionsPage() {
               Informações detalhadas sobre a transação {selectedTransaction?.transactionId}.
             </DialogDescription>
           </DialogHeader>
-          
+
           {selectedTransaction && (
             <div className="grid gap-6 py-4">
               <div className="grid grid-cols-2 gap-4">
@@ -589,7 +590,7 @@ export default function AdminCoinsTransactionsPage() {
                   <p className="font-medium">{formatDate(selectedTransaction.createdAt)}</p>
                 </div>
               </div>
-              
+
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <h3 className="text-sm font-medium text-muted-foreground mb-1">Usuário</h3>
@@ -601,7 +602,7 @@ export default function AdminCoinsTransactionsPage() {
                   <div>{getTransactionTypeBadge(selectedTransaction.transactionType)}</div>
                 </div>
               </div>
-              
+
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <h3 className="text-sm font-medium text-muted-foreground mb-1">Valor</h3>
@@ -614,19 +615,19 @@ export default function AdminCoinsTransactionsPage() {
                   <p className="text-xl font-medium">{selectedTransaction.balance}</p>
                 </div>
               </div>
-              
+
               <div>
                 <h3 className="text-sm font-medium text-muted-foreground mb-1">Descrição</h3>
                 <p className="text-sm">{selectedTransaction.description || "Sem descrição"}</p>
               </div>
-              
+
               {selectedTransaction.referenceId && (
                 <div>
                   <h3 className="text-sm font-medium text-muted-foreground mb-1">ID de Referência</h3>
                   <p className="font-medium">{selectedTransaction.referenceId}</p>
                 </div>
               )}
-              
+
               {selectedTransaction.metadata && (
                 <div>
                   <h3 className="text-sm font-medium text-muted-foreground mb-1">Metadados</h3>
@@ -641,7 +642,7 @@ export default function AdminCoinsTransactionsPage() {
       </Dialog>
     </AdminLayout>
   );
-  
+
   function renderTransactionsTable(filter?: "earnings" | "expenses") {
     return (
       <>
@@ -706,7 +707,7 @@ export default function AdminCoinsTransactionsPage() {
                 </TableBody>
               </Table>
             </div>
-            
+
             <div className="flex flex-col sm:flex-row justify-between gap-2 items-center mt-4">
               <div className="text-sm text-muted-foreground flex items-center gap-2">
                 <span>
